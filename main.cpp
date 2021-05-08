@@ -31,16 +31,17 @@ int main()
 	long long data_tmp[m];
 	long long m1_inv,m2_inv,s_m1_inv,s_m2_inv;
 	prou_n = test_105_PFA.find_prou( m, modular_n);
-	m1_inv = test_105_PFA.find_inv(m1, modular_n);
-	m2_inv = test_105_PFA.find_inv(m2, modular_n);
-	s_m1_inv = test_105_PFA.find_inv(s_m1, modular_n);
-	s_m2_inv = test_105_PFA.find_inv(s_m2, modular_n);	
+	m1_inv = test_105_PFA.find_inv(m1, m2);
+	m2_inv = test_105_PFA.find_inv(m2, m1);
+	s_m1_inv = test_105_PFA.find_inv(s_m1, s_m2);
+	s_m2_inv = test_105_PFA.find_inv(s_m2, s_m1);	
 	
 	//------------------------------------------
 	for (int i = 0; i < m ; i++){
-		data_in[i] = 1 ;
+		data_in[i] = i ;
 	}			
-	
+	cout << "m1_inv" << m1_inv <<endl;
+	cout << "m2_inv" << m2_inv <<endl;	
 	
 	//-------------------------------------------
 	test_105_PFA.PFA3(PFA_data_out, data_in, m1,m2,s_m1,s_m2,m1_inv,m2_inv,s_m1_inv,s_m2_inv, prou_n, modular_n);           	
@@ -48,13 +49,13 @@ int main()
 	for (int i = 0; i< m ; i++){	
 		std::cout << PFA_data_out[i] << " ";	
 	}
-	/*
+	
 	std::cout << "\n  ";
 	test_105_PFA.DFT(DFT_data_out, data_in, m, prou_n, modular_n);           	
 	std::cout << "DFT_data_out =  ";	
 	for (int i = 0; i< m ; i++){	
 		std::cout << DFT_data_out[i] << " ";	
 	}
-	*/
+	
 	std::cout << "\n  ";		
 }

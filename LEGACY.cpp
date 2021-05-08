@@ -391,13 +391,13 @@ long long LEGACY::PFA3(long long *DFT_data, long long *data_in, long long m1, lo
             DFT_data[index_m] = data_in[index_in];						
         }    
     }
-    
+
     for(n2=0;n2<m2;n2++)
     {
-        //m1(= s_m1 * s_m2)-point PFA
-        PFA2(data_tmp + m1 * n2, DFT_data + m1 * n2, s_m1, s_m2, s_inv1, s_inv2, prou_power(prou, m2, modular), modular);         
+        //m2 times, m1-point DFT
+        DFT(data_tmp + m1 * n2, DFT_data + m1 * n2, m1, prou_power(prou, m2, modular), modular);           
     }    
-    
+ 
     for(n2=0;n2<m2;n2++)
     {
         for(n1=0;n1<m1;n1++)
@@ -408,15 +408,16 @@ long long LEGACY::PFA3(long long *DFT_data, long long *data_in, long long m1, lo
             index_in = (k1 + k2 * m1) % (m1 * m2);
             
             DFT_data[index_m] = data_tmp[index_in];
+			
         }    
     }
    
     {
-        for(n1=0;n1<m1;n1++)
-        {
-            //m2-point DFT
-            DFT(data_tmp + m2 * n1, DFT_data + m2 * n1, m2, prou_power(prou, m1, modular), modular);           
-        }
+		for(n2=0;n2<m1;n2++)
+		{
+			//m1(= s_m1 * s_m2)-point PFA
+			PFA2(data_tmp + m2 * n2, DFT_data + m2 * n2, s_m1, s_m2, s_inv1, s_inv2, prou_power(prou, m1, modular), modular);         
+		}  
     }
             
     for(n2=0;n2<m2;n2++)
@@ -429,6 +430,7 @@ long long LEGACY::PFA3(long long *DFT_data, long long *data_in, long long m1, lo
             index_out = (k1 * inv2 * m2 + k2 * inv1 * m1) % (m1 * m2);
             
             DFT_data[index_out] = data_tmp[index_m];
+			cout << index_m <<" "<< k2 <<" "<< k1 <<" "<< inv1<<" "<<inv2 <<" "<< index_out <<endl;
         }    
     }
 }
