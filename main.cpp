@@ -12,53 +12,49 @@ using namespace std;
 
 int main()
 {
-	//test AE 
-	LEGACY AE;
-	//varilable definition
-	int N = 256 ;
-	int r = 4 ;
-	int p,g,s;
-	p = log(N)/log(r) ;
-	g = N/(r*r) ;
-	s = log2(r) ;
-	int    BC_WIDTH; 
-	BC_WIDTH = (int)ceil(log2(N/r));	
-	//main function
-	int BC, BN, MA ;
-	int RR_out = 0;
-	int xor_out = 0;
-	int bit_width = log2(N);
-	vector<int> bit_array;	
-	int Data ;
+    LEGACY test_105_PFA;
+	//notice that the primitive root of unity exist
+	//when m | modular - 1 (modular -1 can be divided by m)	
+	long long m = 105;	
+	long long m1 = 3;	
+	long long m2 = 35;	
+	long long s_m1 = 5;	
+	long long s_m2 = 7;		
+	long long modular_n = 211;
+	long long prou_n;	
+	long long DFT_data_out[m];
+	long long DFT_data[m];	
+	long long PFA_data_out[m];	
+	long long IDFT_data_out[m];	
+	long long data_in[m];
+	long long data_in2[m]={5,4,3,2,1};
+	long long data_tmp[m];
+	long long m1_inv,m2_inv,s_m1_inv,s_m2_inv;
+	prou_n = test_105_PFA.find_prou( m, modular_n);
+	m1_inv = test_105_PFA.find_inv(m1, modular_n);
+	m2_inv = test_105_PFA.find_inv(m2, modular_n);
+	s_m1_inv = test_105_PFA.find_inv(s_m1, modular_n);
+	s_m2_inv = test_105_PFA.find_inv(s_m2, modular_n);	
 	
-	for (int t = 0; t < p; t++)
-	{
-		cout << "stage "<< t << endl ;
-		for(int i = 0; i < g; i++)
-		{
-			for(int j = 0; j < r; j++)
-			{
-				//-----------------------------
-				BC = j*g + AE.Gray(i,g) ;
-				//cout << "BC = "<< BC << endl ;
-				RR_out = AE.RR(BC, s*t, BC_WIDTH);
-				xor_out = AE.unary_xor(RR_out , BC_WIDTH);
-				BN = xor_out;
-				MA = RR_out >> 1;	
-				cout << "(BC, BN, MA) = ";				
-				cout << "(" << BC << " , "<< BN <<" , "<< MA << ")";	
-				//-------------------------------
-				AE.int2vec(BC, bit_width, bit_array);				
-				std::rotate(bit_array.begin(), bit_array.begin()+ s*t , bit_array.end());
-				Data = AE.vec2int(bit_array, bit_width);
-				cout << "Data_index = ";				
-				cout << "(" ;	
-				for(int k = 0; k < r ; k++ ){
-					cout << Data + k*(1<<(bit_width-s-s*t)) <<"  ";	
-				}
-				cout << ") \n" ;	
-			}
-		}
+	//------------------------------------------
+	for (int i = 0; i < m ; i++){
+		data_in[i] = 1 ;
+	}			
+	
+	
+	//-------------------------------------------
+	test_105_PFA.PFA3(PFA_data_out, data_in, m1,m2,s_m1,s_m2,m1_inv,m2_inv,s_m1_inv,s_m2_inv, prou_n, modular_n);           	
+	std::cout << "PFA_data_out =  ";	
+	for (int i = 0; i< m ; i++){	
+		std::cout << PFA_data_out[i] << " ";	
 	}
-		
+	/*
+	std::cout << "\n  ";
+	test_105_PFA.DFT(DFT_data_out, data_in, m, prou_n, modular_n);           	
+	std::cout << "DFT_data_out =  ";	
+	for (int i = 0; i< m ; i++){	
+		std::cout << DFT_data_out[i] << " ";	
+	}
+	*/
+	std::cout << "\n  ";		
 }

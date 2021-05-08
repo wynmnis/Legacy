@@ -11,6 +11,6 @@ main.o:main.cpp
 LEGACY.o: LEGACY.cpp LEGACY.h
 
 clean:
+	rm *.exe
 	rm *.o
 	rm *.txt
-	rm *.exe

@@ -206,8 +206,8 @@ long long LEGACY::DFT(long long *DFT_data, long long *data_in, long long m, long
     
 	return 0;
 }
-/*
-long long LEGACY::IDFT(long long *DFT_data, long long *data_in, long long m, long long prou, long long modular)
+
+long long LEGACY::IDFT(long long *IDFT_data, long long *data_in, long long n, long long prou, long long modular)
 {
 	long long prou_inv;
 	long long n_inv;
@@ -215,16 +215,16 @@ long long LEGACY::IDFT(long long *DFT_data, long long *data_in, long long m, lon
 	
 	prou_inv = find_inv(prou, modular);
 	n_inv = find_inv(n, modular);	
-	DFT(IFFT_tmp, data_in, n, prou_inv, modular);
+	DFT(IDFT_tmp, data_in, n, prou_inv, modular);
 	
 	for (int i = 0; i< n ; i++){	
-		IDFT_data[i] = ( n_inv * IFFT_tmp[i] ) % modular ;
+		IDFT_data[i] = ( n_inv * IDFT_tmp[i] ) % modular ;
 	}	
 	
 	return 0;	
 	
 }
-*/
+
 long long LEGACY::FFT(long long *DFT_data, long long *data_in, long long n, long long prou, long long modular) //primitive root of unity in n-point FFT
 {
 	long long DFT_data_tmp_1[n];
@@ -318,18 +318,18 @@ long long LEGACY::PFA2(long long *DFT_data, long long *data_in, long long m1, lo
     {
         for(n1=0;n1<m1;n1++)
         {
-            index_m = n1 + n2 * m1;
+            index_m = n1 + n2 * m1; // 0 1 2 3 .... m
             k2 = index_m % m2;
             k1 = index_m / m2;
-            index_in = (n1 * m2 + n2 * m1) % (m1 * m2);
-            
+            index_in = (n1 * m2 + n2 * m1) % (m1 * m2);//input re-index
+           
             DFT_data[index_m] = data_in[index_in];
         }    
     }
     
     for(n2=0;n2<m2;n2++)
     {
-        //m1-point DFT
+        //m2 times, m1-point DFT
         DFT(data_tmp + m1 * n2, DFT_data + m1 * n2, m1, prou_power(prou, m2, modular), modular);           
     }    
     
@@ -340,7 +340,7 @@ long long LEGACY::PFA2(long long *DFT_data, long long *data_in, long long m1, lo
             index_m = n1 + n2 * m1;
             k2 = index_m % m2;
             k1 = index_m / m2;
-            index_in = (k1 + k2 * m1) % (m1 * m2);
+            index_in = (k1 + k2 * m1) % (m1 * m2); //re-index between m1 and m2 
             
             DFT_data[index_m] = data_tmp[index_in];
         }    
@@ -361,7 +361,7 @@ long long LEGACY::PFA2(long long *DFT_data, long long *data_in, long long m1, lo
             index_m = n1 + n2 * m1;
             k2 = index_m % m2;
             k1 = index_m / m2;
-            index_out = (k1 * inv2 * m2 + k2 * inv1 * m1) % (m1 * m2);
+            index_out = (k1 * inv2 * m2 + k2 * inv1 * m1) % (m1 * m2); //output re-index
             
             DFT_data[index_out] = data_tmp[index_m];
         }    
@@ -383,12 +383,12 @@ long long LEGACY::PFA3(long long *DFT_data, long long *data_in, long long m1, lo
     {
         for(n1=0;n1<m1;n1++)
         {
-            index_m = n1 + n2 * m1;
+            index_m = n1 + n2 * m1; // 1 2 3 ... m
             k2 = index_m % m2;
             k1 = index_m / m2;
-            index_in = (n1 * m2 + n2 * m1) % (m1 * m2);
+            index_in = (n1 * m2 + n2 * m1) % (m1 * m2);// 1
             
-            DFT_data[index_m] = data_in[index_in];
+            DFT_data[index_m] = data_in[index_in];						
         }    
     }
     
@@ -410,106 +410,7 @@ long long LEGACY::PFA3(long long *DFT_data, long long *data_in, long long m1, lo
             DFT_data[index_m] = data_tmp[index_in];
         }    
     }
-    /*
-    if((m2 == 17) || (m2 >= 29))
-    {
-        long long n_2_power;
-        long long prom;         //primitive root modulo
-        long long prom_temp;
-        long long prou_temp;
-        long long inv_temp;
-        long long i;
-        
-        n_2_power = log2(2*m2-3) + 1;
-        n_2_power = 1 << n_2_power;
-    
-        long long w_padd[n_2_power];
-        long long w_FFT_out[n_2_power];
-        
-        long long d_padd[n_2_power];
-        long long d_FFT_out[n_2_power];
-        
-        prom = find_prou(m2-1, m2);                 //primitive root modulo
-        if(prom == 0)
-        {
-            printf("Error : can't find primitive root");
-            return 0;
-        }
-        prou_temp = prou_power(prou, m1, modular);  //m2 primitive root of unity
-        if(prou_temp == 0)
-        {
-            printf("Error : can't find primitive root of unity");
-            return 0;
-        }
-        
-        for(i = 0; i < n_2_power; i++)
-        {
-            w_padd[i] = 0;
-        }
-        
-        for(i = 0; i < (m2 - 1); i++)               //Zero padding and cyclic
-        {
-            prom_temp = prou_power(prom, m2 - 1 - i, m2);    //in index
-            w_padd[i] = prou_power(prou_temp, prom_temp, modular);
-            if(i != 0)
-            {
-                w_padd[i + n_2_power - m2 + 1] = w_padd[i]; 
-            }
-        }
-        
-        prou_temp = find_prou(n_2_power, modular);  //n primitive root of unity
-        if(prou_temp == 0)
-        {
-            printf("Error : can't find primitive root of unity");
-            return 0;
-        }
-        
-        //w FFT first
-        FFT(w_FFT_out, w_padd, n_2_power, prou_temp, modular);
-    
-        //RA-FFT 
-        for(n1=0;n1<m1;n1++)
-        {
-            for(i = 0; i < n_2_power; i++)
-            {
-                d_padd[i] = 0;
-            }
-            for(i = 0; i < (m2 - 1); i++)
-            {
-                d_padd[i] = DFT_data[m2 * n1 + prou_power(prom, i, m2)]; //Zero padding
-            }
-            //d FFT
-            FFT(d_FFT_out, d_padd, n_2_power, prou_temp, modular);
-               
-            //point-wise mult
-            for(i = 0; i < n_2_power; i++)
-            {
-                d_FFT_out[i] *= w_FFT_out[i];
-                d_FFT_out[i] %= modular;
-            }     
-            
-            //IFFT
-            FFT(d_padd, d_FFT_out, n_2_power, find_inv(prou_temp, modular), modular);
-            
-            inv_temp = find_inv(n_2_power, modular);
-            
-            for(i = 0; i < (m2 - 1); i++)       //d IFFT
-            {
-                d_padd[i] *= inv_temp;
-                d_padd[i] %= modular;
-            } 
-            
-            //add d0 and sum
-            data_tmp[m2 * n1] = DFT_data[m2 * n1 + m2 - 1];
-            for(i = 0; i < (m2 - 1); i++)
-            {
-                data_tmp[m2 * n1 + prou_power(prom, m2 - 1 - i, m2)] = (d_padd[i] + DFT_data[m2 * n1]) % modular;
-                data_tmp[m2 * n1] += DFT_data[m2 * n1 + i];
-                data_tmp[m2 * n1] %= modular;
-            } 
-        }
-    }
-    else*/
+   
     {
         for(n1=0;n1<m1;n1++)
         {
@@ -606,103 +507,7 @@ long long LEGACY::cyc_PFA2(long long *DFT_data, long long *data_in, long long m1
             DFT_data[index_m] = data_tmp[index_in];
         }    
     }
-    /*
-    if((m2 == 17) || (m2 >= 29))
-    {
-        long long n_2_power;
-        long long prom;         //primitive root modulo
-        long long prom_temp;
-        long long prou_temp;
-        long long inv_temp;
-        long long i;
-        
-        n_2_power = log2(2*m2-3) + 1;
-        n_2_power = 1 << n_2_power;
-    
-        long long w_padd[n_2_power];
-        long long w_FFT_out[n_2_power];
-        
-        long long d_padd[n_2_power];
-        long long d_FFT_out[n_2_power];
-        
-        prom = find_prou(m2-1, m2);                 //primitive root modulo
-        if(prom == 0)
-        {
-            printf("Error : can't find primitive root");
-            return 0;
-        }
-        prou_temp = prou_power(prou, m1, modular);  //m2 primitive root of unity
-        if(prou_temp == 0)
-        {
-            printf("Error : can't find primitive root of unity");
-            return 0;
-        }
-        
-        for(i = 0; i < n_2_power; i++)
-        {
-            w_padd[i] = 0;
-        }
-        
-        for(i = 0; i < (m2 - 1); i++)               //Zero padding and cyclic
-        {
-            prom_temp = prou_power(prom, m2 - 1 - i, m2);    //in index
-            w_padd[i] = prou_power(prou_temp, prom_temp, modular);
-            if(i != 0)
-            {
-                w_padd[i + n_2_power - m2 + 1] = w_padd[i]; 
-            }
-        }
-        
-        prou_temp = find_prou(n_2_power, modular);  //n primitive root of unity
-        if(prou_temp == 0)
-        {
-            printf("Error : can't find primitive root of unity");
-            return 0;
-        }
-        
-        //w FFT first
-        FFT(w_FFT_out, w_padd, n_2_power, prou_temp, modular);
-    
-        //RA-FFT 
-        for(n1=1;n1<m1;n1++)
-        {
-            for(i = 0; i < n_2_power; i++)
-            {
-                d_padd[i] = 0;
-            }
-            for(i = 0; i < (m2 - 1); i++)
-            {
-                d_padd[i] = DFT_data[m2 * n1 + prou_power(prom, i, m2)]; //Zero padding
-            }
-            //d FFT
-            FFT(d_FFT_out, d_padd, n_2_power, prou_temp, modular);
-               
-            //point-wise mult
-            for(i = 0; i < n_2_power; i++)
-            {
-                d_FFT_out[i] *= w_FFT_out[i];
-                d_FFT_out[i] %= modular;
-            }     
-            
-            //IFFT
-            FFT(d_padd, d_FFT_out, n_2_power, find_inv(prou_temp, modular), modular);
-            
-            inv_temp = find_inv(n_2_power, modular);
-            
-            for(i = 0; i < (m2 - 1); i++)       //d IFFT
-            {
-                d_padd[i] *= inv_temp;
-                d_padd[i] %= modular;
-            } 
-            
-            //add d0
-            for(i = 0; i < (m2 - 1); i++)
-            {
-                data_tmp[m2 * n1 + prou_power(prom, m2 - 1 - i, m2)] = (d_padd[i] + DFT_data[m2 * n1]) % modular;
-            } 
-        }
-    }
-    else*/
+
     {
         for(n1=1;n1<m1;n1++) //cyclotomic gcd(n1,m1)=1, when m1 is prime, i = 1~m1-1
         {
