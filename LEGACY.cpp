@@ -73,6 +73,53 @@
 
 using namespace std;
 
+long long LEGACY::Euler(long long x){
+    if (x < 2) return 0;
+    int ret = x;
+    int sq = sqrt(x);
+    for (int p=2; p<=sq; p++){
+        if (x % p == 0){
+            while (x % p == 0) x /= p;
+            ret -= ret / p;
+        }
+        if (x == 1) break;
+    }
+    if (x > 1) ret -= ret / x;
+    return ret;
+}
+
+// find the power of 2 integer which is m' >= 2m-3
+long long LEGACY::find_m_prime(long long m){
+	long long n = ceil(log2(2*m-3))  ;
+
+	long long ans = 0; ;
+	ans = pow(2,n);
+	return ans ;
+}
+
+bool LEGACY::coprime(long long a, long long b){
+
+	if(a==1||b==1)    
+		return true;
+	while(1)
+    {       
+		int t = a%b;
+		if(t == 0) 
+        {
+            break;
+        }
+		else
+        {
+			a = b;
+			b = t;
+		}
+	}
+	if(b>1)	
+		return false;
+	else 
+		return true;	 
+}
+
 long long LEGACY::find_inv(long long data_in, long long modular)
 {
     long long inv;
@@ -310,9 +357,9 @@ long long LEGACY::PFA2(long long *DFT_data, long long *data_in, long long m1, lo
     long long index_out;
     long long index_m;
     
-    long long data_tmp[system_m1];
+    long long data_tmp[m1*m2];
     
-    
+    //cout << "index_3" <<endl;
     //PFA with m = m1 * m2 -> m2 * m1-DFT + m1 * m2-DFT
     for(n2=0;n2<m2;n2++)
     {
@@ -324,6 +371,78 @@ long long LEGACY::PFA2(long long *DFT_data, long long *data_in, long long m1, lo
             index_in = (n1 * m2 + n2 * m1) % (m1 * m2);//input re-index
            
             DFT_data[index_m] = data_in[index_in];
+			//cout << index_in << endl;
+        }    
+    }
+    
+    for(n2=0;n2<m2;n2++)
+    {
+        //m2 times, m1-point DFT
+        DFT(data_tmp + m1 * n2, DFT_data + m1 * n2, m1, prou_power(prou, m2, modular), modular);           
+    }    
+    //cout << "index_4" <<endl;    
+    for(n2=0;n2<m2;n2++)
+    {
+        for(n1=0;n1<m1;n1++)
+        {
+            index_m = n1 + n2 * m1;
+            k2 = index_m % m2;
+            k1 = index_m / m2;
+            index_in = (k1 + k2 * m1) % (m1 * m2); //re-index between m1 and m2 
+            
+            DFT_data[index_m] = data_tmp[index_in];
+			//cout << index_in << endl;
+        }    
+    }
+   
+    {
+        for(n1=0;n1<m1;n1++)
+        {
+            //m2-point DFT
+            DFT(data_tmp + m2 * n1, DFT_data + m2 * n1, m2, prou_power(prou, m1, modular), modular);           
+        }
+    }
+         
+    //cout << "index_5" <<endl;		 
+    for(n2=0;n2<m2;n2++)
+    {
+        for(n1=0;n1<m1;n1++)
+        {
+            index_m = n1 + n2 * m1;
+            k2 = index_m % m2;
+            k1 = index_m / m2;
+            index_out = (k1 * inv2 * m2 + k2 * inv1 * m1) % (m1 * m2); //output re-index
+            
+            DFT_data[index_out] = data_tmp[index_m];
+			//cout << index_out << endl;
+        }    
+    }
+}
+
+
+long long LEGACY::PFA2_v2(long long *DFT_data, long long *data_in, long long m1, long long m2, long long inv1, long long inv2, long long prou, long long modular) //primitive root of unity in m(= m1 * m2)-point PFA
+{
+    long long n1,n2,k1,k2;
+    long long index_in;
+    long long index_out;
+    long long index_m;
+    
+    long long data_tmp[m1*m2];
+    
+    
+    //PFA with m = m1 * m2 -> m2 * m1-DFT + m1 * m2-DFT
+    for(n2=0;n2<m2;n2++)
+    {
+        for(n1=0;n1<m1;n1++)
+        {
+			
+            index_m = n1 + n2 * m1; // 0 1 2 3 .... m
+		    /*
+            k2 = index_m % m2;
+            k1 = index_m / m2;
+            index_in = (n1 * m2 + n2 * m1) % (m1 * m2);//input re-index
+            */
+            DFT_data[index_m] = data_in[index_m];
         }    
     }
     
@@ -363,10 +482,12 @@ long long LEGACY::PFA2(long long *DFT_data, long long *data_in, long long m1, lo
             k1 = index_m / m2;
             index_out = (k1 * inv2 * m2 + k2 * inv1 * m1) % (m1 * m2); //output re-index
             
-            DFT_data[index_out] = data_tmp[index_m];
+            DFT_data[index_m] = data_tmp[index_m];
+			//cout << index_out <<" ";
         }    
     }
 }
+
 
 long long LEGACY::PFA3(long long *DFT_data, long long *data_in, long long m1, long long m2, long long s_m1, long long s_m2, long long inv1, long long inv2, long long s_inv1, long long s_inv2, long long prou, long long modular) //primitive root of unity in m(= m1(= s_m1 * s_m2) * m2)-point PFA
 {
@@ -375,9 +496,10 @@ long long LEGACY::PFA3(long long *DFT_data, long long *data_in, long long m1, lo
     long long index_out;
     long long index_m;
     
-    long long data_tmp[system_m];
+    long long data_tmp[m1*m2];
     
-    
+    //cout << "index_1 " << endl;
+	
     //PFA with m = m1 * m2 -> m2 * m1-DFT + m1 * m2-DFT
     for(n2=0;n2<m2;n2++)
     {
@@ -388,9 +510,86 @@ long long LEGACY::PFA3(long long *DFT_data, long long *data_in, long long m1, lo
             k1 = index_m / m2;
             index_in = (n1 * m2 + n2 * m1) % (m1 * m2);// 1
             
-            DFT_data[index_m] = data_in[index_in];						
+            DFT_data[index_m] = data_in[index_in];	
+			//cout<< index_in << endl;
         }    
     }
+
+
+    for(n2=0;n2<m2;n2++)
+    {
+        //m2 times, m1-point DFT
+        DFT(data_tmp + m1 * n2, DFT_data + m1 * n2, m1, prou_power(prou, m2, modular), modular);           
+    }    
+
+	//cout << "index_2" <<endl; 
+	
+    for(n2=0;n2<m2;n2++)
+    {
+        for(n1=0;n1<m1;n1++)
+        {
+            index_m = n1 + n2 * m1;
+            k2 = index_m % m2;
+            k1 = index_m / m2;
+            index_in = (k1 + k2 * m1) % (m1 * m2);
+            
+            DFT_data[index_m] = data_tmp[index_in];
+			//cout<< index_in << endl;
+        }    
+    }
+ 	//cout << "----------------------" <<endl;  
+    {
+		for(n2=0;n2<m1;n2++)
+		{
+			//m1(= s_m1 * s_m2)-point PFA
+			PFA2(data_tmp + m2 * n2, DFT_data + m2 * n2, s_m1, s_m2, s_inv1, s_inv2, prou_power(prou, m1, modular), modular);         
+		}  
+    }
+        
+	//cout << "index_6" <<endl;		
+    for(n2=0;n2<m2;n2++)
+    {
+        for(n1=0;n1<m1;n1++)
+        {
+            index_m = n1 + n2 * m1;
+            k2 = index_m % m2;
+            k1 = index_m / m2;
+            index_out = (k1 * inv2 * m2 + k2 * inv1 * m1) % (m1 * m2);
+            
+            DFT_data[index_out] = data_tmp[index_m];
+			//cout<< index_out << endl;
+        }    
+    }
+	 	//cout << "----------------------" <<endl; 
+}
+
+//combine the first and second decomposition input index at the beginnig 
+long long LEGACY::PFA3_v2(long long *DFT_data, long long *data_in, long long m1, long long m2, long long s_m1, long long s_m2, long long inv1, long long inv2, long long s_inv1, long long s_inv2, long long prou, long long modular) //primitive root of unity in m(= m1(= s_m1 * s_m2) * m2)-point PFA
+{
+    long long n1,n2,k1,k2,k3;
+    long long index_in;
+    long long index_out;
+    long long index_m;
+    
+    long long data_tmp[m1*m2];
+    
+    
+    //PFA with m = m1 * m2 -> m2 * m1-DFT + m1 * m2-DFT
+    for(n2=0;n2<m2;n2++)
+    {
+        for(n1=0;n1<m1;n1++)
+        {
+            index_m = n1 + n2 * m1; // 1 2 3 ... m
+			k3 = (index_m / (m1*s_m1)) % s_m2 ;
+            k2 = (index_m / m1) % s_m1 ;
+		    k1 = index_m % m1;
+            index_in = (k1 * m2 + k2 * s_m2*m1 + k3 * s_m1*m1) % (m1 * m2);// 1
+            
+            DFT_data[index_m] = data_in[index_in];	
+			//cout<< index_in << endl;
+        }    
+    }
+	//cout << "----------------------" <<endl;
 
     for(n2=0;n2<m2;n2++)
     {
@@ -408,15 +607,15 @@ long long LEGACY::PFA3(long long *DFT_data, long long *data_in, long long m1, lo
             index_in = (k1 + k2 * m1) % (m1 * m2);
             
             DFT_data[index_m] = data_tmp[index_in];
-			
+			//cout<< index_in << endl;
         }    
     }
-   
+ 	//cout << "----------------------" <<endl;  
     {
 		for(n2=0;n2<m1;n2++)
 		{
 			//m1(= s_m1 * s_m2)-point PFA
-			PFA2(data_tmp + m2 * n2, DFT_data + m2 * n2, s_m1, s_m2, s_inv1, s_inv2, prou_power(prou, m1, modular), modular);         
+			PFA2_v2(data_tmp + m2 * n2, DFT_data + m2 * n2, s_m1, s_m2, s_inv1, s_inv2, prou_power(prou, m1, modular), modular);         
 		}  
     }
             
@@ -425,14 +624,126 @@ long long LEGACY::PFA3(long long *DFT_data, long long *data_in, long long m1, lo
         for(n1=0;n1<m1;n1++)
         {
             index_m = n1 + n2 * m1;
-            k2 = index_m % m2;
-            k1 = index_m / m2;
-            index_out = (k1 * inv2 * m2 + k2 * inv1 * m1) % (m1 * m2);
-            
+			//k2 = index_m % m2;
+            //k1 = index_m / m2;
+            //index_out = (k1 * inv2 * m2 + k2 * inv1 * m1) % (m1 * m2);
+			k1 = (index_m / m2) % m1 ;
+            k2 = (index_m / s_m2) % s_m1 ;
+		    k3 = index_m % s_m2;
+            index_out = (k1 * inv2 * m2 + (k2 * s_m2 * s_inv2 + k3 * s_m1 * s_inv1)*m1*inv1 ) % (m1 * m2);
             DFT_data[index_out] = data_tmp[index_m];
-			cout << index_m <<" "<< k2 <<" "<< k1 <<" "<< inv1<<" "<<inv2 <<" "<< index_out <<endl;
+			//cout<< index_out << endl;
         }    
     }
+	 	//cout << "----------------------" <<endl; 
+}
+
+long long LEGACY::find_gen(long long n)
+{
+	bool flag = 0 ;
+	long long ans;
+	long long tmp = 1;
+	for(int i = 2; i < n; i++)
+	{
+		for(int j = 1; j < n; j++)
+		{
+			tmp = tmp * i ;
+			tmp %= n;
+			if(tmp == 1){
+				if(j == n - 1)
+					flag = 1;
+				else
+					break ;
+			}
+		}
+		if(flag == 1){
+			ans = i;
+			break ; 
+		}
+	}
+	return ans ;
+}
+
+// input n must be a prime
+void LEGACY::Rader(long long *DFT_data, long long *data_in, long long n, long long prou, long long modular)
+{
+	int m_prime ;
+	if( (n==3) || (n==5) || (n==17) || (n==257))
+		m_prime = n-1;
+	else
+		m_prime = find_m_prime(n);
+	
+	long long gen;
+	long long data_in_reindex[n];
+	long long tmp = 1;
+	long long index_in[n-1];	
+	long long index_out[n-1];	
+	gen = find_gen(n);
+
+//----------------input re-index-----------------
+	index_in[0] = 1;
+	index_out[0] = 1;
+	data_in_reindex[0] = data_in[0];
+	data_in_reindex[1] = data_in[1];	
+	for (int i = 0; i < n-2; i++){
+		tmp *= gen;
+		tmp %= n;
+		index_in[i+1] = tmp ;
+		data_in_reindex[i+2] = data_in[tmp];
+	}
+	
+	for (int i = 1; i < n-1 ; i++){
+		index_out[i] = index_in[n-1-i];
+	}
+/*
+	for (int i = 0; i < n-1 ; i++){
+		//cout << index_in[i] <<endl;
+		//cout << index_out[i] <<endl;
+	}	
+*/	
+	cout << endl ;
+	
+	long long FFT_in[m_prime];
+	for (int i = 0; i < m_prime ; i++){
+		if(i < n - 1)
+			FFT_in[i] = data_in_reindex[i+1];
+		else 
+			FFT_in[i] = 0;
+		
+		cout << FFT_in[i] <<endl;
+	}
+//-----------------------------------------------
+		cout <<endl;
+//----------------tw input re-index-----------------
+	long long tw_FFT_index[m_prime];
+	long long tw_FFT_in[m_prime];
+	for (int i = 0; i < m_prime ; i++){
+		if(i < n-1)
+			tw_FFT_index[i] = index_out[i];
+		else if(i > (m_prime - n + 1))
+			tw_FFT_index[i] = index_out[i + n - m_prime -1];
+		else
+			tw_FFT_index[i] = 0;
+	}	
+	for (int i = 0; i < m_prime ; i++){
+		cout << tw_FFT_index[i] <<endl;
+	}
+		cout <<endl;
+		
+	for (int i = 0; i < m_prime ; i++){
+		if(tw_FFT_index[i] == 0)
+			tw_FFT_in[i] = 0;
+		else
+			tw_FFT_in[i] = prou_power(prou,tw_FFT_index[i],modular);
+	}
+	for (int i = 0; i < m_prime ; i++){
+		cout << tw_FFT_in[i] <<endl;
+	}
+
+
+
+
+
 }
 
 long long LEGACY::cyc_DFT(long long *DFT_data, long long *data_in, long long m, long long prou, long long modular) //primitive root of unity in m-point DFT : m in -> m-1 out
