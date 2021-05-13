@@ -16,10 +16,13 @@ public:
 	long long find_m_prime(long long m);
 	long long find_gen(long long n);
 	long long find_inv(long long data_in, long long modular);
+	bool isPowerBy2(long long n);
+	bool isPrime(long long n);
+	long long find_prime(long long m, long long powerof2);
 	long long find_prou(long long m, long long modular);
 	long long prou_power(long long data_in, long long power, long long modular);
 	long long DFT(long long *DFT_data, long long *data_in, long long m, long long prou, long long modular);
-	void Rader(long long *DFT_data, long long *data_in, long long n, long long prou, long long modular);
+	void Rader(long long *RA_out, long long *data_in, long long n, long long prou, long long modular);
 	long long IDFT(long long *IDFT_data, long long *data_in, long long n, long long prou, long long modular);	
 	long long FFT(long long *DFT_data, long long *data_in, long long n, long long prou, long long modular);
 	long long IFFT(long long *DFT_data, long long *data_in, long long n, long long prou, long long modular);

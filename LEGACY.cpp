@@ -120,6 +120,52 @@ bool LEGACY::coprime(long long a, long long b){
 		return true;	 
 }
 
+bool LEGACY::isPowerBy2(long long n)
+{
+    return n > 0 && (n & n - 1) == 0;
+}
+
+bool LEGACY::isPrime(long long n)
+{
+    if(n==1)
+        return 0;
+    long long i=2;
+    for(; i*i<=n; i++)
+    {
+        if(n%i==0)
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+//   m   | modular - 1
+//   2^n | modular - 1
+
+long long LEGACY::find_prime(long long m, long long powerof2){
+	bool flag = 0;
+	bool powerof2_flag = 0;
+	bool prime_flag = 0;	
+	long long i = 0;
+	long long tmp ;
+	long long init = m * pow(2,powerof2);
+	while(flag == 0){
+		i++ ;
+		tmp = init * i;
+		powerof2_flag = 0;
+
+		prime_flag = 0;
+		prime_flag = isPrime(tmp+1);
+		if(prime_flag == 1){		
+			flag = 1;
+		}		
+		
+	}
+	return tmp+1 ;
+	
+}
+
 long long LEGACY::find_inv(long long data_in, long long modular)
 {
     long long inv;
@@ -665,14 +711,14 @@ long long LEGACY::find_gen(long long n)
 }
 
 // input n must be a prime
-void LEGACY::Rader(long long *DFT_data, long long *data_in, long long n, long long prou, long long modular)
+void LEGACY::Rader(long long *RA_out, long long *data_in, long long n, long long prou, long long modular)
 {
 	int m_prime ;
 	if( (n==3) || (n==5) || (n==17) || (n==257))
 		m_prime = n-1;
 	else
 		m_prime = find_m_prime(n);
-	
+
 	long long gen;
 	long long data_in_reindex[n];
 	long long tmp = 1;
@@ -695,12 +741,13 @@ void LEGACY::Rader(long long *DFT_data, long long *data_in, long long n, long lo
 	for (int i = 1; i < n-1 ; i++){
 		index_out[i] = index_in[n-1-i];
 	}
-/*
+
+
 	for (int i = 0; i < n-1 ; i++){
-		//cout << index_in[i] <<endl;
+		cout << index_in[i] <<endl;
 		//cout << index_out[i] <<endl;
 	}	
-*/	
+	
 	cout << endl ;
 	
 	long long FFT_in[m_prime];
@@ -710,7 +757,7 @@ void LEGACY::Rader(long long *DFT_data, long long *data_in, long long n, long lo
 		else 
 			FFT_in[i] = 0;
 		
-		cout << FFT_in[i] <<endl;
+		//cout << FFT_in[i] <<endl;
 	}
 //-----------------------------------------------
 		cout <<endl;
@@ -724,10 +771,12 @@ void LEGACY::Rader(long long *DFT_data, long long *data_in, long long n, long lo
 			tw_FFT_index[i] = index_out[i + n - m_prime -1];
 		else
 			tw_FFT_index[i] = 0;
-	}	
+	}
+/*	
 	for (int i = 0; i < m_prime ; i++){
 		cout << tw_FFT_index[i] <<endl;
 	}
+*/
 		cout <<endl;
 		
 	for (int i = 0; i < m_prime ; i++){
@@ -736,14 +785,51 @@ void LEGACY::Rader(long long *DFT_data, long long *data_in, long long n, long lo
 		else
 			tw_FFT_in[i] = prou_power(prou,tw_FFT_index[i],modular);
 	}
+	/*
 	for (int i = 0; i < m_prime ; i++){
 		cout << tw_FFT_in[i] <<endl;
 	}
+	*/
+//-------------pointwise mul--------------------------
+	long long FFT_out[m_prime];
+	long long tw_FFT_out[m_prime];
+	long long m_prime_prou;
 
+	m_prime_prou = find_prou(m_prime, modular);
+	FFT(FFT_out, FFT_in, m_prime, m_prime_prou, modular) ;
+	FFT(tw_FFT_out, tw_FFT_in, m_prime, m_prime_prou, modular) ;
 
+	long long ele_mul[m_prime];
+	for (int i = 0; i< m_prime ; i++){	
+		ele_mul[i] = (FFT_out[i]*tw_FFT_out[i]) % modular ;
+	}
 
-
-
+//---------------IFFT------------------------
+	long long IFFT_out[m_prime];
+	IFFT(IFFT_out , ele_mul , m_prime , m_prime_prou , modular);
+	/*
+	cout << "IFFT_out" <<endl;	
+	for (int i = 0; i< n-1 ; i++){	
+		cout << IFFT_out[i] << " ";
+	}	
+	cout  <<endl;*/
+	
+//-------------add do------------------------
+	//long long RA_out[n];
+	RA_out[0] = 0;
+	for (int i = 0; i< n ; i++){	
+		RA_out[0] += data_in[i] ;
+	}	
+	for (int i = 0; i< n-1 ; i++){	
+		RA_out[index_out[i]] = IFFT_out[i] + data_in[0] ;
+	}	
+	/*
+	cout << "RA_out" <<endl;
+	for (int i = 0; i< n ; i++){	
+		cout << RA_out[i] << " ";
+	}	
+	cout  <<endl;
+*/
 }
 
 long long LEGACY::cyc_DFT(long long *DFT_data, long long *data_in, long long m, long long prou, long long modular) //primitive root of unity in m-point DFT : m in -> m-1 out
