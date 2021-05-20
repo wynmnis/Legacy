@@ -274,11 +274,15 @@ long long LEGACY::DFT(long long *DFT_data, long long *data_in, long long m, long
 	check_m = (modular-1) % m ;
 	assert(check_m == 0) ;
 	
+	//cout << "DFT_in = " << endl;	
     for(i=0;i<m;i++)
     {
         DFT_data_tmp[i] = 0;
+		//cout << data_in[i] << endl ;		
     }
-    
+	//cout << endl; 
+
+ 
     for(i=0;i<m;i++)
     {
         prou_tmp = prou_power(prou, i, modular);
@@ -292,10 +296,13 @@ long long LEGACY::DFT(long long *DFT_data, long long *data_in, long long m, long
         DFT_data_tmp[i] %= modular;
     } 	
     
+	//cout << "DFT_out = " << endl;
     for(i=0;i<m;i++)
     {
         DFT_data[i] = DFT_data_tmp[i];
+		//cout << DFT_data[i] << endl ;
     }
+	//cout << endl;
     
 	return 0;
 }
@@ -495,7 +502,8 @@ long long LEGACY::PFA2_v2(long long *DFT_data, long long *data_in, long long m1,
     for(n2=0;n2<m2;n2++)
     {
         //m2 times, m1-point DFT
-        DFT(data_tmp + m1 * n2, DFT_data + m1 * n2, m1, prou_power(prou, m2, modular), modular);           
+        DFT(data_tmp + m1 * n2, DFT_data + m1 * n2, m1, prou_power(prou, m2, modular), modular);  
+		//Rader(data_tmp + m1 * n2, DFT_data + m1 * n2, m1, prou_power(prou, m2, modular), modular); 		
     }    
     
     for(n2=0;n2<m2;n2++)
@@ -515,7 +523,8 @@ long long LEGACY::PFA2_v2(long long *DFT_data, long long *data_in, long long m1,
         for(n1=0;n1<m1;n1++)
         {
             //m2-point DFT
-            DFT(data_tmp + m2 * n1, DFT_data + m2 * n1, m2, prou_power(prou, m1, modular), modular);           
+            DFT(data_tmp + m2 * n1, DFT_data + m2 * n1, m2, prou_power(prou, m1, modular), modular);    
+			//Rader(data_tmp + m2 * n1, DFT_data + m2 * n1, m2, prou_power(prou, m1, modular), modular);    	
         }
     }
             
@@ -530,6 +539,82 @@ long long LEGACY::PFA2_v2(long long *DFT_data, long long *data_in, long long m1,
             
             DFT_data[index_m] = data_tmp[index_m];
 			//cout << index_out <<" ";
+        }    
+    }
+}
+
+long long LEGACY::PFA2_v3(long long *DFT_data, long long *data_in, long long m1, long long m2, long long m1_prime, long long m2_prime, long long m1_prime_prou, long long m2_prime_prou, long long inv1, long long inv2, long long *tw_FFT_out1, long long *tw_FFT_out2, long long *index_out1, long long *index_out2, long long modular, long long m1_prou,long long m2_prou,long long *index_in1,long long *index_in2) //primitive root of unity in m(= m1 * m2)-point PFA
+{
+    long long n1,n2,k1,k2;
+    long long index_in;
+    long long index_out;
+    long long index_m;
+    
+    long long data_tmp[m1*m2];
+    
+    
+    //PFA with m = m1 * m2 -> m2 * m1-DFT + m1 * m2-DFT
+    for(n2=0;n2<m2;n2++)
+    {
+        for(n1=0;n1<m1;n1++)
+        {
+			
+            index_m = n1 + n2 * m1; // 0 1 2 3 .... m
+		    
+            //k2 = index_m % m2;
+            //k1 = index_m / m2;
+            //index_in = (n1 * m2 + n2 * m1) % (m1 * m2);//input re-index
+            
+            DFT_data[index_m] = data_in[index_m];
+        }    
+    }
+ 
+/*
+    cout << "m1 = " << m1 << endl;
+    cout << "m1_prime = " << m1_prime << endl;
+    cout << "m1_prime_prou = " << m1_prime_prou << endl;
+*/
+ 
+    for(n2=0;n2<m2;n2++)
+    {
+        //m2 times, m1-point DFT
+        //DFT(data_tmp + m1 * n2, DFT_data + m1 * n2, m1, m1_prou, modular);                  
+	    //Rader(data_tmp + m1 * n2, DFT_data + m1 * n2, m1, m1_prou, modular); 
+		Rader_v3(data_tmp + m1 * n2, DFT_data + m1 * n2, tw_FFT_out1 ,index_in1, index_out1 , m1, m1_prime, m1_prime_prou, modular);           
+    }    
+    
+    for(n2=0;n2<m2;n2++)
+    {
+        for(n1=0;n1<m1;n1++)
+        {
+            index_m = n1 + n2 * m1;
+            k2 = index_m % m2;
+            k1 = index_m / m2;
+            index_in = (k1 + k2 * m1) % (m1 * m2); //re-index between m1 and m2 
+            
+            DFT_data[index_m] = data_tmp[index_in];
+        }  
+    }
+
+        for(n1=0;n1<m1;n1++)
+        {
+            //m2-point DFT
+            //Rader(data_tmp + m2 * n1, DFT_data + m2 * n1, m2, m2_prou, modular);
+			//DFT(data_tmp + m2 * n1, DFT_data + m2 * n1, m2, m2_prou, modular);  
+			Rader_v3(data_tmp + m2 * n1, DFT_data + m2 * n1, tw_FFT_out2 ,index_in2, index_out2 , m2, m2_prime, m2_prime_prou, modular); 			
+        }
+    
+            
+    for(n2=0;n2<m2;n2++)
+    {
+        for(n1=0;n1<m1;n1++)
+        {
+            index_m = n1 + n2 * m1;
+            k2 = index_m % m2;
+            k1 = index_m / m2;
+            index_out = (k1 * inv2 * m2 + k2 * inv1 * m1) % (m1 * m2); //output re-index
+            
+            DFT_data[index_m] = data_tmp[index_m];
         }    
     }
 }
@@ -610,6 +695,7 @@ long long LEGACY::PFA3(long long *DFT_data, long long *data_in, long long m1, lo
 }
 
 //combine the first and second decomposition input index at the beginnig 
+
 long long LEGACY::PFA3_v2(long long *DFT_data, long long *data_in, long long m1, long long m2, long long s_m1, long long s_m2, long long inv1, long long inv2, long long s_inv1, long long s_inv2, long long prou, long long modular) //primitive root of unity in m(= m1(= s_m1 * s_m2) * m2)-point PFA
 {
     long long n1,n2,k1,k2,k3;
@@ -642,6 +728,8 @@ long long LEGACY::PFA3_v2(long long *DFT_data, long long *data_in, long long m1,
         //m2 times, m1-point DFT
         DFT(data_tmp + m1 * n2, DFT_data + m1 * n2, m1, prou_power(prou, m2, modular), modular);           
     }    
+	
+	//cout << "rader ok" << endl;
  
     for(n2=0;n2<m2;n2++)
     {
@@ -664,7 +752,8 @@ long long LEGACY::PFA3_v2(long long *DFT_data, long long *data_in, long long m1,
 			PFA2_v2(data_tmp + m2 * n2, DFT_data + m2 * n2, s_m1, s_m2, s_inv1, s_inv2, prou_power(prou, m1, modular), modular);         
 		}  
     }
-            
+	
+    //merge final two reindex
     for(n2=0;n2<m2;n2++)
     {
         for(n1=0;n1<m1;n1++)
@@ -683,6 +772,509 @@ long long LEGACY::PFA3_v2(long long *DFT_data, long long *data_in, long long m1,
     }
 	 	//cout << "----------------------" <<endl; 
 }
+
+long long LEGACY::PFA3_v3(long long *DFT_data, long long *data_in, long long m1, long long m2, long long s_m1, long long s_m2, long long inv1, long long inv2, long long s_inv1, long long s_inv2, long long prou, long long modular) //primitive root of unity in m(= m1(= s_m1 * s_m2) * m2)-point PFA
+{
+    long long n1,n2,k1,k2,k3;
+    long long index_in;
+    long long index_out;
+    long long index_m;
+    
+    long long data_tmp[m1*m2];
+	long long tmp;
+//------------------------ rader parameter m1 set up-------------------------
+	long long m1_prime, gen1;
+	long long rader_index_in1[m1];
+	long long rader_index_out1[m1];	
+	gen1 = find_gen(m1);
+	if( (m1==3) || (m1==5) || (m1==17) || (m1==257)){
+		m1_prime = m1-1;
+	}
+	else{
+		m1_prime = find_m_prime(m1);
+	}
+	
+	long long tw_FFT_index1[m1_prime];
+	long long tw_FFT_in1[m1_prime];	
+	long long m1_prou;	
+	
+	m1_prou = prou_power(prou, m2, modular);
+	rader_index_in1[0] = 0;
+	rader_index_out1[0] = 0;
+	rader_index_in1[1] = 1;
+	rader_index_out1[1] = 1;
+	tmp = 1;
+	for (int i = 2; i < m1 ; i++){
+		tmp *= gen1;
+		tmp %= m1;
+		rader_index_in1[i] = tmp;
+	}	
+	for (int i = 2; i < m1 ; i++){
+		rader_index_out1[i] = rader_index_in1[m1-i+1];
+	}
+	
+	for (int i = 0; i < m1_prime ; i++){
+		if(i < (m1 - 1) )//0-5
+			tw_FFT_index1[i] = rader_index_out1[i+1];
+		else if(i > (m1_prime - m1 + 1))
+			tw_FFT_index1[i] = rader_index_out1[i + m1 - m1_prime];			
+		else		
+			tw_FFT_index1[i] = 0; //00000
+		//cout << tw_FFT_index1[i] << endl;	
+	}
+	
+	for (int i = 0; i < m1_prime ; i++){
+		if(tw_FFT_index1[i] == 0)
+			tw_FFT_in1[i] = 0;
+		else
+			tw_FFT_in1[i] = prou_power(m1_prou,tw_FFT_index1[i],modular);
+	}
+	//cout << "prou = " << prou << endl;
+	//cout << "m1_prou = " << m1_prou << endl;	
+	//cout << "tw_FFT_in1 = " << endl;
+	/*for (int i = 0; i < m1_prime ; i++){
+			//cout << tw_FFT_in1[i] <<endl;
+	}*/
+	
+	long long tw_FFT_out1[m1_prime];
+	long long m1_prime_prou;
+
+	m1_prime_prou = find_prou(m1_prime, modular);
+	FFT(tw_FFT_out1, tw_FFT_in1, m1_prime, m1_prime_prou, modular) ;	
+	//cout << "tw_FFT_out1 = " << endl;
+	/*for (int i = 0; i < m1_prime ; i++){
+			//cout << tw_FFT_out1[i] <<endl;
+	}*/	
+//-----------------------
+	int m2_prime, gen2;
+	long long rader_index_in2[s_m1];
+	long long rader_index_out2[s_m1];	
+	gen2 = find_gen(s_m1);	
+	if( (s_m1==3) || (s_m1==5) || (s_m1==17) || (s_m1==257)){
+		m2_prime = s_m1-1;
+	}
+	else{
+		m2_prime = find_m_prime(s_m1);
+	}
+	long long tw_FFT_index2[m2_prime];	
+	long long tw_FFT_in2[m2_prime];	
+	long long m2_prou;	
+	
+	m2_prou = prou_power(prou, m1*s_m2, modular);	
+	rader_index_in2[0] = 0;
+	rader_index_out2[0] = 0;
+	rader_index_in2[1] = 1;
+	rader_index_out2[1] = 1;
+	tmp = 1;
+	for (int i = 2; i < s_m1 ; i++){
+		tmp *= gen2;
+		tmp %= s_m1;
+		rader_index_in2[i] = tmp;	
+	}	
+	for (int i = 2; i < s_m1 ; i++){
+		rader_index_out2[i] = rader_index_in2[s_m1-i+1];
+	}
+	for (int i = 0; i < m2_prime ; i++){
+		if(i < (s_m1 - 1) )//0-5
+			tw_FFT_index2[i] = rader_index_out2[i+1];
+		else if(i > (m2_prime - s_m1 + 1))
+			tw_FFT_index2[i] = rader_index_out2[i + s_m1 - m2_prime];			
+		else		
+			tw_FFT_index2[i] = 0; //00000
+		//cout << tw_FFT_index2[i] << endl;	
+	}
+	
+	for (int i = 0; i < m2_prime ; i++){
+		if(tw_FFT_index2[i] == 0)
+			tw_FFT_in2[i] = 0;
+		else
+			tw_FFT_in2[i] = prou_power(m2_prou,tw_FFT_index2[i],modular);
+	}
+	long long tw_FFT_out2[m2_prime];
+	long long m2_prime_prou;
+	m2_prime_prou = find_prou(m2_prime, modular);
+	FFT(tw_FFT_out2, tw_FFT_in2, m2_prime, m2_prime_prou, modular) ;	
+	
+//----------	
+	int m3_prime, gen3;
+	long long rader_index_in3[s_m2];
+	long long rader_index_out3[s_m2];
+	gen3 = find_gen(s_m2);
+	if( (s_m2==3) || (s_m2==5) || (s_m2==17) || (s_m2==257)){
+		m3_prime = s_m2-1;
+	}
+	else{
+		m3_prime = find_m_prime(s_m2);
+	}
+	long long tw_FFT_index3[m3_prime];
+	long long tw_FFT_in3[m3_prime];
+	long long m3_prou;	
+	
+	m3_prou = prou_power(prou, m1*s_m1, modular);	
+	rader_index_in3[0] = 0;
+	rader_index_out3[0] = 0;
+	rader_index_in3[1] = 1;
+	rader_index_out3[1] = 1;
+	tmp = 1;
+	for (int i = 2; i < s_m2 ; i++){
+		tmp *= gen3;
+		tmp %= s_m2;
+		rader_index_in3[i] = tmp;	
+	}
+	for (int i = 2; i < s_m2 ; i++){
+		rader_index_out3[i] = rader_index_in3[s_m2-i+1];
+	}
+	for (int i = 0; i < m3_prime ; i++){
+		if(i < (s_m2 - 1) )//0-5
+			tw_FFT_index3[i] = rader_index_out3[i+1];
+		else if(i > (m3_prime - s_m2 + 1))
+			tw_FFT_index3[i] = rader_index_out3[i + s_m2 - m3_prime];			
+		else		
+			tw_FFT_index3[i] = 0; //00000
+		//cout << tw_FFT_index3[i] << endl;	
+	}	
+	
+	for (int i = 0; i < m3_prime ; i++){
+		if(tw_FFT_index3[i] == 0)
+			tw_FFT_in3[i] = 0;
+		else
+			tw_FFT_in3[i] = prou_power(m3_prou,tw_FFT_index3[i],modular);
+	}	
+	long long tw_FFT_out3[m3_prime];
+	long long m3_prime_prou;
+	m3_prime_prou = find_prou(m3_prime, modular);
+	FFT(tw_FFT_out3, tw_FFT_in3, m3_prime, m3_prime_prou, modular) ;
+//-----------------------------------------------------------------------------
+
+    
+    
+    //PFA with m = m1 * m2 -> m2 * m1-DFT + m1 * m2-DFT
+    for(n2=0;n2<m2;n2++)
+    {
+        for(n1=0;n1<m1;n1++)
+        {
+            index_m = n1 + n2 * m1; // 1 2 3 ... m
+			k3 = (index_m / (m1*s_m1)) % s_m2 ;
+            k2 = (index_m / m1) % s_m1 ;
+		    k1 = index_m % m1;
+            index_in = (k1 * m2 + k2 * s_m2*m1 + k3 * s_m1*m1) % (m1 * m2);// 1
+            
+            DFT_data[index_m] = data_in[index_in];	
+			//cout<< index_in << endl;
+        }    
+    }
+	//cout << "----------------------" <<endl;
+		//cout << "prou = " << prou << endl;
+    for(n2=0;n2<m2;n2++)
+    {
+        //m2 times, m1-point DFT
+        //Rader(data_tmp + m1 * n2, DFT_data + m1 * n2, m1, prou_power(prou, m2, modular), modular); 
+		//DFT(data_tmp + m1 * n2, DFT_data + m1 * n2, m1, prou_power(prou, m2, modular), modular); 
+		Rader_v3(data_tmp + m1 * n2, DFT_data + m1 * n2, tw_FFT_out1, rader_index_in1, rader_index_out1, m1, m1_prime, m1_prime_prou, modular);
+		
+    }    
+	
+	//cout << "rader ok" << endl;
+ 
+    for(n2=0;n2<m2;n2++)
+    {
+        for(n1=0;n1<m1;n1++)
+        {
+            index_m = n1 + n2 * m1;
+            k2 = index_m % m2;
+            k1 = index_m / m2;
+            index_in = (k1 + k2 * m1) % (m1 * m2);
+            
+            DFT_data[index_m] = data_tmp[index_in];
+			//cout<< index_in << endl;
+        }    
+    }
+ 	//cout << "----------------------" <<endl;  
+    {
+		for(n2=0;n2<m1;n2++)
+		{
+			//m1(= s_m1 * s_m2)-point PFA
+			//PFA2_v2(data_tmp + m2 * n2, DFT_data + m2 * n2, s_m1, s_m2, s_inv1, s_inv2, prou_power(prou, m1, modular), modular); 
+			PFA2_v3(data_tmp + m2 * n2, DFT_data + m2 * n2, s_m1, s_m2, m2_prime, m3_prime, m2_prime_prou, m3_prime_prou, s_inv1, s_inv2, tw_FFT_out2, tw_FFT_out3, rader_index_out2, rader_index_out3, modular, m2_prou, m3_prou,rader_index_in2,rader_index_in3); 			
+		}  
+    }
+	
+    //merge final two reindex
+    for(n2=0;n2<m2;n2++)
+    {
+        for(n1=0;n1<m1;n1++)
+        {
+            index_m = n1 + n2 * m1;
+			//k2 = index_m % m2;
+            //k1 = index_m / m2;
+            //index_out = (k1 * inv2 * m2 + k2 * inv1 * m1) % (m1 * m2);
+			k1 = (index_m / m2) % m1 ;
+            k2 = (index_m / s_m2) % s_m1 ;
+		    k3 = index_m % s_m2;
+            index_out = (k1 * inv2 * m2 + (k2 * s_m2 * s_inv2 + k3 * s_m1 * s_inv1)*m1*inv1 ) % (m1 * m2);
+            DFT_data[index_out] = data_tmp[index_m];
+			//cout<< index_out << endl;
+        }    
+    }
+	 	//cout << "----------------------" <<endl; 
+}
+
+
+
+/*
+// PFA + rader input index merge
+long long LEGACY::PFA3_v3(long long *DFT_data, long long *data_in, long long m1, long long m2, long long m3, long long inv1, long long inv2, long long inv3, long long prou, long long modular) //primitive root of unity in m(= m1(= s_m1 * s_m2) * m2)-point PFA
+{
+    long long n1,n2,n3,k1,k2,k3;
+    long long index_in;
+    long long index_out;
+    long long index_m;
+    
+    long long data_tmp[m1*m2*m3];
+	long long tmp;
+//------------------------ rader parameter set up-------------------------
+
+	long long m1_prime, gen1;
+	long long rader_index_in1[m1];
+	long long rader_index_out1[m1];	
+	gen1 = find_gen(m1);
+	if( (m1==3) || (m1==5) || (m1==17) || (m1==257)){
+		m1_prime = m1-1;
+	}
+	else{
+		m1_prime = find_m_prime(m1);
+	}
+	
+	long long tw_FFT_index1[m1_prime];
+	long long tw_FFT_in1[m1_prime];	
+	rader_index_in1[0] = 0;
+	rader_index_out1[0] = 0;
+	rader_index_in1[1] = 1;
+	rader_index_out1[1] = 1;
+	tmp = 1;
+	for (int i = 2; i < m1 ; i++){
+		tmp *= gen1;
+		tmp %= m1;
+		rader_index_in1[i] = tmp;
+	}	
+	for (int i = 2; i < m1 ; i++){
+		rader_index_out1[i] = rader_index_in1[m1-i+1];
+	}
+	
+	for (int i = 0; i < m1_prime ; i++){
+		if(i < (m1 - 1) )//0-5
+			tw_FFT_index1[i] = rader_index_out1[i+1];
+		else if(i > (m1_prime - m1 + 1))
+			tw_FFT_index1[i] = rader_index_out1[i + m1 - m1_prime];			
+		else		
+			tw_FFT_index1[i] = 0; //00000
+		//cout << tw_FFT_index1[i] << endl;	
+	}
+	
+	for (int i = 0; i < m1_prime ; i++){
+		if(tw_FFT_index1[i] == 0)
+			tw_FFT_in1[i] = 0;
+		else
+			tw_FFT_in1[i] = prou_power(prou,tw_FFT_index1[i],modular);
+	}
+	long long tw_FFT_out1[m1_prime];
+	long long m1_prime_prou;
+	m1_prime_prou = find_prou(m1_prime, modular);
+	FFT(tw_FFT_out1, tw_FFT_in1, m1_prime, m1_prime_prou, modular) ;	
+	
+	
+//----------	
+	int m2_prime, gen2;
+	long long rader_index_in2[m2];
+	long long rader_index_out2[m2];	
+	gen2 = find_gen(m2);	
+	if( (m2==3) || (m2==5) || (m2==17) || (m2==257)){
+		m2_prime = m2-1;
+	}
+	else{
+		m2_prime = find_m_prime(m2);
+	}
+	long long tw_FFT_index2[m2_prime];	
+	long long tw_FFT_in2[m2_prime];	
+	rader_index_in2[0] = 0;
+	rader_index_out2[0] = 0;
+	rader_index_in2[1] = 1;
+	rader_index_out2[1] = 1;
+	tmp = 1;
+	for (int i = 2; i < m2 ; i++){
+		tmp *= gen2;
+		tmp %= m2;
+		rader_index_in2[i] = tmp;	
+	}	
+	for (int i = 2; i < m2 ; i++){
+		rader_index_out2[i] = rader_index_in2[m2-i+1];
+	}
+	for (int i = 0; i < m2_prime ; i++){
+		if(i < (m2 - 1) )//0-5
+			tw_FFT_index2[i] = rader_index_out2[i+1];
+		else if(i > (m2_prime - m2 + 1))
+			tw_FFT_index2[i] = rader_index_out2[i + m2 - m2_prime];			
+		else		
+			tw_FFT_index2[i] = 0; //00000
+		//cout << tw_FFT_index2[i] << endl;	
+	}
+	
+	for (int i = 0; i < m2_prime ; i++){
+		if(tw_FFT_index2[i] == 0)
+			tw_FFT_in2[i] = 0;
+		else
+			tw_FFT_in2[i] = prou_power(prou,tw_FFT_index2[i],modular);
+	}
+	long long tw_FFT_out2[m2_prime];
+	long long m2_prime_prou;
+	m2_prime_prou = find_prou(m2_prime, modular);
+	FFT(tw_FFT_out2, tw_FFT_in2, m2_prime, m2_prime_prou, modular) ;	
+	
+//----------	
+	int m3_prime, gen3;
+	long long rader_index_in3[m3];
+	long long rader_index_out3[m3];
+	gen3 = find_gen(m3);
+	if( (m3==3) || (m3==5) || (m3==17) || (m3==257)){
+		m3_prime = m3-1;
+	}
+	else{
+		m3_prime = find_m_prime(m3);
+	}
+	long long tw_FFT_index3[m3_prime];
+	long long tw_FFT_in3[m3_prime];		
+	rader_index_in3[0] = 0;
+	rader_index_out3[0] = 0;
+	rader_index_in3[1] = 1;
+	rader_index_out3[1] = 1;
+	tmp = 1;
+	for (int i = 2; i < m3 ; i++){
+		tmp *= gen3;
+		tmp %= m3;
+		rader_index_in3[i] = tmp;	
+	}
+	for (int i = 2; i < m3 ; i++){
+		rader_index_out3[i] = rader_index_in3[m3-i+1];
+	}
+	for (int i = 0; i < m3_prime ; i++){
+		if(i < (m3 - 1) )//0-5
+			tw_FFT_index3[i] = rader_index_out3[i+1];
+		else if(i > (m3_prime - m3 + 1))
+			tw_FFT_index3[i] = rader_index_out3[i + m3 - m3_prime];			
+		else		
+			tw_FFT_index3[i] = 0; //00000
+		//cout << tw_FFT_index3[i] << endl;	
+	}	
+	
+	for (int i = 0; i < m3_prime ; i++){
+		if(tw_FFT_index3[i] == 0)
+			tw_FFT_in3[i] = 0;
+		else
+			tw_FFT_in3[i] = prou_power(prou,tw_FFT_index3[i],modular);
+	}	
+	long long tw_FFT_out3[m3_prime];
+	long long m3_prime_prou;
+	m3_prime_prou = find_prou(m3_prime, modular);
+	FFT(tw_FFT_out3, tw_FFT_in3, m3_prime, m3_prime_prou, modular) ;		
+//-----------------------------end rader setup---------------------------------		
+
+//------------------------input index-------------------------------  
+
+	for(n3 = 0; n3 < m3; n3++)//257
+	{
+		for(n2 = 0; n2 < m2; n2++)//17
+		{
+			for(n1 = 0; n1 < m1; n1++)//5
+			{
+				
+				//k1 = rader_index_in1[n1] ;//5
+				//k2 = rader_index_in2[n2] ;//17
+				//k3 = rader_index_in3[n3] ;//257
+				//index_in = (k1 * m2 * m3 + k2 * m1 * m3 + k3 * m1 * m2) % (m1 * m2 *m3);// 1
+				
+				index_m = n1 + n2 * m1; // 1 2 3 ... m
+				k3 = (index_m / (m1*m2)) % m3 ;
+				k2 = (index_m / m1) % m2 ;
+				k1 = index_m % m1;
+				index_in = (k1 * m2 + k2 * m3*m1 + k3 * m2*m1) % (m1 * m2);// 1
+				DFT_data[index_m] = data_in[index_in];	
+				//cout<< index_in << endl;
+			}    
+		}
+	}
+	
+//-------------------------------------------------------------------
+//-------------first stage FFT---------------------------------------
+    for(n2 = 0; n2 < m2*m3; n2++) // 4369 - 5-RA_FFT
+    {
+        //m2 times, m1-point DFT
+		DFT(data_tmp + m1 * n2, DFT_data + m1 * n2, m1, prou_power(prou, m2*m3, modular), modular); 
+        //Rader_v3(data_tmp + m1 * n2, DFT_data + m1 * n2, tw_FFT_out1 , rader_index_out1 , m1, m1_prime, m1_prime_prou, modular);           
+    }    
+	
+//-------------------------------------------------------------------
+    for(n2 = 0; n2 < m1*m2*m3; n2++) // 4369 - 5-RA_FFT
+    {
+        //m2 times, m1-point DFT
+       //cout << data_tmp[n2] << " " ;
+    } 
+
+
+//-----------------------m1 to m2 reindex---------------------------- 
+    for(n2 = 0; n2 < m2*m3; n2++)
+    {
+        for(n1 = 0; n1 < m1; n1++)
+        {
+            index_m = n1 + n2 * m1;
+            k2 = index_m % (m2*m3);
+            k1 = index_m / (m2*m3);
+            index_in = (k1 + k2 * m1) % (m1 * (m2*m3));
+            
+            DFT_data[index_m] = data_tmp[index_in];
+			//cout<< index_in << endl;
+        }    
+    }
+ 	//cout << "----------------------" <<endl;  
+//--------------------------------------------------------------------	
+
+//-----------------------m2 PFA FFT ----------------------------------	
+    
+		long long s_inv1 = find_inv(m2,m3);
+		long long s_inv2 = find_inv(m3,m2);	
+	
+		for(n2=0;n2<m1;n2++)
+		{
+			//m1(= s_m1 * s_m2)-point PFA
+			PFA2_v2(data_tmp + m2*m3 * n2, DFT_data + m2*m3 * n2, m2, m3, s_inv1, s_inv2, prou_power(prou, m1, modular), modular);
+			//PFA2_v3(data_tmp + (m2*m3) * n2, DFT_data + (m2*m3) * n2, m2, m3, m2_prime, m3_prime, m2_prime_prou, m3_prime_prou, s_inv1, s_inv2, tw_FFT_out2, tw_FFT_out3, rader_index_out2, rader_index_out3, modular);         
+		}  
+    
+
+//--------------------------------------------------------------------
+
+//-------------------output reindex-----------------------------------
+    //merge final two reindex
+    for(n2 = 0; n2 < m2 * m3; n2++)
+    {
+        for(n1 = 0; n1 < m1; n1++)
+        {
+            index_m = n1 + n2 * m1;
+			//k2 = index_m % m2;
+            //k1 = index_m / m2;
+            //index_out = (k1 * inv2 * m2 + k2 * inv1 * m1) % (m1 * m2);
+			k1 = (index_m / m2) % m1 ;
+            k2 = (index_m / m3) % m2 ;
+		    k3 = index_m % m3;
+            index_out = (k1 * inv2*inv3 * m2*m3 + (k2 * m3 * s_inv2 + k3 * m2 * s_inv1) * m1 * inv1 ) % (m1 * m2 * m3);
+            DFT_data[index_out] = data_tmp[index_m];
+			//cout<< index_out << endl;
+        }    
+    }
+	 	//cout << "----------------------" <<endl; 	
+
+}
+*/
+
 
 long long LEGACY::find_gen(long long n)
 {
@@ -742,13 +1334,13 @@ void LEGACY::Rader(long long *RA_out, long long *data_in, long long n, long long
 		index_out[i] = index_in[n-1-i];
 	}
 
-
+/*
 	for (int i = 0; i < n-1 ; i++){
-		cout << index_in[i] <<endl;
+		//cout << index_in[i] <<endl;
 		//cout << index_out[i] <<endl;
 	}	
-	
-	cout << endl ;
+*/	
+	//cout << endl ;
 	
 	long long FFT_in[m_prime];
 	for (int i = 0; i < m_prime ; i++){
@@ -760,7 +1352,7 @@ void LEGACY::Rader(long long *RA_out, long long *data_in, long long n, long long
 		//cout << FFT_in[i] <<endl;
 	}
 //-----------------------------------------------
-		cout <<endl;
+		//cout <<endl;
 //----------------tw input re-index-----------------
 	long long tw_FFT_index[m_prime];
 	long long tw_FFT_in[m_prime];
@@ -772,12 +1364,12 @@ void LEGACY::Rader(long long *RA_out, long long *data_in, long long n, long long
 		else
 			tw_FFT_index[i] = 0;
 	}
-/*	
+
 	for (int i = 0; i < m_prime ; i++){
-		cout << tw_FFT_index[i] <<endl;
+		//cout << tw_FFT_index[i] <<endl;
 	}
-*/
-		cout <<endl;
+
+		//cout <<endl;
 		
 	for (int i = 0; i < m_prime ; i++){
 		if(tw_FFT_index[i] == 0)
@@ -785,19 +1377,28 @@ void LEGACY::Rader(long long *RA_out, long long *data_in, long long n, long long
 		else
 			tw_FFT_in[i] = prou_power(prou,tw_FFT_index[i],modular);
 	}
-	/*
+	//cout << "prou = " << prou << endl;
+	//cout << "tw_FFT_in = " << endl ;
 	for (int i = 0; i < m_prime ; i++){
-		cout << tw_FFT_in[i] <<endl;
+		//cout << tw_FFT_in[i] <<endl;
 	}
-	*/
+	
 //-------------pointwise mul--------------------------
 	long long FFT_out[m_prime];
 	long long tw_FFT_out[m_prime];
 	long long m_prime_prou;
+	
 
 	m_prime_prou = find_prou(m_prime, modular);
+	//cout << "m_prime_prou = " << m_prime_prou << endl;	
+	//cout << "modular = " << modular << endl;	
 	FFT(FFT_out, FFT_in, m_prime, m_prime_prou, modular) ;
 	FFT(tw_FFT_out, tw_FFT_in, m_prime, m_prime_prou, modular) ;
+	
+	//cout << "tw_FFT_out = " << endl ;
+	for (int i = 0; i < m_prime ; i++){
+		//cout << tw_FFT_out[i] <<endl;
+	}
 
 	long long ele_mul[m_prime];
 	for (int i = 0; i< m_prime ; i++){	
@@ -818,11 +1419,13 @@ void LEGACY::Rader(long long *RA_out, long long *data_in, long long n, long long
 	//long long RA_out[n];
 	RA_out[0] = 0;
 	for (int i = 0; i< n ; i++){	
-		RA_out[0] += data_in[i] ;
+		RA_out[0] =  (RA_out[0] + data_in[i]) %  modular;
 	}	
 	for (int i = 0; i< n-1 ; i++){	
-		RA_out[index_out[i]] = IFFT_out[i] + data_in[0] ;
+		RA_out[index_out[i]] = (IFFT_out[i] + data_in[0]) %  modular ;
 	}	
+	
+	//cout << "ok" <<endl;
 	/*
 	cout << "RA_out" <<endl;
 	for (int i = 0; i< n ; i++){	
@@ -830,6 +1433,62 @@ void LEGACY::Rader(long long *RA_out, long long *data_in, long long n, long long
 	}	
 	cout  <<endl;
 */
+
+}
+
+
+void LEGACY::Rader_v3(long long *RA_out, long long *data_in, long long *tw_FFT_out, long long *index_in,long long *index_out, long long m, long long m_prime, long long m_prime_prou, long long modular)
+{
+	/*
+	cout << "RA_in = " << data_in << endl;
+	for (int i = 0; i < m ; i++){
+		cout << data_in[i] << endl ;
+	}	
+	cout << endl;
+	*/	
+		
+	long long FFT_in[m_prime];
+	for (int i = 0; i < m_prime ; i++){
+		if(i < m - 1)
+			FFT_in[i] = data_in[index_in[i+1]];
+		else 
+			FFT_in[i] = 0;
+		//cout << FFT_in[i] << endl;
+
+	}	
+	//cout << endl;
+//-------------pointwise mul--------------------------
+	long long FFT_out[m_prime];
+	FFT(FFT_out, FFT_in, m_prime, m_prime_prou, modular) ;
+	
+	long long ele_mul[m_prime];
+	for (int i = 0; i< m_prime ; i++){	
+		ele_mul[i] = (FFT_out[i]*tw_FFT_out[i]) % modular ;
+	}
+
+//---------------IFFT------------------------
+	long long IFFT_out[m_prime];
+	IFFT(IFFT_out , ele_mul , m_prime , m_prime_prou , modular);	
+//-------------add do------------------------
+	//long long RA_out[n];
+	RA_out[0] = 0;
+	for (int i = 0; i< m ; i++){	
+		RA_out[0] = (RA_out[0] + data_in[i]) % modular ;
+	}	
+	for (int i = 0; i< m-1 ; i++){	
+		RA_out[index_out[i+1]] = (IFFT_out[i] + data_in[0]) % modular;
+		//cout << index_out[i+1] << endl;
+	}	
+	
+	//cout << "ok" <<endl;
+	/*
+	cout << "RA_out = " <<endl;
+	for (int i = 0; i< m ; i++){	
+		cout << RA_out[i] << " ";
+	}	
+	cout  <<endl;
+	*/
+	
 }
 
 long long LEGACY::cyc_DFT(long long *DFT_data, long long *data_in, long long m, long long prou, long long modular) //primitive root of unity in m-point DFT : m in -> m-1 out
