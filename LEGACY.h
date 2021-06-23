@@ -45,7 +45,7 @@ public:
 	int unary_xor(int data_in, int Bit_WIDTH);
 	void int2vec(int integer, int Bit_WIDTH, vector<int> &bit_array);
 	int vec2int(vector<int> &bit_array, int Bit_WIDTH);
-	void Radix_4_BU(vector<ZZ> &output, vector<ZZ> &input, vector<ZZ> &tw, ZZ modular);	
+	void Radix_4_BU(vector<ZZ> &output, vector<ZZ> &input, ZZ tw_1_N, long N, ZZ modular);	
 	void Relocation_4(vector<ZZ> &v0, vector<ZZ> &v1, vector<ZZ> &v2, vector<ZZ> &v3);
 	
 	

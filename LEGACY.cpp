@@ -1920,26 +1920,28 @@ int LEGACY::vec2int(vector<int> &bit_array, int Bit_WIDTH){
 	return integer ;
 }
 
-void LEGACY::Radix_4_BU(vector<ZZ> &output, vector<ZZ> &input, vector<ZZ> &tw, ZZ modular)
+void LEGACY::Radix_4_BU(vector<ZZ> &output, vector<ZZ> &input, ZZ tw_1_N, long N, ZZ modular)
 {
-	vector<ZZ> output_temp(4);
-	for (int i = 0; i < 4; i++)
-	{	
-		output_temp[i] = 0;
-		for (int j = 0; j <4; j++)
-		{
-			ZZ tw_tmp;
-			PowerMod(tw_tmp,tw[i],(ZZ) j, modular);
-			//cout << tw_tmp << " ";			
-			output_temp[i] += (input[j]*tw_tmp)%modular;
-			//cout << output_temp[i] << " ";
-		}
-		output_temp[i] %= modular ;
-		//cout << endl ;
-		//cout << output[i] << " ";
-	}	
-		output = output_temp;
-	//cout << endl ;
+	vector<ZZ> output_temp_s1(4), output_temp_s2(4);
+	ZZ tw_1_4;
+	PowerMod(tw_1_4, tw_1_N, N/4, modular);
+	
+	//stage 0
+	AddMod(output_temp_s1[0],input[0],input[2],modular);  //a0 + a2
+	SubMod(output_temp_s1[2],input[0],input[2],modular);  //a0 - a2
+	AddMod(output_temp_s1[1],input[1],input[3],modular);  //a1 + a3
+	SubMod(output_temp_s1[3],input[1],input[3],modular);  //a1 - a3
+	MulMod(output_temp_s1[3],output_temp_s1[3],tw_1_4,modular); //(a1 - a3)*w
+	//stage 1
+	AddMod(output_temp_s2[0],output_temp_s1[0],output_temp_s1[1],modular);  //a0 + a2 + a1 + a3
+	SubMod(output_temp_s2[1],output_temp_s1[0],output_temp_s1[1],modular);  //a0 + a2 - (a1 + a3)
+	AddMod(output_temp_s2[2],output_temp_s1[2],output_temp_s1[3],modular);  //a0 - a2 + ((a1 - a3)*w)
+	SubMod(output_temp_s2[3],output_temp_s1[2],output_temp_s1[3],modular);	//a0 - a2 - ((a1 - a3)*w)
+	// bit-reverse
+	output[0] = output_temp_s2[0];
+	output[1] = output_temp_s2[2];	
+	output[2] = output_temp_s2[1];	
+	output[3] = output_temp_s2[3];	
 }
 
 
