@@ -1450,7 +1450,7 @@ void LEGACY::Rader(long long *RA_out, long long *data_in, long long n, long long
 		//cout << index_out[i] <<endl;
 	}	
 */	
-	//cout << endl ;
+	//cout <<"rader fft in = " << endl ;
 	
 	long long FFT_in[m_prime];
 	for (int i = 0; i < m_prime ; i++){
@@ -1459,8 +1459,9 @@ void LEGACY::Rader(long long *RA_out, long long *data_in, long long n, long long
 		else 
 			FFT_in[i] = 0;
 		
-		//cout << FFT_in[i] <<endl;
+		//cout << FFT_in[i] <<" ";
 	}
+	//cout << endl ;	
 //-----------------------------------------------
 		//cout <<endl;
 //----------------tw input re-index-----------------
@@ -1474,7 +1475,7 @@ void LEGACY::Rader(long long *RA_out, long long *data_in, long long n, long long
 		else
 			tw_FFT_index[i] = 0;
 	}
-
+		//cout << tw_FFT_index[i] <<endl;
 	for (int i = 0; i < m_prime ; i++){
 		//cout << tw_FFT_index[i] <<endl;
 	}
@@ -1508,7 +1509,10 @@ void LEGACY::Rader(long long *RA_out, long long *data_in, long long n, long long
 	//cout << "tw_FFT_out = " << endl ;
 	for (int i = 0; i < m_prime ; i++){
 		//cout << tw_FFT_out[i] <<endl;
+		//cout << FFT_out[i] <<" ";
 	}
+		//cout <<endl;	
+	
 
 	long long ele_mul[m_prime];
 	for (int i = 0; i< m_prime ; i++){	
