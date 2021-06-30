@@ -20,6 +20,7 @@ public:
 	bool isPrime(long long n);
 	long long find_prime(long long m, long long powerof2);
 	long long find_prou(long long m, long long modular);
+	void find_zmstar(long long *zmstar, long long m);	
 	long long prou_power(long long data_in, long long power, long long modular);
 	long long DFT(long long *DFT_data, long long *data_in, long long m, long long prou, long long modular);
 	void Rader(long long *RA_out, long long *data_in, long long n, long long prou, long long modular);
@@ -42,6 +43,7 @@ public:
 	long long cyc_PFA3(long long *DFT_data, long long *data_in, long long m1, long long m2, long long s_m1, long long s_m2, long long inv1, long long inv2, long long s_inv1, long long s_inv2, long long prou, long long modular);
 	int Gray(int index,int group);
 	int RR(int BC, int shift_bit, int Bit_WIDTH);
+	int Bit_convert(int addr);	
 	int unary_xor(int data_in, int Bit_WIDTH);
 	void int2vec(int integer, int Bit_WIDTH, vector<int> &bit_array);
 	int vec2int(vector<int> &bit_array, int Bit_WIDTH);

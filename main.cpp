@@ -5,6 +5,8 @@
 #include <time.h>
 #include <assert.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include<bits/stdc++.h> 
 
 #include "LEGACY.h"
@@ -15,7 +17,7 @@ int main()
 	LEGACY test;
 	//notice that the primitive root of unity exist
 	//when m | modular - 1 (modular -1 can be divided by m)	
-
+	int test_time = 30;
 //---------setting-----------	
 	long long m = 21845;	
 	long long m1 = 5;	
@@ -46,13 +48,8 @@ int main()
 	
 	prou_n = test.find_prou( m, modular_n);
 	phi_m = test.Euler(m);
-	//------------------------------------------	
-	for(int i = 0; i < phi_m; i++){	
-		data_in[i] = i ;
-	}
-	for(int i = 0; i < m; i++){	
-		debug_data[i] = i ;
-	}	
+	srand( time(NULL));
+
 	
 //--------Mem-----------------
 	vector<vector<ZZ>> Dual_port_mem_4w_4096(4096);
@@ -86,8 +83,8 @@ int main()
 	long long tw_FFT_in1[m1_prime];	
 	long long m1_prou;	
 	
-	//m1_prou = test.prou_power(prou_n, m2, modular_n);
-	m1_prou = test.find_prou(m1,modular_n);
+	m1_prou = test.prou_power(prou_n, m2, modular_n);
+	//m1_prou = test.find_prou(m1,modular_n);
 	rader_index_in1[0] = 0;
 	rader_index_out1[0] = 0;
 	rader_index_in1[1] = 1;
@@ -151,8 +148,8 @@ int main()
 	long long tw_FFT_in2[m2_prime];	
 	long long m2_prou;	
 	
-	//m2_prou = test.prou_power(prou_n, m1*s_m2, modular_n);
-	m2_prou = test.find_prou(s_m1,modular_n);	
+	m2_prou = test.prou_power(prou_n, m1*s_m2, modular_n);
+	//m2_prou = test.find_prou(s_m1,modular_n);	
 	rader_index_in2[0] = 0;
 	rader_index_out2[0] = 0;
 	rader_index_in2[1] = 1;
@@ -207,8 +204,8 @@ int main()
 	long long tw_FFT_in3[m3_prime];
 	long long m3_prou;	
 	
-	//m3_prou = test.prou_power(prou_n, m1*s_m1, modular_n);
-	m3_prou = test.find_prou(s_m2,modular_n);
+	m3_prou = test.prou_power(prou_n, m1*s_m1, modular_n);
+	//m3_prou = test.find_prou(s_m2,modular_n);
 	rader_index_in3[0] = 0;
 	rader_index_out3[0] = 0;
 	rader_index_in3[1] = 1;
@@ -222,6 +219,13 @@ int main()
 	for (int i = 2; i < s_m2 ; i++){
 		rader_index_out3[i] = rader_index_in3[s_m2-i+1];
 	}
+	
+	for (int i = 0; i < s_m2 ; i++){
+		//cout << rader_index_out3[i] << endl;
+	}	
+	//cout << endl;
+	
+	
 	for (int i = 0; i < m3_prime ; i++){
 		if(i < (s_m2 - 1) )//0-5
 			tw_FFT_index3[i] = rader_index_out3[i+1];
@@ -244,8 +248,16 @@ int main()
 	test.FFT(tw_FFT_out3, tw_FFT_in3, m3_prime, m3_prime_prou, modular_n) ;
 //-----------------------------------------------------------------------------
 
-
+for(int time = 0; time < test_time; time++){
 //---------I/O Re-Index-------------------
+//------------------------------------------	
+	for(int i = 0; i < phi_m; i++){	
+		data_in[i] = (rand() % modular_n) ;
+	}
+	for(int i = 0; i < m; i++){	
+		debug_data[i] = i ;
+	}	
+	
     long long n1,n2,n3,k1,k2,k3;
     long long index_in;
     long long index_out;
@@ -275,29 +287,7 @@ int main()
 		}
 	}
 
-	for(n1 = 0; n1 < m1; n1++) //5    3  
-	{ 
-		for(n2 = 0; n2 < s_m1; n2++)//17    5
-		{
-			for(n3 = 0; n3 < s_m2; n3++)//257     7
-			{
-				index_m = n3 + n2 * s_m2 + n1 * s_m2*s_m1; // 1 2 3 ... m
-				k1 = rader_index_out1[n1] ;//5
-				k2 = rader_index_out2[n2] ;//17
-				k3 = rader_index_out3[n3] ;//257
-				index_out = (k1 * m2_inv * m2 + (k2 * s_m2 * s_m2_inv + k3 * s_m1 * s_m1_inv)*m1*m1_inv ) % (m1 * m2);
-                Re_Index_Output_Data[index_out] = data_tmp[index_m];	
-				
-				//index_m = n1 + n2 * m1; // 1 2 3 ... m
-				//k3 = (index_m / (m1*m2)) % m3 ;
-				//k2 = (index_m / m1) % m2 ;
-				//k1 = index_m % m1;
-				//index_in = (k1 * m2 + k2 * m3*m1 + k3 * m2*m1) % (m1 * m2);// 1
-				//DFT_data[index_m] = data_in[index_in];	
-				//test << k1 << endl;
-			}    
-		}
-	}
+
 //------------------- put into memory ----------------------------
 	for(int i = 0; i < 273 ; i++){
 		if(i<257){
@@ -750,11 +740,49 @@ cout << endl ;  */
 
 
 //---next stage relocation 17->257
-
+// p11
  	for(int i = 0; i < 1024 ; i++){	// relocation 256*16
 		test.Relocation_4(Dual_port_mem_4w_4096[i],Dual_port_mem_4w_4096[i+1024],Dual_port_mem_4w_4096[i+2048],Dual_port_mem_4w_4096[i+3072]);	
 	}
+	
+	
+//--------------------------------------------------------------------------------------------//
+//test data
+long long test_256_FFT_input[256]; 
+long long test_256_FFT_output[256]; 
+long long test_257_FFT_input[257]; 
+long long test_257_FFT_output[257]; 
+long long test_256_FFT_prou = test.find_prou(256, modular_n);
+long long test_257_FFT_prou = test.find_prou(257, modular_n);
+//Dual_port_mem_4w_273[257][0] = 0;
+//cout << Dual_port_mem_4w_273[257][0] << endl;
+for (int i = 0; i < 64 ; i++){
+	for (int j = 0; j < 4 ; j++){
+		//Dual_port_mem_4w_4096[16*i][j] = rader_index_in3[i + 64*j + 1];
+		//Dual_port_mem_4w_4096[16*i][j] =  i + 64*j  ;
+		//Dual_port_mem_4w_4096[16*i][j] =  i ;
+		//cout << Dual_port_mem_4w_4096[16*i][j] << " ";
+	}
+	//cout << endl;
+}
 
+for (int i = 0; i < 257 ; i++){
+	//for (int j = 0; j < 4 ; j++){
+		test_257_FFT_input[i] =  i ; // 0 - 256
+		//cout << test_257_FFT_input[i] << endl;
+	//}
+} 
+
+//test.DFT(test_257_FFT_output, test_257_FFT_input, 257, test_257_FFT_prou , modular_n);
+for (int i = 0; i < 257 ; i++){
+	//for (int j = 0; j < 4 ; j++){
+		//test_257_FFT_input[i] =  i ; // 0 - 256
+		//cout << test_257_FFT_output[i] << endl;
+	//}
+} 
+	//cout << endl;
+
+//--------------------------------------------------------------------------------------------//
 //-----------------------------third stage 256 FFT -------------------------------------------// 
 	long long m3_prime_prou_inv = test.find_inv(m3_prime_prou,modular_n);
 	long long inv_256 = test.find_inv(256, modular_n);
@@ -797,18 +825,288 @@ cout << endl ;  */
 		tw_256p_inv_s3[i] = tw_256p_inv_s1[16*i];
 	}
 
-
+// FFT
+{
+//cout << "stage1" << endl;
  	for(int i = 0; i < 4096 ; i++){	// first stage radix4 s1
 		test.Radix_4_BU(Dual_port_mem_4w_4096[i], Dual_port_mem_4w_4096[i], tw_1_256, 256, (ZZ)modular_n);
 	}
 
-// mul s1_tw factor
-for(int t = 0; t < 4 ; t++){ // 0-15 1024-1039 2048-2063 3072-387
- 	for(int i = 0; i < 16 ; i++){	
-		for(int j = 0; j < 64 ; j++){	
-			for(int k = 0; k < 4 ; k++){	
-				MulMod(Dual_port_mem_4w_4096[1024*t+16*j+i][k], Dual_port_mem_4w_4096[1024*t16*j+i][k], tw_256p_s1[j][k], (ZZ)modular_n);				
-			}			
+	// mul s1_tw factor
+	long long mem_addr;
+	for(int i = 0; i < 4 ; i++){  // 4 group
+		for(int j = 0; j < 16 ; j++){  //each group 16 256-FFT
+			for(int t = 0; t < 64 ; t++){  //each FFT 64 addr
+				mem_addr = 1024 * (j / 4) + (j % 4) + 4 * i + 16 * t; //64 to 64
+				for(int k = 0; k < 4 ; k++){  //each addr 4 words
+					MulMod(Dual_port_mem_4w_4096[mem_addr][k], Dual_port_mem_4w_4096[mem_addr][k], tw_256p_s1[t][k], (ZZ)modular_n);				
+				}			
+			}		
+		}
+	}
+
+	//s1 relacation
+	//excel 256-relocation		
+	for(int i = 0; i < 4 ; i++){  // 4 group
+		for(int j = 0; j < 16 ; j++){  //each group 16 256-FFT
+			mem_addr = 1024 * (j / 4) + (j % 4) + 4 * i ;
+			for(int t1 = 0; t1 < 16 ; t1++){  //each FFT 64 addr 
+				test.Relocation_4(Dual_port_mem_4w_4096[mem_addr + 16 * t1],Dual_port_mem_4w_4096[mem_addr + 16 * (t1+16)],Dual_port_mem_4w_4096[mem_addr + 16 * (t1+32)],Dual_port_mem_4w_4096[mem_addr + 16 * (t1+48)]);											
+			}		
+		}
+	}
+//cout << "stage2" << endl;
+ 	for(int i = 0; i < 4096 ; i++){	// first stage radix4 s2
+		test.Radix_4_BU(Dual_port_mem_4w_4096[i], Dual_port_mem_4w_4096[i], tw_1_256, 256, (ZZ)modular_n);
+	}
+
+	// mul s2_tw factor
+	for(int i = 0; i < 4 ; i++){  // 4 group
+		for(int j = 0; j < 16 ; j++){  //each group 16 256-FFT
+			for(int t1 = 0; t1 < 4 ; t1++){  //each FFT 64 addr
+				for(int t2 = 0; t2 < 16 ; t2++){  //each FFT 64 addr
+					mem_addr = 1024 * (j / 4) + (j % 4) + 4 * i + 16 * (16 * t1 + t2); //64 to 16 * 4
+					for(int k = 0; k < 4 ; k++){  //each addr 4 words
+						MulMod(Dual_port_mem_4w_4096[mem_addr][k], Dual_port_mem_4w_4096[mem_addr][k], tw_256p_s2[t2][k], (ZZ)modular_n);				
+					}			
+				}				
+			}		
+		}
+	}
+
+	//s2 relacation
+	//excel 256-relocation		
+	for(int i = 0; i < 4 ; i++){  // 4 group
+		for(int j = 0; j < 16 ; j++){  //each group 16 256-FFT
+			mem_addr = 1024 * (j / 4) + (j % 4) + 4 * i ; 		
+			for(int t1 = 0; t1 < 4 ; t1++){  //each FFT 64 addr
+				for(int t2 = 0; t2 < 4 ; t2++){  //each FFT 64 addr
+					test.Relocation_4(Dual_port_mem_4w_4096[mem_addr + 16 * (16 * t1 + t2 + 0)],Dual_port_mem_4w_4096[mem_addr + 16 * (16 * t1 + t2 + 4)],Dual_port_mem_4w_4096[mem_addr + 16 * (16 * t1 + t2 + 8)],Dual_port_mem_4w_4096[mem_addr + 16 * (16 * t1 + t2 + 12)]);										
+				}						
+			}		
+		}
+	}
+//cout << "stage3" << endl;
+ 	for(int i = 0; i < 4096 ; i++){	// first stage radix4 s3
+		test.Radix_4_BU(Dual_port_mem_4w_4096[i], Dual_port_mem_4w_4096[i], tw_1_256, 256, (ZZ)modular_n);
+	}
+
+
+	// mul s3_tw factor
+	for(int i = 0; i < 4 ; i++){  // 4 group
+		for(int j = 0; j < 16 ; j++){  //each group 16 256-FFT
+			for(int t1 = 0; t1 < 16 ; t1++){  //each FFT 64 addr
+				for(int t2 = 0; t2 < 4 ; t2++){  //each FFT 64 addr
+					mem_addr = 1024 * (j / 4) + (j % 4) + 4 * i + 16 * (4 * t1 + t2); //64 to 4 * 16
+					for(int k = 0; k < 4 ; k++){  //each addr 4 words
+						MulMod(Dual_port_mem_4w_4096[mem_addr][k], Dual_port_mem_4w_4096[mem_addr][k], tw_256p_s3[t2][k], (ZZ)modular_n);				
+					}			
+				}				
+			}		
+		}
+	}
+
+
+	//s3 relacation
+	//excel 256-relocation		
+	for(int i = 0; i < 4 ; i++){  // 4 group
+		for(int j = 0; j < 16 ; j++){  //each group 16 256-FFT
+			mem_addr = 1024 * (j / 4) + (j % 4) + 4 * i ; 		
+			for(int t1 = 0; t1 < 16 ; t1++){  //each FFT 64 addr
+				test.Relocation_4(Dual_port_mem_4w_4096[mem_addr + 16 * (4 * t1 + 0)],Dual_port_mem_4w_4096[mem_addr + 16 * (4 * t1 + 1)],Dual_port_mem_4w_4096[mem_addr + 16 * (4 * t1 + 2)],Dual_port_mem_4w_4096[mem_addr + 16 * (4 * t1 + 3)]);																
+			}		
+		}
+	}
+//cout << "stage4" << endl;
+ 	for(int i = 0; i < 4096 ; i++){	// first stage radix4 s4
+		test.Radix_4_BU(Dual_port_mem_4w_4096[i], Dual_port_mem_4w_4096[i], tw_1_256, 256, (ZZ)modular_n);
+	}
+
+
+}
+//end FFT
+
+//--------------------------------------------------------------------------------------------//
+//test data
+ for (int i = 0; i < 64 ; i++){
+	for (int j = 0; j < 4 ; j++){
+		//cout << Dual_port_mem_4w_4096[16*i][j] << " ";
+	}
+	//cout << endl;
+}
+
+//test.DFT(test_256_FFT_output, (long long *)test_256_FFT_input, 256, test_256_FFT_prou , modular_n);
+for (int i = 0; i < 256 ; i++){
+	//cout << test_256_FFT_output[i] << endl;
+}
+ 
+//--------------------------------------------------------------------------------------------//
+	long long mem_addr;
+//-------------------------------- 256-point-wise mul-----------------------------------------//
+ 	for(int i = 0; i < 4 ; i++){ // 4 group 
+		for(int j = 0; j < 16; j++){  // each group 16 256-FFT
+			mem_addr = 1024 * (j / 4) + (j % 4) + 4 * i;
+			for(int t1 = 0; t1 < 4; t1++){  // each addr 4 word	 0 64 128 192 16 80 144 208 
+				for(int t2 = 0; t2 < 4; t2++){  // each addr 4 word	 0 64 128 192 16 80 144 208 
+					for(int t3 = 0; t3 < 4; t3++){  // each addr 4 word	 0 64 128 192 16 80 144 208 
+						for(int k = 0; k < 4; k++){  // each addr 4 word	 0 64 128 192 16 80 144 208 
+							MulMod(Dual_port_mem_4w_4096[mem_addr+16*(16*t1+4*t2+t3)][k], Dual_port_mem_4w_4096[mem_addr+16*(16*t1+4*t2+t3)][k], tw_FFT_out3[(t1+4*t2+16*t3)+64*k], (ZZ)modular_n );
+							//cout <<"["<<16*t1+4*t2+t3<<"]"<<"["<<k<<"]"<<"-->"<<"["<<(t1+4*t2+16*t3)+64*k<<"]"<< endl;
+						}
+					}
+				}
+			}
+		}
+	}
+
+//--------------------------------------------------------------------------------------------//
+
+// IFFT
+{
+//cout << "stage1" << endl;
+ 	for(int i = 0; i < 4096 ; i++){	// first stage radix4 s1
+		test.Radix_4_BU(Dual_port_mem_4w_4096[i], Dual_port_mem_4w_4096[i], tw_1_256_inv, 256, (ZZ)modular_n);
+	}
+
+	// mul s1_tw factor
+
+	for(int i = 0; i < 4 ; i++){  // 4 group
+		for(int j = 0; j < 16 ; j++){  //each group 16 256-FFT
+			for(int t = 0; t < 64 ; t++){  //each FFT 64 addr
+				mem_addr = 1024 * (j / 4) + (j % 4) + 4 * i + 16 * test.Bit_convert(t); //64 to 64
+				for(int k = 0; k < 4 ; k++){  //each addr 4 words
+					MulMod(Dual_port_mem_4w_4096[mem_addr][k], Dual_port_mem_4w_4096[mem_addr][k], tw_256p_inv_s1[t][k], (ZZ)modular_n);				
+				}			
+			}		
+		}
+	}
+
+	//s1 relacation
+	//excel 256-relocation		
+	for(int i = 0; i < 4 ; i++){  // 4 group
+		for(int j = 0; j < 16 ; j++){  //each group 16 256-FFT
+			mem_addr = 1024 * (j / 4) + (j % 4) + 4 * i ;
+			for(int t1 = 0; t1 < 16 ; t1++){  //each FFT 64 addr 
+				test.Relocation_4(Dual_port_mem_4w_4096[mem_addr + 16 * test.Bit_convert(t1)],Dual_port_mem_4w_4096[mem_addr + 16 * test.Bit_convert(t1+16)],Dual_port_mem_4w_4096[mem_addr + 16 * test.Bit_convert(t1+32)],Dual_port_mem_4w_4096[mem_addr + 16 * test.Bit_convert(t1+48)]);											
+			}		
+		}
+	}
+//cout << "stage2" << endl;
+ 	for(int i = 0; i < 4096 ; i++){	// first stage radix4 s2
+		test.Radix_4_BU(Dual_port_mem_4w_4096[i], Dual_port_mem_4w_4096[i], tw_1_256_inv, 256, (ZZ)modular_n);
+	}
+
+	// mul s2_tw factor
+	for(int i = 0; i < 4 ; i++){  // 4 group
+		for(int j = 0; j < 16 ; j++){  //each group 16 256-FFT
+			for(int t1 = 0; t1 < 4 ; t1++){  //each FFT 64 addr
+				for(int t2 = 0; t2 < 16 ; t2++){  //each FFT 64 addr
+					mem_addr = 1024 * (j / 4) + (j % 4) + 4 * i + 16 * test.Bit_convert(16 * t1 + t2); //64 to 16 * 4
+					for(int k = 0; k < 4 ; k++){  //each addr 4 words
+						MulMod(Dual_port_mem_4w_4096[mem_addr][k], Dual_port_mem_4w_4096[mem_addr][k], tw_256p_inv_s2[t2][k], (ZZ)modular_n);				
+					}			
+				}				
+			}		
+		}
+	}
+
+	//s2 relacation
+	//excel 256-relocation		
+	for(int i = 0; i < 4 ; i++){  // 4 group
+		for(int j = 0; j < 16 ; j++){  //each group 16 256-FFT
+			mem_addr = 1024 * (j / 4) + (j % 4) + 4 * i ; 		
+			for(int t1 = 0; t1 < 4 ; t1++){  //each FFT 64 addr
+				for(int t2 = 0; t2 < 4 ; t2++){  //each FFT 64 addr
+					test.Relocation_4(Dual_port_mem_4w_4096[mem_addr + 16 * test.Bit_convert(16 * t1 + t2 + 0)],Dual_port_mem_4w_4096[mem_addr + 16 * test.Bit_convert(16 * t1 + t2 + 4)],Dual_port_mem_4w_4096[mem_addr + 16 * test.Bit_convert(16 * t1 + t2 + 8)],Dual_port_mem_4w_4096[mem_addr + 16 * test.Bit_convert(16 * t1 + t2 + 12)]);										
+				}						
+			}		
+		}
+	}
+//cout << "stage3" << endl;
+ 	for(int i = 0; i < 4096 ; i++){	// first stage radix4 s3
+		test.Radix_4_BU(Dual_port_mem_4w_4096[i], Dual_port_mem_4w_4096[i], tw_1_256_inv, 256, (ZZ)modular_n);
+	}
+
+
+	// mul s3_tw factor
+	for(int i = 0; i < 4 ; i++){  // 4 group
+		for(int j = 0; j < 16 ; j++){  //each group 16 256-FFT
+			for(int t1 = 0; t1 < 16 ; t1++){  //each FFT 64 addr
+				for(int t2 = 0; t2 < 4 ; t2++){  //each FFT 64 addr
+					mem_addr = 1024 * (j / 4) + (j % 4) + 4 * i + 16 * test.Bit_convert(4 * t1 + t2); //64 to 4 * 16
+					for(int k = 0; k < 4 ; k++){  //each addr 4 words
+						MulMod(Dual_port_mem_4w_4096[mem_addr][k], Dual_port_mem_4w_4096[mem_addr][k], tw_256p_inv_s3[t2][k], (ZZ)modular_n);				
+					}			
+				}				
+			}		
+		}
+	}
+
+
+	//s3 relacation
+	//excel 256-relocation		
+	for(int i = 0; i < 4 ; i++){  // 4 group
+		for(int j = 0; j < 16 ; j++){  //each group 16 256-FFT
+			mem_addr = 1024 * (j / 4) + (j % 4) + 4 * i ; 		
+			for(int t1 = 0; t1 < 16 ; t1++){  //each FFT 64 addr
+				test.Relocation_4(Dual_port_mem_4w_4096[mem_addr + 16 * test.Bit_convert(4 * t1 + 0)],Dual_port_mem_4w_4096[mem_addr + 16 * test.Bit_convert(4 * t1 + 1)],Dual_port_mem_4w_4096[mem_addr + 16 * test.Bit_convert(4 * t1 + 2)],Dual_port_mem_4w_4096[mem_addr + 16 * test.Bit_convert(4 * t1 + 3)]);																
+			}		
+		}
+	}
+//cout << "stage4" << endl;
+ 	for(int i = 0; i < 4096 ; i++){	// first stage radix4 s4
+		test.Radix_4_BU(Dual_port_mem_4w_4096[i], Dual_port_mem_4w_4096[i], tw_1_256_inv, 256, (ZZ)modular_n);
+		for(int k = 0; k < 4; k++){
+			MulMod(Dual_port_mem_4w_4096[i][k], Dual_port_mem_4w_4096[i][k], inv_256, (ZZ)modular_n );
+		}
+	}
+}
+//end IFFT
+//cout << "end IFFT" << endl;
+//--------------------------add d[0]---------------------------------------------//
+	for(int i = 0; i < 4 ; i++){  // 4 group
+		for(int j = 0; j < 16 ; j++){  //each group 16 256-FFT
+			mem_addr = 1024 * (j / 4) + (j % 4) + 4 * i ; 		
+			for(int t1 = 0; t1 < 64 ; t1++){  //each FFT 64 addr
+				for(int k = 0; k < 4 ; k++){  //each 4 words
+					AddMod(Dual_port_mem_4w_4096[mem_addr + 16*(t1) ][k], Dual_port_mem_4w_4096[mem_addr + 16*(t1)][k], Dual_port_mem_4w_273[257+4*i+(j%4)][(j/4)], (ZZ)modular_n );														
+				}																														
+			}		
+		}
+	}
+
+//-------------------------------------------------------------------------------//
+//cout << "end add d[0]" << endl;
+
+
+
+
+//--------------------output array----------------------------------//
+  std::ofstream o_o_16384("./output_16384.txt");
+  std::ofstream o_o("./output_21845.txt");
+  std::ofstream g_o("./golden.txt");  
+
+
+
+ZZ output_array_tmp[16384];
+ZZ output_array_tmp2[m];
+ZZ output_array[m];
+ZZ golden_output[m];
+	for(int i = 0; i < 4 ; i++){  // 4 group
+		for(int j = 0; j < 16 ; j++){  //each group 16 256-FFT
+			mem_addr = 1024 * (j / 4) + (j % 4) + 4 * i ; 		
+			for(int t1 = 0; t1 < 4 ; t1++){  //each FFT 64 addr
+				for(int k = 0; k < 64 ; k++){  //each 4 words
+					output_array_tmp[4096 * i + 256 * j + 64 * t1 + k] = Dual_port_mem_4w_4096[mem_addr + 16*k][t1];												
+				}																														
+			}		
+		}
+	}
+
+for(int i = 1; i < 5; i++){
+	for(int j = 1; j < 17 ; j++){
+		for(int k = 1; k < 257 ; k++){
+			output_array_tmp2[4369*i + 257*j + k] = output_array_tmp[4096*(i-1) + 256*(j-1) + (k-1)];
 		}		
 	}
 }
@@ -816,35 +1114,140 @@ for(int t = 0; t < 4 ; t++){ // 0-15 1024-1039 2048-2063 3072-387
 
 
 
+	for(n1 = 0; n1 < m1; n1++) //5    3  
+	{ 
+		for(n2 = 0; n2 < s_m1; n2++)//17    5
+		{
+			for(n3 = 0; n3 < s_m2; n3++)//257     7
+			{
+				index_m = n3 + n2 * s_m2 + n1 * s_m2*s_m1; // 1 2 3 ... m
+				k1 = rader_index_out1[n1] ;//5
+				k2 = rader_index_out2[n2] ;//17
+				k3 = rader_index_out3[n3] ;//257
+				index_out = (k1 * m2_inv * m2 + (k2 * s_m2 * s_m2_inv + k3 * s_m1 * s_m1_inv)*m1*m1_inv ) % (m1 * m2);
+                output_array[index_out] = output_array_tmp2[index_m];	
+				
+				//index_m = n1 + n2 * m1; // 1 2 3 ... m
+				//k3 = (index_m / (m1*m2)) % m3 ;
+				//k2 = (index_m / m1) % m2 ;
+				//k1 = index_m % m1;
+				//index_in = (k1 * m2 + k2 * m3*m1 + k3 * m2*m1) % (m1 * m2);// 1
+				//DFT_data[index_m] = data_in[index_in];	
+				//test << k1 << endl;
+			}    
+		}
+	}
 
 
 
 
+
+long long test_21845_FFT_output[m];
+test.DFT(test_21845_FFT_output, data_in, 21845, prou_n , modular_n);
+
+long long zmstar[phi_m];
+test.find_zmstar(zmstar, m);
+for(int i = 0; i < phi_m; i++){
+	golden_output[zmstar[i]] = test_21845_FFT_output[zmstar[i]];
+}
+
+	for(int i = 0; i < m; i++){
+		o_o << output_array[i] << endl;
+		g_o << golden_output[i] << endl;
+		//cout << output_array[i]<< endl;
+		
+	}
+
+
+	for(int i = 0; i < 16384; i++){
+		o_o_16384 << output_array_tmp[i] << endl;
+		//g_o << test_21845_FFT_output[i] << endl;
+		//cout << output_array[i]<< endl;
+		
+	}
+
+
+	int k = 0;
+	for (int i = 0; i< m ; i++){	
+		if(output_array[i] != golden_output[i])	{
+			cout << "fail" <<endl;
+			break;
+		}
+		else {
+			k++;
+		}
+		if(k == m){
+			cout << "done" <<endl;
+		}
+			
+	}
+
+
+	//test.PFA3_v4(PFA_data_out, data_in, m1,m2,s_m1,s_m2,m1_inv,m2_inv,s_m1_inv,s_m2_inv, prou_n, modular_n); 
+
+
+
+
+
+
+
+
+
+
+
+  for (int i = 0; i < 64 ; i++){
+	for (int j = 0; j < 4 ; j++){
+		//cout << Dual_port_mem_4w_4096[16*i][j] << " ";
+	}
+	//cout << endl;
+} 
+
+ZZ tmp_256[256];
+ZZ ans_256[256];
+ for (int i = 0; i < 4 ; i++){
+	for (int j = 0; j < 64 ; j++){
+		//cout << Dual_port_mem_4w_4096[16*j][i] << endl;
+		//tmp_256[64 * i + j] =  Dual_port_mem_4w_4096[16*j][i] ;
+		//cout << tmp_256[64 * i + j] << endl;
+	}
+	//cout << endl;
+}
+
+for (int j = 0; j < 256 ; j++){
+	//cout << Dual_port_mem_4w_4096[16*j][i] << endl;
+	//ans_256[rader_index_out3[j+1]-1] =  tmp_256[j] ;
+}
+
+
+for (int j = 0; j < 256 ; j++){
+	//cout << Dual_port_mem_4w_4096[16*j][i] << endl;
+	//cout << ans_256[j] - test_257_FFT_output[j+1] << endl;
+}
 
 
 
 //---------------/////////////////////-----------End Second stage---------------///////////////////////-----------//
 //cout << "golden = " << endl;
 //-----golden rader-----
-long long rader_in[17] = {14577791,10629372,6680953,11561170,16649673,13251367,10360485,12714571,4365733,12793856,10103857,643192,16340040,15243222,11238477,11237192,11235907};
-long long rader_out[17];
-long long rader_prou = test.find_prou(17, modular_n);
+//long long rader_in[17] = {14577791,10629372,6680953,11561170,16649673,13251367,10360485,12714571,4365733,12793856,10103857,643192,16340040,15243222,11238477,11237192,11235907};
+//long long rader_out[17];
+//long long rader_prou = test.find_prou(17, modular_n);
 // long long rader_in[5] = {85 ,4454 ,8823 ,13192,0};
 // long long rader_out[5];
 // long long rader_prou = test.find_prou(5, modular_n);
 //test.Rader(rader_out, rader_in, 17, rader_prou , modular_n);
 //cout << " prou_n = " <<  rader_prou << endl;	
 //test.DFT(rader_out, rader_in, 17, rader_prou , modular_n);
- 	for(int i = 0; i < 17 ; i++){
+ 	//for(int i = 0; i < 17 ; i++){
 		//cout << rader_out[i] << " ";
-	}
+	//}
 	
 
-long long in_16[16] = {10629372 ,11561170 ,12793856 ,10103857,15243222 ,13251367 ,11237192 ,643192   ,11235907 ,11238477 ,4365733  ,12714571 ,16649673,16340040,6680953,10360485};
+//long long in_16[16] = {10629372 ,11561170 ,12793856 ,10103857,15243222 ,13251367 ,11237192 ,643192   ,11235907 ,11238477 ,4365733  ,12714571 ,16649673,16340040,6680953,10360485};
 //test.DFT(rader_out, in_16, 16, m2_prime_prou , modular_n);
- 	for(int i = 0; i < 16 ; i++){
+ 	//for(int i = 0; i < 16 ; i++){
 		//cout << rader_out[i] << " ";
-	}
+	//}
 
 
 
@@ -907,5 +1310,6 @@ long long in_16[16] = {10629372 ,11561170 ,12793856 ,10103857,15243222 ,13251367
 
 
 
+}
 
 }

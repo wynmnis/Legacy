@@ -235,6 +235,18 @@ long long LEGACY::find_prou(long long m, long long modular)
     }
 }
 
+void LEGACY::find_zmstar(long long *zmstar, long long m)
+{
+	int j = 0;
+	for(int i = 0; i < m; i++){
+		if(coprime(i,m)){
+			zmstar[j] = i;
+			j++;
+		}
+	}
+}	
+
+
 long long LEGACY::prou_power(long long data_in, long long power, long long modular)
 {
     //output = data_in^power % modular
@@ -1304,8 +1316,8 @@ long long LEGACY::PFA3_v4(long long *DFT_data, long long *data_in, long long m1,
     {
         //m2 times, m1-point DFT
         //Rader(data_tmp + m1 * n2, DFT_data + m1 * n2, m1, prou_power(prou, m2, modular), modular); 
-		DFT(data_tmp + m1 * n2, DFT_data + m1 * n2, m1, prou_power(prou, m2, modular), modular); 
-		//Rader_v4(data_tmp + m1 * n2, DFT_data + m1 * n2, tw_FFT_out1, rader_index_in1, rader_index_out1, m1, m1_prime, m1_prime_prou, modular);
+		//DFT(data_tmp + m1 * n2, DFT_data + m1 * n2, m1, prou_power(prou, m2, modular), modular); 
+		Rader_v4(data_tmp + m1 * n2, DFT_data + m1 * n2, tw_FFT_out1, rader_index_in1, rader_index_out1, m1, m1_prime, m1_prime_prou, modular);
 		
     }    
 	
@@ -1329,8 +1341,8 @@ long long LEGACY::PFA3_v4(long long *DFT_data, long long *data_in, long long m1,
 		for(n2=0;n2<m1;n2++)
 		{
 			//m1(= s_m1 * s_m2)-point PFA
-			PFA2_v2(data_tmp + m2 * n2, DFT_data + m2 * n2, s_m1, s_m2, s_inv1, s_inv2, prou_power(prou, m1, modular), modular); 
-			//PFA2_v4(data_tmp + m2 * n2, DFT_data + m2 * n2, s_m1, s_m2, m2_prime, m3_prime, m2_prime_prou, m3_prime_prou, s_inv1, s_inv2, tw_FFT_out2, tw_FFT_out3, rader_index_out2, rader_index_out3, modular, m2_prou, m3_prou,rader_index_in2,rader_index_in3); 			
+			//PFA2_v2(data_tmp + m2 * n2, DFT_data + m2 * n2, s_m1, s_m2, s_inv1, s_inv2, prou_power(prou, m1, modular), modular); 
+			PFA2_v4(data_tmp + m2 * n2, DFT_data + m2 * n2, s_m1, s_m2, m2_prime, m3_prime, m2_prime_prou, m3_prime_prou, s_inv1, s_inv2, tw_FFT_out2, tw_FFT_out3, rader_index_out2, rader_index_out3, modular, m2_prou, m3_prou,rader_index_in2,rader_index_in3); 			
 		}  
     }	
 	
@@ -1373,11 +1385,14 @@ long long LEGACY::PFA3_v4(long long *DFT_data, long long *data_in, long long m1,
 				//k1 = index_m % m1;
 				//index_in = (k1 * m2 + k2 * m3*m1 + k3 * m2*m1) % (m1 * m2);// 1
 				//DFT_data[index_m] = data_in[index_in];	
-				test << k1 << endl;
+				//test << data_tmp[index_m] << endl;
 			}    
 		}
 	}
 
+	for(int i = 0; i < m1*m2; i++){
+		test << DFT_data[i] << endl;
+	}
 
 
 
@@ -1877,6 +1892,34 @@ int LEGACY::RR(int BC, int shift_bit, int Bit_WIDTH){
 	for(int j=0; j < Bit_WIDTH;j++)
 	{
 		RR_out += bit_array[j] << j ;
+	} 
+	return RR_out;
+}
+
+int LEGACY::Bit_convert(int addr){  //bit convert [0][1][2][3][4][5] --> [4][5][2][3][0][1]
+	int    RR_out = 0;
+	int Bit_WIDTH = 6;
+	std::vector<int> bit_array;
+	std::vector<int> bit_array_tmp;	
+	bit_array.resize(Bit_WIDTH);
+	bit_array_tmp.resize(Bit_WIDTH);	
+	//bit calculate
+	for(int j=0; j < Bit_WIDTH;j++)
+	{
+		bit_array[j] = (addr >> j) & 1 ;
+		//cout << bit_array[j] << endl ;
+	} 		
+	bit_array_tmp[4] = bit_array[0];
+	bit_array_tmp[5] = bit_array[1];
+	bit_array_tmp[2] = bit_array[2];
+	bit_array_tmp[3] = bit_array[3];
+	bit_array_tmp[0] = bit_array[4];
+	bit_array_tmp[1] = bit_array[5];	
+	
+	
+	for(int j=0; j < Bit_WIDTH;j++)
+	{
+		RR_out += bit_array_tmp[j] << j ;
 	} 
 	return RR_out;
 }

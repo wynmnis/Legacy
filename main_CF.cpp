@@ -13,15 +13,15 @@ using namespace std;
 int main()
 {
 	//test AE 
-	LEGACY AE;
+	LEGACY CF;
 	//varilable definition
 	int N = 256 ;
 	int r = 4 ;
 	int p,g,s;
-	p = log(N)/log(r) ; //4
-	g = N/(r*r) ;		//16
-	s = log2(r) ;		//8
-	int    BC_WIDTH;    //6
+	p = log(N)/log(r) ;
+	g = N/(r*r) ;
+	s = log2(r) ;
+	int    BC_WIDTH; 
 	BC_WIDTH = (int)ceil(log2(N/r));	
 	//main function
 	int BC, BN, MA ;
@@ -39,18 +39,18 @@ int main()
 			for(int j = 0; j < r; j++)
 			{
 				//-----------------------------
-				BC = j*g + AE.Gray(i,g) ;
+				BC = j*g + i ;
 				//cout << "BC = "<< BC << endl ;
-				RR_out = AE.RR(BC, s*t, BC_WIDTH);
-				xor_out = AE.unary_xor(RR_out , BC_WIDTH);
-				BN = xor_out;
+				RR_out = CF.RR(BC, s*t, BC_WIDTH);
+				//xor_out = AE.unary_xor(RR_out , BC_WIDTH);
+				//BN = xor_out;
 				MA = RR_out >> 1;	
-				cout << "(BC, BN, MA) = ";				
-				cout << "(" << BC << " , "<< BN <<" , "<< MA << ")";	
+				cout << "(BC, MA) = ";				
+				cout << "(" << BC << " , "<< MA << ")";	
 				//-------------------------------
-				AE.int2vec(BC, bit_width, bit_array);				
+				CF.int2vec(BC, bit_width, bit_array);				
 				std::rotate(bit_array.begin(), bit_array.begin()+ s*t , bit_array.end());
-				Data = AE.vec2int(bit_array, bit_width);
+				Data = CF.vec2int(bit_array, bit_width);
 				cout << "Data_index = ";				
 				cout << "(" ;	
 				for(int k = 0; k < r ; k++ ){
@@ -60,12 +60,5 @@ int main()
 			}
 		}
 	}
-	
-	for(int i = 0; i < 64; i++){
-		cout << "[" << 16*i << "] = " << AE.unary_xor(16*i,12) << endl;
-	}
-
-
-
-	
+		
 }

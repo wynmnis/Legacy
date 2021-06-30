@@ -45,7 +45,7 @@ int main()
 	long long PFA_data_out[m];	
 	long long IDFT_data_out[m];
 	long long error[m];
-	long long data_in[m];
+	long long data_in[m]={0};
 	long long data_in2[m]={5,4,3,2,1};
 	long long data_tmp[m];
 	long long m1_inv,m2_inv,s_m1_inv,s_m2_inv;
@@ -67,8 +67,8 @@ int main()
 	cout << " 85_inv(257) = " << test_105_PFA.find_inv(85, 257) << endl;
 */	
 	//------------------------------------------
-	for (int i = 0; i < m ; i++){
-		data_in[i] = i*2 ;
+	for (int i = 0; i < 16384 ; i++){
+		data_in[i] = i ;
 	}			
 
 
