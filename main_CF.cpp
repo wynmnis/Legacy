@@ -15,8 +15,8 @@ int main()
 	//test AE 
 	LEGACY CF;
 	//varilable definition
-	int N = 256 ;
-	int r = 4 ;
+	int N = 8 ;
+	int r = 2 ;
 	int p,g,s;
 	p = log(N)/log(r) ;
 	g = N/(r*r) ;
@@ -41,10 +41,9 @@ int main()
 				//-----------------------------
 				BC = j*g + i ;
 				//cout << "BC = "<< BC << endl ;
-				RR_out = CF.RR(BC, s*t, BC_WIDTH);
+				MA = CF.RR(BC, s*t, BC_WIDTH);
 				//xor_out = AE.unary_xor(RR_out , BC_WIDTH);
-				//BN = xor_out;
-				MA = RR_out >> 1;	
+				//BN = xor_out;	
 				cout << "(BC, MA) = ";				
 				cout << "(" << BC << " , "<< MA << ")";	
 				//-------------------------------

@@ -21,14 +21,14 @@ int main()
 	cout << endl; */
 
 
-	long long m = 1024;
- 	long long modular = test.find_prime(m,6);	
-/*	long long RA_out[m];
+	long long m = 31;
+	long long modular = test.find_prime(m*30,6);	
+	long long RA_out[m];
 	long long RA_in[m];	
 	long long DFT_out[m];
-	long long DFT_in[m]; */	
+	long long DFT_in[m];	
 	
-/* 	for(int i = 0; i < m; i++){
+	for(int i = 0; i < m; i++){
 		RA_in[i] = i;
 		DFT_in[i] = i;
 	}
@@ -43,34 +43,8 @@ int main()
 	
 	for(int i = 0; i < m; i++){
 		cout << DFT_out[i] << endl;
-	} */
-	vector<ZZ> output(m);
-	vector<ZZ> input(m);	
-	
-	
-	//test.Config_PFA_Rader_FFT(output, input, (ZZ)m, (ZZ)modular);
-	
-	
-	test.FFT_1024_radix2(output, input, m, (ZZ)modular);
-	int DFT_m = 16;
-	
-	long long DFT_in[DFT_m] ;
-	long long DFT_out[DFT_m] ;
-	long long prou = 3/*test.find_prou(4, 17)*/;	
-	//cout << "prou=" << prou << endl;
-	for (int i = 0; i < DFT_m; i++){
-		DFT_in[i] = i+1; 
 	}
 	
-	
-	test.DFT(DFT_out, DFT_in, DFT_m, prou, 17);
-	
-	
-	cout << endl;
-	for(int i = 0; i < DFT_m; i++){
-		//cout << DFT_out[i] << endl;
-	}
 
-	
 	return 0;
 }

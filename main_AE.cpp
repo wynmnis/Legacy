@@ -15,8 +15,8 @@ int main()
 	//test AE 
 	LEGACY AE;
 	//varilable definition
-	int N = 256 ;
-	int r = 4 ;
+	int N = 1024 ;
+	int r = 2 ;
 	int p,g,s;
 	p = log(N)/log(r) ; //4
 	g = N/(r*r) ;		//16
@@ -60,12 +60,8 @@ int main()
 			}
 		}
 	}
+
 	
-	for(int i = 0; i < 64; i++){
-		cout << "[" << 16*i << "] = " << AE.unary_xor(16*i,12) << endl;
-	}
-
-
-
+	//cout << AE.Gray(16,4096) << endl;
 	
 }
