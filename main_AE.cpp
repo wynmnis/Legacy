@@ -18,11 +18,11 @@ int main()
 	int N = 1024 ;
 	int r = 2 ;
 	int p,g,s;
-	p = log(N)/log(r) ; //4
-	g = N/(r*r) ;		//16
-	s = log2(r) ;		//8
-	int    BC_WIDTH;    //6
-	BC_WIDTH = (int)ceil(log2(N/r));	
+	p = log(N)/log(r) ; //10
+	g = N/(r*r) ;		//256
+	s = log2(r) ;		//1
+	int    BC_WIDTH;    
+	BC_WIDTH = (int)ceil(log2(N/r)); //9	
 	//main function
 	int BC, BN, MA ;
 	int RR_out = 0;

@@ -75,6 +75,12 @@
 using namespace std;
 using namespace NTL;
 
+long LEGACY::ZZ2int(ZZ n){
+	long ans;
+	conv(ans, n);
+	return ans;
+}
+
 long long LEGACY::Euler(long long x){
     if (x < 2) return 0;
     int ret = x;
@@ -94,15 +100,21 @@ long long LEGACY::Euler(long long x){
 long long LEGACY::find_m_prime(long long m){
 	long long n = ceil(log2(2*m-3))  ;
 
-	long long ans = 0; ;
-	ans = pow(2,n);
+	long long ans = 0; 
+	if(isPowerBy2(m))
+		ans = m;
+	else 
+		ans = pow(2,n);
 	return ans ;
 }
 
 ZZ LEGACY::find_m_prime(ZZ m){
 	long long n = ceil(NumBits(2*m-3))  ;
 	ZZ ans ;
-	power(ans, 2 , n);
+	if(isPowerBy2(m))
+		ans = m;
+	else 
+		power(ans, 2 , n);
 	return ans ;	
 }
 
@@ -302,12 +314,35 @@ long long LEGACY::find_inv(long long data_in, long long modular)
     return inv;
 }
 
-ZZ LEGACY::find_inv(ZZ data_in, ZZ modular)
+ZZ LEGACY::find_inv(ZZ data_in, ZZ modular) // modular need to be prime
 {
-    ZZ inv;    
+    ZZ inv;   
+	//cout << " data in = " << data_in << " modular = " << modular << endl;
+	assert(isPrime(modular) == 1);
 	PowerMod(inv, data_in, (modular-2), modular); //by fermat little theorem
     
     return inv;
+}
+
+ZZ LEGACY::exgcd(ZZ a, ZZ b, ZZ &x, ZZ &y) {
+    if(b == 0) {
+        x = 1; // 设置b=0时的特殊解 
+        y = 0;
+        return a;
+    }
+    ZZ ans = exgcd(b, a % b, x, y);
+    ZZ t = x; // 将x2, y2换算成x1, y1
+    x = y;
+    y = t - a / b * y;
+    return ans;
+}
+ZZ LEGACY::find_inv_exgcd(ZZ a, ZZ m) {
+    ZZ x, y;
+    exgcd(a, m, x, y);
+    if(m < 0) m = -m;
+    ZZ ans = x % m;
+    if(ans <= 0) ans += m;
+    return ans;
 }
 
 long long LEGACY::find_prou(long long m, long long modular)
@@ -394,6 +429,7 @@ ZZ LEGACY::find_prou(long long m, ZZ modular)
 		is_prou = check_prou(n_rou, m, modular);
 		i = i + 1;
 	}
+	//cout << " base " << i-1 << endl;
 	prou = n_rou;
 	return prou;
 }
@@ -935,6 +971,13 @@ long long LEGACY::PFA2_v4(long long *DFT_data, long long *data_in, long long m1,
     cout << "m1_prime = " << m1_prime << endl;
     cout << "m1_prime_prou = " << m1_prime_prou << endl;
 */
+	cout << "second stage in= " << endl;
+	for(int k = 0; k < m1*m2; k++){
+		cout << DFT_data[k] << endl;
+	}	
+		cout << endl; 
+ 
+ 
  
     for(n2=0;n2<m2;n2++)
     {
@@ -944,6 +987,12 @@ long long LEGACY::PFA2_v4(long long *DFT_data, long long *data_in, long long m1,
 		Rader_v4(data_tmp + m1 * n2, DFT_data + m1 * n2, tw_FFT_out1 ,index_in1, index_out1 , m1, m1_prime, m1_prime_prou, modular);           
     }    
     
+	cout << "second stage out= " << endl;
+	for(int k = 0; k < m1*m2; k++){
+		cout << data_tmp[k] << endl;
+	}	
+		cout << endl;
+		
     for(n2=0;n2<m2;n2++)
     {
         for(n1=0;n1<m1;n1++)
@@ -954,6 +1003,7 @@ long long LEGACY::PFA2_v4(long long *DFT_data, long long *data_in, long long m1,
             index_in = (k1 + k2 * m1) % (m1 * m2); //re-index between m1 and m2 
             
             DFT_data[index_m] = data_tmp[index_in];
+			//cout << index_in << endl;
         }  
     }
 
@@ -1406,8 +1456,9 @@ long long LEGACY::PFA3_v4(long long *DFT_data, long long *data_in, long long m1,
 	long long tw_FFT_index1[m1_prime];
 	long long tw_FFT_in1[m1_prime];	
 	long long m1_prou;	
-	
+	cout << " prou " << prou << endl;
 	m1_prou = prou_power(prou, m2, modular);
+	cout << " m1_prou " << m1_prou << endl;
 	rader_index_in1[0] = 0;
 	rader_index_out1[0] = 0;
 	rader_index_in1[1] = 1;
@@ -1468,8 +1519,9 @@ long long LEGACY::PFA3_v4(long long *DFT_data, long long *data_in, long long m1,
 	long long tw_FFT_index2[m2_prime];	
 	long long tw_FFT_in2[m2_prime];	
 	long long m2_prou;	
-	
+
 	m2_prou = prou_power(prou, m1*s_m2, modular);	
+	cout << " m2_prou " << m2_prou << endl;
 	rader_index_in2[0] = 0;
 	rader_index_out2[0] = 0;
 	rader_index_in2[1] = 1;
@@ -1520,6 +1572,7 @@ long long LEGACY::PFA3_v4(long long *DFT_data, long long *data_in, long long m1,
 	long long m3_prou;	
 	
 	m3_prou = prou_power(prou, m1*s_m1, modular);	
+	cout << " m3_prou " << m3_prou << endl;	
 	rader_index_in3[0] = 0;
 	rader_index_out3[0] = 0;
 	rader_index_in3[1] = 1;
@@ -1591,6 +1644,12 @@ long long LEGACY::PFA3_v4(long long *DFT_data, long long *data_in, long long m1,
 		
     }    
 	
+	//cout << " first stage " << endl;
+	
+	for(int i = 0; i < m1*m2; i++){
+		//cout << data_tmp[i] << endl;
+	}
+	
 	//cout << "rader ok" << endl;
  
     for(n2=0;n2<m2;n2++)
@@ -1635,7 +1694,15 @@ long long LEGACY::PFA3_v4(long long *DFT_data, long long *data_in, long long m1,
     }
 */
 
+for(int i = 0; i < m1*m2; i++){
+	//cout << data_tmp[i] << endl;
+}
 
+
+
+
+
+				//cout << "index out = " <<endl;
 	for(n1 = 0; n1 < m1; n1++) //5    3  
 	{ 
 		for(n2 = 0; n2 < s_m1; n2++)//17    5
@@ -1656,6 +1723,7 @@ long long LEGACY::PFA3_v4(long long *DFT_data, long long *data_in, long long m1,
 				//index_in = (k1 * m2 + k2 * m3*m1 + k3 * m2*m1) % (m1 * m2);// 1
 				//DFT_data[index_m] = data_in[index_in];	
 				//test << data_tmp[index_m] << endl;
+				//cout << index_out <<endl;
 			}    
 		}
 	}
@@ -1682,6 +1750,31 @@ long long LEGACY::find_gen(long long n)
 		{
 			tmp = tmp * i ;
 			tmp %= n;
+			if(tmp == 1){
+				if(j == n - 1)
+					flag = 1;
+				else
+					break ;
+			}
+		}
+		if(flag == 1){
+			ans = i;
+			break ; 
+		}
+	}
+	return ans ;
+}
+
+long long LEGACY::find_gen(ZZ n)
+{
+	bool flag = 0 ;
+	long long ans;
+	long long tmp = 1;
+	for(int i = 2; i < n; i++)
+	{
+		for(int j = 1; j < n; j++)
+		{
+			MulMod((ZZ)tmp, (ZZ)i , n);
 			if(tmp == 1){
 				if(j == n - 1)
 					flag = 1;
@@ -1782,7 +1875,7 @@ void LEGACY::Rader(long long *RA_out, long long *data_in, long long n, long long
 	//cout << "prou = " << prou << endl;
 	//cout << "tw_FFT_in = " << endl ;
 	for (int i = 0; i < m_prime ; i++){
-		//cout << tw_FFT_in[i] <<endl;
+		cout << tw_FFT_in[i] <<endl;
 	}
 	
 //-------------pointwise mul--------------------------
@@ -1852,7 +1945,11 @@ void LEGACY::Rader_DFT(long long *RA_out, long long *data_in, long long n, long 
 	assert(isPrime(n) == 1);
 	assert(isPrime(modular) == 1);	
 	
-	int m_prime = n-1;
+	int m_prime ;
+	if( (n==3) || (n==5) || (n==17) || (n==257))
+		m_prime = n-1;
+	else
+		m_prime = find_m_prime(n);
 
 	long long gen;
 	long long data_in_reindex[n];
@@ -1860,7 +1957,7 @@ void LEGACY::Rader_DFT(long long *RA_out, long long *data_in, long long n, long 
 	long long index_in[n-1];	
 	long long index_out[n-1];	
 	gen = find_gen(n);
-
+	//cout << "prou = " <<prou << endl;
 //----------------input re-index-----------------
 	index_in[0] = 1;
 	index_out[0] = 1;
@@ -1905,7 +2002,7 @@ void LEGACY::Rader_DFT(long long *RA_out, long long *data_in, long long n, long 
 		//cout << tw_FFT_index[i] <<endl;
 	}
 
-		//cout <<endl;
+		cout <<endl;
 		
 	for (int i = 0; i < m_prime ; i++){
 		if(tw_FFT_index[i] == 0)
@@ -1933,7 +2030,7 @@ void LEGACY::Rader_DFT(long long *RA_out, long long *data_in, long long n, long 
 	
 	//cout << "tw_FFT_out = " << endl ;
 	for (int i = 0; i < m_prime ; i++){
-		//cout << tw_FFT_out[i] <<endl;
+		cout << tw_FFT_out[i] <<endl;
 		//cout << FFT_out[i] <<" ";
 	}
 		//cout <<endl;	
@@ -2484,10 +2581,11 @@ ZZ LEGACY::expand_point_RA(ZZ m){
 	return m_prime;
 }
 
-void LEGACY::Config_PFA_Rader_FFT(vector<ZZ> &output, vector<ZZ> &input, ZZ m, ZZ modular){
+void LEGACY::Config_PFA_Rader_FFT(vector<ZZ> &output, vector<ZZ> &input, ZZ m, ZZ prou_m, ZZ modular){
 	ZZ factor[20];
 	long long 
 	int cnt = Factorize(factor , m);
+	int m_int = ZZ2int(m);
 	//cout << cnt << endl;
 	ZZ m_s[cnt]; // factor to several small primes 
 	ZZ phi_m_s[cnt];
@@ -2509,7 +2607,7 @@ void LEGACY::Config_PFA_Rader_FFT(vector<ZZ> &output, vector<ZZ> &input, ZZ m, Z
 	ZZ stage_cnt_eliminate[cnt];	
 	for(int i = 0; i < cnt; i++){ // ususlly decompose to 3 factor m1 m2 m3
 		stage_cnt_non_eliminate[i] = m/m_s[i];
-		cout << "stage" << i << " = "<< stage_cnt_non_eliminate[i] << endl;
+		cout << "stage_cnt" << i << " = "<< stage_cnt_non_eliminate[i] << endl;
 	}	
 	
     mul(stage_cnt_eliminate[0],m_s[1],m_s[2]);
@@ -2520,12 +2618,206 @@ void LEGACY::Config_PFA_Rader_FFT(vector<ZZ> &output, vector<ZZ> &input, ZZ m, Z
 	}		
 	//------------------------------------------------------------
 	vector<ZZ> Data_Mem(92837);
-	vector<vector<ZZ>> FFT_1024_Mem(512);	
-	for(int i = 0; i < 512; i++){	
-		FFT_1024_Mem[i].resize(2);
+//-----------------------Rader I/O index ----------------------
+	int gen[cnt], gen_inv[cnt];
+	for(int i = 0; i < cnt; i++){
+		gen[i] = find_gen(ZZ2int(m_s[i]));
+		gen_inv[i] = find_inv(gen[i], ZZ2int(m_s[i]));		
+		//cout << gen[i] << endl;
+	}
+
+	long long rader_index_in0[ZZ2int(m_s[0])] = {0};
+	long long rader_index_in1[ZZ2int(m_s[1])] = {0};
+	long long rader_index_in2[ZZ2int(m_s[2])] = {0};	
+	long long rader_index_out0[ZZ2int(m_s[0])] = {0};
+	long long rader_index_out1[ZZ2int(m_s[1])] = {0};
+	long long rader_index_out2[ZZ2int(m_s[2])] = {0};		
+
+	for(int i = 0; i < m_s[0] -1 ; i++){
+		rader_index_in0[i+1] = prou_power(gen[0],i,ZZ2int(m_s[0]));	
+		rader_index_out0[i+1] = prou_power(gen_inv[0],i,ZZ2int(m_s[0]));			
+	}	
+	for(int i = 0; i < m_s[0] ; i++){
+		//cout << rader_index_out0[i] << endl;	
+	}
+	for(int i = 0; i < m_s[1] -1 ; i++){
+		rader_index_in1[i+1] = prou_power(gen[1],i,ZZ2int(m_s[1]));	
+		rader_index_out1[i+1] = prou_power(gen_inv[1],i,ZZ2int(m_s[1]));			
+	}	
+	for(int i = 0; i < m_s[1] ; i++){
+		//cout << rader_index_in1[i] << endl;	
+	}
+	for(int i = 0; i < m_s[2] -1 ; i++){
+		rader_index_in2[i+1] = prou_power(gen[2],i,ZZ2int(m_s[2]));	
+		rader_index_out2[i+1] = prou_power(gen_inv[2],i,ZZ2int(m_s[2]));			
+	}	
+	for(int i = 0; i < m_s[2] ; i++){
+		//cout << rader_index_in2[i] << endl;	
+	}	
+	//cout << " fdfdf " << endl;
+//---------------------------input reindex and put in mem--------------------------------------//
+    long long n1,n2,n3,k1,k2,k3;
+    long long index_in;
+    long long index_out;
+    long long index_m;
+	//long long Re_Index_Input_Data[m];	
+	//long long Re_Index_Output_Data[m];
+	for(n3 = 0; n3 < m_s[2]; n3++)//257     17
+	{ 
+		for(n2 = 0; n2 < m_s[1]; n2++)//17   5
+		{
+			for(n1 = 0; n1 < m_s[0]; n1++)//5  3
+			{
+				index_m = n1 + n2 * ZZ2int(m_s[0]) + n3 * ZZ2int(m_s[0])*ZZ2int(m_s[1]); // 1 2 3 ... m
+				k1 = rader_index_in0[n1] ;//5
+				k2 = rader_index_in1[n2] ;//17
+				k3 = rader_index_in2[n3] ;//257
+				index_in = (k1 * ZZ2int(m_s[1]) *ZZ2int(m_s[2]) + k2 * ZZ2int(m_s[0]) * ZZ2int(m_s[2]) + k3 * ZZ2int(m_s[0]) * ZZ2int(m_s[1])) % (m_int);// 1
+				//cout << input[index_m] << endl;
+				Data_Mem[index_m] = input[index_in];
+				//cout << "Data_Mem[index_m] = " << Data_Mem[index_m] <<endl;
+			}    
+		}
+	}	
+//-------------------------------------------------------------------------------------------------//
+//-----------------stage 0 -------------------//
+vector<ZZ> s0_tmp_in(ZZ2int(m_s[0]));
+vector<ZZ> s0_tmp_out(ZZ2int(m_s[0]));
+int s0_counter = 0;
+
+	for(int i = 0; i < stage_cnt_non_eliminate[0]; i++){
+		//cout << "input = " << endl;
+		for(int j = 0; j < m_s[0]; j++){
+			s0_tmp_in[j] = Data_Mem[j + s0_counter];
+			//cout << s0_tmp_in[j] << endl;
+		}
+		//cout << endl;
+		FFT_1024_radix2_config(s0_tmp_out, s0_tmp_in, ZZ2int(m_s[0]), m, prou_m, modular);
+		
+		//cout << "output = " << endl;
+		for(int j = 0; j < m_s[0]; j++){
+			Data_Mem[j + s0_counter] = s0_tmp_out[j];
+			//cout << Data_Mem[j + s0_counter] << endl;
+		}
+			
+		s0_counter += ZZ2int(m_s[0]);
+		//cout << s0_counter << endl;
+	}
+/* 	cout << "first stage =" << endl;
+	for(int k = 0; k < m; k++){
+		cout << Data_Mem[k] << endl;
+	} */
+
+
+//-----------------stage 1 -------------------//
+vector<ZZ> s1_tmp_in(ZZ2int(m_s[1]));
+vector<ZZ> s1_tmp_out(ZZ2int(m_s[1]));
+int s1_counter = 0;
+
+	for(int i = 0; i < m_s[0]; i++){
+		for(int j = 0; j < m_s[2]; j++){
+			//cout << "input = " << endl;
+			for(int k = 0; k < m_s[1]; k++){
+				s1_tmp_in[k] = Data_Mem[i + ZZ2int(m_s[0])*ZZ2int(m_s[1])*j +  ZZ2int(m_s[0])*k ];
+				//cout << s1_tmp_in[k] << endl;
+				//cout << i + ZZ2int(m_s[0])*ZZ2int(m_s[1])*j +  ZZ2int(m_s[0])*k  << endl;
+			}
+			//cout << endl;
+			FFT_1024_radix2_config(s1_tmp_out, s1_tmp_in, ZZ2int(m_s[1]), m, prou_m,  modular);
+			
+			//cout << "output = " << endl;
+			for(int k = 0; k < m_s[1]; k++){
+				Data_Mem[i + ZZ2int(m_s[0])*ZZ2int(m_s[1])*j +  ZZ2int(m_s[0])*k] = s1_tmp_out[k];
+				//cout << s1_tmp_out[k] << endl;
+			}
+		}
+	}
+
+	//cout << "second stage out =" << endl;
+	for(int k = 0; k < m; k++){
+		//cout << Data_Mem[k] << endl;
+	}
+	//cout << endl;
+//-----------------stage 2 -------------------//
+vector<ZZ> s2_tmp_in(ZZ2int(m_s[2]));
+vector<ZZ> s2_tmp_out(ZZ2int(m_s[2]));
+int s2_counter = 0;
+
+	for(int i = 0; i < m_s[0]; i++){
+		for(int j = 0; j < m_s[1]; j++){
+			//cout << "input = " << endl;
+			for(int k = 0; k < m_s[2]; k++){
+				s2_tmp_in[k] = Data_Mem[i + ZZ2int(m_s[0])*j + ZZ2int(m_s[0])*ZZ2int(m_s[1])*k ];
+				//cout << s2_tmp_in[j] << endl;
+				//cout << i + ZZ2int(m_s[0])*j + ZZ2int(m_s[0])*ZZ2int(m_s[1])*k  << endl;
+			}
+			//cout << endl;
+			FFT_1024_radix2_config(s2_tmp_out, s2_tmp_in, ZZ2int(m_s[2]), m, prou_m, modular);
+			
+			//cout << "output = " << endl;
+			for(int k = 0; k < m_s[2]; k++){
+				Data_Mem[i + ZZ2int(m_s[0])*j + ZZ2int(m_s[0])*ZZ2int(m_s[1])*k] = s2_tmp_out[k];
+				//cout << i + ZZ2int(m_s[0])*j + ZZ2int(m_s[0])*ZZ2int(m_s[1])*k  << endl;				
+				//cout << Data_Mem[j + s2_counter] << endl;
+			}
+		}
+	}
+
+	//cout << " fdfdf " << endl;
+//------------------output reindex1-------------------//	
+	for(int i = 0; i < m_s[0]; i++){
+		for(int j = 0; j < m_s[1]; j++){
+			for(int k = 0; k < m_s[2]; k++){
+				//Data_Mem
+			}
+		}
 	}	
 	
+	
+	for(int k = 0; k < m; k++){
+		//cout << Data_Mem[k] << endl;
+	}
+	
+	
+//------------------output reindex2-------------------//
+ZZ m_s_inv[cnt];
+ZZ m2_inv;
+m_s_inv[0] = find_inv_exgcd(m_s[0], m_s[1]*m_s[2]);
+	//cout << " m_s_inv[0] = " << m_s_inv[0] << endl;
+m_s_inv[1] = find_inv_exgcd(m_s[1], m_s[2]);
+	//cout << " m_s_inv[1] = " << m_s_inv[1] << endl;
+m_s_inv[2] = find_inv_exgcd(m_s[2], m_s[1]);
+	//cout << " m_s_inv[2] = " << m_s_inv[2] << endl;
+m2_inv = find_inv_exgcd(m_s[2]*m_s[1] , m_s[1]);
+	//cout << " m2_inv[2] = " << m2_inv  << endl;
+	for(n1 = 0; n1 < m_s[0]; n1++) //5    3  
+	{ 
+		for(n2 = 0; n2 < m_s[1]; n2++)//17    5
+		{
+			for(n3 = 0; n3 < m_s[2]; n3++)//257     7
+			{
+				index_m = n1 + n2 * ZZ2int(m_s[0]) + n3 * ZZ2int(m_s[0])*ZZ2int(m_s[1]); // 1 2 3 ... m
+				k1 = rader_index_out0[n1] ;//5
+				k2 = rader_index_out1[n2] ;//17
+				k3 = rader_index_out2[n3] ;//257
+				index_out = (k1 * ZZ2int(m2_inv) * ZZ2int(m_s[2]*m_s[1]) + (k2 * ZZ2int(m_s[2]) * ZZ2int(m_s_inv[2]) + k3 * ZZ2int(m_s[1]) * ZZ2int(m_s_inv[1]))*ZZ2int(m_s[0])*ZZ2int(m_s_inv[0]) ) % (ZZ2int(m_s[2]*m_s[1]*m_s[0]));
+                output[index_out] = Data_Mem[index_m];	
+				
+				//index_m = n1 + n2 * m1; // 1 2 3 ... m
+				//k3 = (index_m / (m1*m2)) % m3 ;
+				//k2 = (index_m / m1) % m2 ;
+				//k1 = index_m % m1;
+				//index_in = (k1 * m2 + k2 * m3*m1 + k3 * m2*m1) % (m1 * m2);// 1
+				//DFT_data[index_m] = data_in[index_in];	
+				//test << k1 << endl;
+				//cout << index_out << endl;
+			}    
+		}
+	}
+
 }
+
+
 
 void LEGACY::FFT_1024_radix2(vector<ZZ> &output, vector<ZZ> &input, int point, ZZ modular)
 {
@@ -2592,6 +2884,7 @@ void LEGACY::FFT_1024_radix2(vector<ZZ> &output, vector<ZZ> &input, int point, Z
 	int BC_tmp1, BC_tmp2;
 	int MA_tmp1, MA_tmp2;
 	int tw_idx;
+	int BC2, BC2_inv;
 
 
 	for (int t = 0; t < p; t++) //stage
@@ -2611,7 +2904,7 @@ void LEGACY::FFT_1024_radix2(vector<ZZ> &output, vector<ZZ> &input, int point, Z
 				Radix_2_BU(Dual_port_mem_2w_512[MA], Dual_port_mem_2w_512[MA], modular);
 			//cout << Dual_port_mem_2w_512[MA][0] << endl;				
 			//cout << Dual_port_mem_2w_512[MA][1] << endl;
-			
+			    cout << "MA = " << MA << endl;
 				if(t == p-1){
 					tw_idx = 0;
 				}
@@ -2625,6 +2918,8 @@ void LEGACY::FFT_1024_radix2(vector<ZZ> &output, vector<ZZ> &input, int point, Z
 				//cout << Dual_port_mem_2w_512[MA][0] << endl;				
 				//cout << Dual_port_mem_2w_512[MA][1] << endl;
 				//MulMod(Dual_port_mem_2w_512[MA][1], Dual_port_mem_2w_512[MA][1], ROM_2w_512[][1], modular);
+
+				
 			}
 			if(t != p-1) {
 				BC_tmp1 = 0*g + i;
@@ -2651,7 +2946,7 @@ ZZ inv = find_inv((ZZ)N, modular) ;
 	for(int i = 0; i < test_m/2 ; i++){
 		for(int j = 0; j < 2; j++){
 			//Dual_port_mem_2w_512[i][j] = i+8*j;
-			//cout << Dual_port_mem_2w_512[i][j] << endl;
+			cout << Dual_port_mem_2w_512[i][j] << endl;
 
 		}		
 	}
@@ -2736,12 +3031,335 @@ int MA_tmp;
 		if(k == test_m)
 			cout << "done " << endl;
 	}
-//-----------------------------------//
-	
-
-
-	
+//-----------------------------------//	
 }
 
+void LEGACY::FFT_1024_radix2_config(vector<ZZ> &output, vector<ZZ> &input, int point, ZZ m, ZZ prou_m, ZZ modular)
+{
+	int N ;
+	bool special;
+	if( (point == 3) || (point == 5) || (point == 17) || (point == 257))
+	{
+		N = point - 1;
+		special = true;
+	}
+	else
+	{
+		N = find_m_prime(point) ;
+		special = false;
+	}
+	
+	//cout << "N = " << N << endl;
+	int r = 2 ;
+	int p,g,s;
+	p = log(N)/log(r) ;
+	g = N/(r*r) ;
+	s = log2(r) ;
+	int BC_WIDTH; 
+	BC_WIDTH = (int)ceil(log2(N/r));	
+	//main function
+	int BC, MA ;
+	vector<vector<ZZ>> Dual_port_mem_2w_512(512);
+	vector<vector<ZZ>> input_buf(N/2);	
+	vector<vector<ZZ>> Precompute_mem(N/2);	
+	vector<ZZ> Precompute_mem_tmp(N);	
+	int test_m = N ;
+	vector<vector<ZZ>> ROM_2w_512(512);
+	vector<vector<ZZ>> ROM_2w_512_inv(512);	
+	ZZ prou = find_prou(N, modular);
+	//cout << "N_prou = " << prou << endl;
+	
+	//reset output
+	for(int i = 0; i < point; i++){
+		output[i] = 0;
+	}		
+	
+	for(int i = 0; i < 512; i++){
+		ROM_2w_512[i].resize(2);
+		ROM_2w_512_inv[i].resize(2);
+	}	
 
+	
+	for(int i = 0; i < N/2; i++){
+		input_buf[i].resize(2);
+		Precompute_mem[i].resize(2);
+	}			
+	for(int i = 0; i < 512; i++){
+		Dual_port_mem_2w_512[i].resize(2);
+	}		
+
+	Rader_precompute_data(Precompute_mem_tmp, point, m, prou_m ,(ZZ)modular);	
+
+	//cout << "Precompute_mem_tmp[i] = "  << endl;	
+	for(int j = 0; j < N; j++){
+		//cout << Precompute_mem_tmp[j] << endl;
+	}		
+	
+	//cout << "Precompute_mem[i][j] = "  << endl;
+	for(int i = 0; i < N/2 ; i++){   
+		for(int j = 0; j < 2; j++){
+			Precompute_mem[bit_reverse(i, BC_WIDTH)][j] = Precompute_mem_tmp[i + (N/2)*j];
+
+		}
+			//cout << Precompute_mem[i][0] << " " << Precompute_mem[i][1] << endl;		
+	}
+
+	for(int i = 0; i < N/2 ; i++){   
+			//cout << Precompute_mem[i][0] << " " << Precompute_mem[i][1] << endl;		
+	}	
+	
+	
+	//cout << " input = " << endl;	
+	for(int i = 0; i < N/2 ; i++){   
+		for(int j = 0; j < 2; j++){
+			if(!special){
+				if( i >= point - 1 )
+					input_buf[i][0] = 0;
+				else 
+					input_buf[i][0] = input[i + 1 ];	
+					
+				input_buf[i][1] = 0;
+			}
+			else {
+				input_buf[i][j] = input[i + (N/2) * j + 1];
+			}		
+			//cout << input_buf[i][j] << endl;
+			//Dual_port_mem_2w_512[i][j] = input_buf[i][j];
+		}		
+	}
+	
+
+
+	
+	
+	for(int i = 0; i < test_m/2 ; i++){
+		for(int j = 0; j < 2; j++){
+			if(j == 0){
+				ROM_2w_512[i][j] = 1;
+				ROM_2w_512_inv[i][j] = 1;
+			}
+			else {
+				PowerMod(ROM_2w_512[i][j], prou, i, modular);
+				PowerMod(ROM_2w_512_inv[i][j], prou, -i, modular);
+			}
+			//cout << ROM_2w_512_inv[i][j] << endl;
+		}		
+	}	
+	
+	
+	
+	int BC_tmp1, BC_tmp2;
+	int MA_tmp1, MA_tmp2;
+	int tw_idx;
+
+	if(g == 0) {
+		Radix_2_BU(Dual_port_mem_2w_512[0], input_buf[0], modular);
+		//cout << "Dual_port_mem_2w_512[0] = " << Dual_port_mem_2w_512[0][0] <<endl;
+		//cout << "Dual_port_mem_2w_512[1] = " << Dual_port_mem_2w_512[0][1]<< endl; 
+		MulMod(Dual_port_mem_2w_512[0][0], Dual_port_mem_2w_512[0][0], Precompute_mem[0][0], modular);
+		MulMod(Dual_port_mem_2w_512[0][1], Dual_port_mem_2w_512[0][1], Precompute_mem[0][1], modular);		
+	}
+	else{
+		for (int t = 0; t < p; t++) //stage
+		{
+			//cout << "stage "<< t << endl ; 
+			for(int i = 0; i < g; i++)  // relocation group
+			{
+				for(int j = 0; j < r; j++) // addr in group
+				{
+					BC = j*g + i ;
+					MA = RR(BC, s*t, BC_WIDTH);
+					if(t == 0)
+						Radix_2_BU(Dual_port_mem_2w_512[MA], input_buf[MA], modular);
+					else
+						Radix_2_BU(Dual_port_mem_2w_512[MA], Dual_port_mem_2w_512[MA], modular);					
+				
+					if(t == p-1){
+						tw_idx = 0;
+					}
+					else {
+						tw_idx = (MA % ((N/2)>>t)) << t  ;
+					}
+					//cout << "MA = " << MA << endl;
+					MulMod(Dual_port_mem_2w_512[MA][0], Dual_port_mem_2w_512[MA][0], ROM_2w_512[tw_idx][0], modular);
+					MulMod(Dual_port_mem_2w_512[MA][1], Dual_port_mem_2w_512[MA][1], ROM_2w_512[tw_idx][1], modular);
+					
+					if(t == p-1){
+						MulMod(Dual_port_mem_2w_512[MA][0], Dual_port_mem_2w_512[MA][0], Precompute_mem[MA][0], modular);
+						MulMod(Dual_port_mem_2w_512[MA][1], Dual_port_mem_2w_512[MA][1], Precompute_mem[MA][1], modular);					
+					}
+				}
+				if(t != p-1) {
+					BC_tmp1 = 0*g + i;
+					BC_tmp2 = 1*g + i;
+					MA_tmp1 = RR(BC_tmp1, s*t, BC_WIDTH);
+					MA_tmp2 = RR(BC_tmp2, s*t, BC_WIDTH);			
+					Relocation_2(Dual_port_mem_2w_512[MA_tmp1], Dual_port_mem_2w_512[MA_tmp2]);
+				}
+				
+				//cout << "Dual_port_mem_2w_512 = " <<Dual_port_mem_2w_512[MA][0] << Dual_port_mem_2w_512[MA][0]<< endl; 
+			}
+		}
+	}
+	
+ZZ inv = find_inv((ZZ)N, modular) ;
+//cout << "inv = " << inv << endl;
+
+	for(int i = 0; i < test_m/2 ; i++){
+		for(int j = 0; j < 2; j++){
+			MulMod(Dual_port_mem_2w_512[i][j], Dual_port_mem_2w_512[i][j], inv, modular);		
+		}		
+		//cout << "Dual_port_mem_2w_512[0] = " << Dual_port_mem_2w_512[0][0] <<endl;
+		//cout << "Dual_port_mem_2w_512[1] = " << Dual_port_mem_2w_512[0][1]<< endl; 
+	}
+
+
+
+int MA_tmp;
+
+	if(g == 0){
+		Radix_2_BU(Dual_port_mem_2w_512[0], Dual_port_mem_2w_512[0], modular);
+		
+		
+		
+		for(int i = 0; i < point; i++){
+			//output[0] += input[i] ;
+			AddMod(output[0],output[0],input[i],modular);
+		}	
+		for(int i = 0; i < point - 1; i++){
+			AddMod(output[i+1], Dual_port_mem_2w_512[0][i], input[0], modular);
+		}
+		
+		
+		
+	}
+	else {
+			for (int t = 0; t < p; t++) //stage
+			{
+				//cout << "stage "<< t << endl ; 
+				for(int i = 0; i < g; i++)  // relocation group
+				{
+					for(int j = 0; j < r; j++) // addr in group
+					{
+						BC = j*g + i ;
+						MA_tmp = RR(BC, s*t, BC_WIDTH);
+						MA = bit_reverse(MA_tmp, BC_WIDTH);			
+						Radix_2_BU(Dual_port_mem_2w_512[MA], Dual_port_mem_2w_512[MA], modular);
+					
+						if(t == p-1){
+							tw_idx = 0;
+						}
+						else {
+							tw_idx = (MA_tmp % ((N/2)>>t)) << t  ;   ///!!!!! the order of tw is not change, only mapping the addr to inverse
+						}
+
+						MulMod(Dual_port_mem_2w_512[MA][0], Dual_port_mem_2w_512[MA][0], ROM_2w_512_inv[tw_idx][0], modular);
+						MulMod(Dual_port_mem_2w_512[MA][1], Dual_port_mem_2w_512[MA][1], ROM_2w_512_inv[tw_idx][1], modular);
+					}
+					if(t != p-1) {
+						BC_tmp1 = 0*g + i;
+						BC_tmp2 = 1*g + i;
+						MA_tmp1 = bit_reverse(RR(BC_tmp1, s*t, BC_WIDTH),BC_WIDTH);
+						MA_tmp2 = bit_reverse(RR(BC_tmp2, s*t, BC_WIDTH),BC_WIDTH);		
+						Relocation_2(Dual_port_mem_2w_512[MA_tmp1], Dual_port_mem_2w_512[MA_tmp2]);
+					}
+				}
+			}
+
+			for(int i = 0; i < test_m/2 ; i++){
+				for(int j = 0; j < 2; j++){
+					//MulMod(Dual_port_mem_2w_512[i][j], Dual_port_mem_2w_512[i][j], inv, modular);			
+					//cout << Dual_port_mem_2w_512[i][j] << endl;
+				}		
+			}
+
+			for(int i = 0; i < point; i++){
+				//output[0] += input[i] ;
+				AddMod(output[0],output[0],input[i],modular);
+			}
+
+			for(int i = 0; i < point - 1; i++){
+				if(!special){
+					AddMod(output[i+1], Dual_port_mem_2w_512[i][0], input[0], modular);
+				}
+				else {	
+					AddMod(output[i+1], Dual_port_mem_2w_512[i%(N/2)][(i/(N/2))], input[0], modular);
+				}
+					//cout << output[i] << endl;		
+			}
+		}
+	}
+
+void LEGACY::Rader_precompute_data(vector<ZZ> &precompute_data, int n, ZZ m, ZZ prou_m, ZZ modular){
+// precompute_data size need m_prime instead of n 
+	int m_prime ;
+	if( (n==3) || (n==5) || (n==17) || (n==257))
+		m_prime = n-1;
+	else
+		m_prime = find_m_prime(n);
+
+	long long tw_FFT_index[m_prime];
+
+	ZZ tw_FFT_in[m_prime];	
+	ZZ tw_FFT_out[m_prime];	
+	long long gen;
+	long long tmp = 1;
+	long long index_in[n];	
+	long long index_out[n];	
+	gen = find_gen(n);
+	ZZ prou ;
+	//prou = find_prou(n, modular);
+	PowerMod(prou, prou_m, ZZ2int((m/n)), modular);
+	//cout << "precompuuted(m) prou = " << prou << endl;
+	//cout << "modular = " << modular << endl;	
+//----------------input re-index-----------------
+	index_in[0] =  1;
+	index_out[0] = 1;
+	
+	for (int i = 0; i < n - 2; i++){
+		tmp *= gen;
+		tmp %= n;
+		index_in[i+1] = tmp ;
+		//cout << "index_in[i] = " << index_in[i] << endl;
+	}
+	
+	for (int i = 1; i < n - 1; i++){
+		index_out[i] = index_in[n - 1 - i];
+		//cout << "index_out[i] = " << index_out[i] << endl;		
+	}
+
+
+	for (int i = 0; i < m_prime ; i++){
+		if(i < (n - 1))
+			tw_FFT_index[i] = index_out[i ];
+		else if(i > (m_prime - n + 1))
+			tw_FFT_index[i] = index_out[i + n - m_prime -1];
+		else
+			tw_FFT_index[i] = 0;
+	}
+	
+	//cout << "tw_FFT_in = " << endl ;	
+	for (int i = 0; i < m_prime ; i++){
+		if(tw_FFT_index[i] == 0)
+			tw_FFT_in[i] = (ZZ)0;
+		else
+			//tw_FFT_in[i] = prou_power(prou,tw_FFT_index[i],modular);
+			PowerMod(tw_FFT_in[i], prou, tw_FFT_index[i], modular );
+			
+		//cout << tw_FFT_in[i] << endl;
+	}	
+	
+	ZZ m_prime_prou = find_prou(m_prime, modular);	
+	//cout << "m_prime_prou = " << m_prime_prou << endl;
+	DFT(tw_FFT_out, tw_FFT_in, m_prime, m_prime_prou, modular) ;	
+	
+	
+	//cout << "tw_FFT_out = " << endl ;	
+	for (int i = 0; i < m_prime ; i++){
+		//cout << tw_FFT_out[i] <<endl;
+		//cout << FFT_out[i] <<" ";
+		precompute_data[i] = tw_FFT_out[i];
+	}
+	
+}
 

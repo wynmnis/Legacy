@@ -32,11 +32,11 @@ int main()
 	long long modular_n = test_105_PFA.find_prime(m,4);		
 */
 	
-	long long m = 21845;	
-	long long m1 = 5;	
-	long long m2 = 4369;	
-	long long s_m1 = 17;	
-	long long s_m2 = 257;		
+	long long m = 105;	
+	long long m1 = 3;	
+	long long m2 = 35;	
+	long long s_m1 = 5;	
+	long long s_m2 = 7;		
 	long long modular_n = test_105_PFA.find_prime(m,8);	
 		
 	long long prou_n;	
@@ -55,19 +55,19 @@ int main()
 	s_m1_inv = test_105_PFA.find_inv(s_m1, s_m2);
 	s_m2_inv = test_105_PFA.find_inv(s_m2, s_m1);	
 	
-/*	
+	
 	cout << "modulus = " <<modular_n << endl;
 	cout << " m1_inv = " << m1_inv << endl;
 	cout << " m2_inv = " << m2_inv << endl;
 	cout << " s_m1_inv = " << s_m1_inv << endl;
 	cout << " s_m2_inv = " << s_m2_inv << endl;	
-*/	
+	
 /*
 	cout << " 1285_inv(17) = " << test_105_PFA.find_inv(1285, 17) << endl;	
 	cout << " 85_inv(257) = " << test_105_PFA.find_inv(85, 257) << endl;
 */	
 	//------------------------------------------
-	for (int i = 0; i < 16384 ; i++){
+	for (int i = 0; i < m ; i++){
 		data_in[i] = i ;
 	}			
 
@@ -105,6 +105,7 @@ int main()
 	
 	//std::cout << "FFT_data_out =  ";	
 	for (int i = 0; i< m ; i++){	
+		//cout << DFT_data_out[i] << endl;
 		error[i] = PFA_data_out[i] - DFT_data_out[i];
 		//std::cout << error[i] << " ";	
 	}

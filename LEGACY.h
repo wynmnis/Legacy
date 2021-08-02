@@ -11,6 +11,7 @@ using namespace std;
 class LEGACY{
 public:	
     void init();	
+	long ZZ2int(ZZ n)	;
 	bool coprime(long long a, long long b);
 	long long Euler(long long data_in);
 	long long find_m_prime(long long m);
@@ -20,8 +21,11 @@ public:
 	long long Factorize(long long *factor ,long long num);
 	long long Factorize(ZZ *factor, ZZ num);
 	long long find_gen(long long n);
+	long long find_gen(ZZ n);	
 	long long find_inv(long long data_in, long long modular);
 	ZZ find_inv(ZZ data_in, ZZ modular);
+	ZZ exgcd(ZZ a, ZZ b, ZZ &x, ZZ &y);
+	ZZ find_inv_exgcd(ZZ a, ZZ m) ;		
 	bool isPowerBy2(long long n);
 	bool isPowerBy2(ZZ n)	;
 	bool isPrime(long long n);
@@ -66,10 +70,11 @@ public:
 	void Relocation_4(vector<ZZ> &v0, vector<ZZ> &v1, vector<ZZ> &v2, vector<ZZ> &v3);
 	void Relocation_2(vector<ZZ> &v0, vector<ZZ> &v1);
 	void Radix_2_BU(vector<ZZ> &output, vector<ZZ> &input, ZZ modular);
-	void Config_PFA_Rader_FFT(vector<ZZ> &output, vector<ZZ> &input, ZZ m, ZZ modular);
+	void Config_PFA_Rader_FFT(vector<ZZ> &output, vector<ZZ> &input, ZZ m, ZZ prou_m, ZZ modular);
 	ZZ expand_point_RA(ZZ m);
 	void FFT_1024_radix2(vector<ZZ> &output, vector<ZZ> &input, int point, ZZ modular);	
-	
+	void FFT_1024_radix2_config(vector<ZZ> &output, vector<ZZ> &input, int point, ZZ m, ZZ prou_m, ZZ modular);
+	void Rader_precompute_data(vector<ZZ> &precompute_data, int n, ZZ m, ZZ prou_m, ZZ modular);
 };
 
 #endif

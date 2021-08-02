@@ -24,9 +24,9 @@ int main()
 	long long m2 = 4369;	
 	long long s_m1 = 17;	
 	long long s_m2 = 257;		
-	//long long modular_n = test.find_prime(m,16);	
+	long long modular_n = test.find_prime(m,8);	
 	//long long modular_n = 68303552103055361 ;
-	long long modular_n = 65699948296929281 ;
+	//long long modular_n = 65699948296929281 ;
 	
 	ZZ modular_n_ZZ;
 	modular_n_ZZ = modular_n;
@@ -52,6 +52,7 @@ int main()
 	prou_n_ZZ = test.find_prou( m, modular_n_ZZ);
 	//prou_n = test.find_prou( m, modular_n);	
 	//prou_n_ZZ = prou_n;
+	cout << " prou_n_ZZ = " << prou_n_ZZ << endl;
 	m1_inv = test.find_inv(m1, m2);
 	m2_inv = test.find_inv(m2, m1);
 	s_m1_inv = test.find_inv(s_m1, s_m2);
@@ -101,6 +102,7 @@ int main()
 	//m1_prou = test.prou_power(prou_n, m2, modular_n);
 	//PowerMod(m1_prou_ZZ, (ZZ)prou_n, (ZZ)m2, modular_n_ZZ);
 	m1_prou_ZZ = test.find_prou( m1, (ZZ)modular_n);
+	cout << " m1_prou_ZZ = " << m1_prou_ZZ << endl;	
 	rader_index_in1[0] = 0;
 	rader_index_out1[0] = 0;
 	rader_index_in1[1] = 1;
@@ -159,7 +161,7 @@ int main()
 	//m1_prime_prou = test.find_prou(m1_prime, modular_n);
 	m1_prime_prou_ZZ = test.find_prou( m1_prime, modular_n_ZZ);
 	//m1_prime_prou_ZZ = m1_prime_prou;
-	
+	cout << " m1_prime_prou_ZZ = " << m1_prime_prou_ZZ << endl;		
 	//cout << "m1_prime_prou = " << m1_prime_prou << endl;
 	//cout << "m1_prime_prou_ZZ = " << m1_prime_prou_ZZ << endl;		
 	
@@ -193,6 +195,7 @@ int main()
 	//m2_prou = test.prou_power(prou_n, m1*s_m2, modular_n);
 	//PowerMod(m2_prou_ZZ, (ZZ)prou_n, (ZZ)m1*s_m2, modular_n_ZZ);	
 	m2_prou_ZZ = test.find_prou( s_m1, (ZZ)modular_n);	
+	cout << " m2_prou_ZZ = " << m2_prou_ZZ << endl;		
 	rader_index_in2[0] = 0;
 	rader_index_out2[0] = 0;
 	rader_index_in2[1] = 1;
@@ -233,6 +236,7 @@ int main()
 	//cout << " 4 " << endl;	
 	//m2_prime_prou = test.find_prou(m2_prime, modular_n);
 	m2_prime_prou_ZZ = test.find_prou( m2_prime, modular_n_ZZ);
+	cout << " m2_prime_prou_ZZ = " << m2_prime_prou_ZZ << endl;		
 	//m2_prime_prou_ZZ = m2_prime_prou;
 	
 	//test.FFT(tw_FFT_out2, tw_FFT_in2, m2_prime, m2_prime_prou, modular_n) ;	
@@ -264,6 +268,7 @@ int main()
 	//m3_prou = test.prou_power(prou_n, m1*s_m1, modular_n);
 	//PowerMod(m3_prou_ZZ, (ZZ)prou_n, (ZZ)m1*s_m1, modular_n_ZZ);
 	m3_prou_ZZ = test.find_prou( s_m2, (ZZ)modular_n);
+	cout << " m3_prou_ZZ = " << m3_prou_ZZ << endl;		
 	rader_index_in3[0] = 0;
 	rader_index_out3[0] = 0;
 	rader_index_in3[1] = 1;
@@ -310,11 +315,12 @@ int main()
 	long long tw_FFT_out3[m3_prime];
 	ZZ tw_FFT_out3_ZZ[m3_prime];	
 	long long m3_prime_prou;
-	ZZ m3_prime_prou_ZZ;	
+	ZZ m3_prime_prou_ZZ;
+	
 	//m3_prime_prou = test.find_prou(m3_prime, modular_n);
 	m3_prime_prou_ZZ = test.find_prou( m3_prime, modular_n_ZZ);
 	//m3_prime_prou_ZZ = m3_prime_prou;
-	
+	cout << " m3_prime_prou_ZZ = " << m3_prime_prou_ZZ << endl;			
 	//test.FFT(tw_FFT_out3, tw_FFT_in3, m3_prime, m3_prime_prou, modular_n) ;
 	test.DFT(tw_FFT_out3_ZZ, tw_FFT_in3_ZZ, m3_prime, m3_prime_prou_ZZ, modular_n_ZZ) ;	
 	
