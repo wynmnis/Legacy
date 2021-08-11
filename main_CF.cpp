@@ -15,7 +15,7 @@ int main()
 	//test AE 
 	LEGACY CF;
 	//varilable definition
-	int N = 16 ;
+	int N = 1024 ;
 	int r = 2 ;
 	int p,g,s;
 	p = log(N)/log(r) ;

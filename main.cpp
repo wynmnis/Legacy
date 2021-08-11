@@ -5,73 +5,100 @@
 #include <time.h>
 #include <assert.h>
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include<bits/stdc++.h> 
 
 #include "LEGACY.h"
 using namespace std;
-using namespace NTL;
+
 int main()
 {
-	LEGACY test;
+    LEGACY test_105_PFA;
+	//notice that the primitive root of unity exist
+	//when m | modular - 1 (modular -1 can be divided by m)	
 
-	long long m = 21845;
- 	long long modular = test.find_prime(m,8);	
-	vector<ZZ> input(m);
-	vector<ZZ> output(m);	
-	ZZ prou = test.find_prou(m, (ZZ)modular);
-	cout << "prou = " << prou << endl;
 	
-	
-	for(int i = 0; i < m; i++){
-		input[i] = i ;
-	}	
-	
-	test.Config_PFA_Rader_FFT(output, input, (ZZ)m, prou, (ZZ)modular);
-
-  std::ofstream output_ans("./output.txt");
-  std::ofstream golden("./golden.txt");
-	
+	long long m = 2821;	
+	long long factor[3];
+	test_105_PFA.Factorize(factor,m);
+	long long m1 = factor[0];	
+	long long m2 = factor[1]*factor[2];	
+	long long s_m1 = factor[1];	
+	long long s_m2 = factor[2];		
+	long long modular_n = test_105_PFA.find_prime(m*15,6);	
+	//cout << " modular = " << modular_n << endl;
 		
+	long long prou_n;	
+	long long DFT_data_out[m];
+	long long DFT_data[m];	
+	long long PFA_data_out[m];	
+	long long IDFT_data_out[m];
+	long long error[m];
+	long long data_in[m]={0};
+	long long data_in2[m]={5,4,3,2,1};
+	long long data_tmp[m];
+	long long m1_inv,m2_inv,s_m1_inv,s_m2_inv;
+	prou_n = test_105_PFA.find_prou( m, modular_n);
+	m1_inv = test_105_PFA.find_inv(m1, m2);
+	m2_inv = test_105_PFA.find_inv(m2, m1);
+	s_m1_inv = test_105_PFA.find_inv(s_m1, s_m2);
+	s_m2_inv = test_105_PFA.find_inv(s_m2, s_m1);	
 	
+	
+	cout << "modulus = " <<modular_n << endl;
+	cout << "prou_n = " <<prou_n << endl;	
+	cout << " m1_inv = " << m1_inv << endl;
+	cout << " m2_inv = " << m2_inv << endl;
+	cout << " s_m1_inv = " << s_m1_inv << endl;
+	cout << " s_m2_inv = " << s_m2_inv << endl;	
+	
+	//------------------------------------------
+	for (int i = 0; i < m ; i++){
+		data_in[i] = i ;
+	}			
+
+
+
+	long long index_tmp[m];
+	long long PFA_data_tmp[m];		
+	//-------------------------------------------
+	test_105_PFA.PFA3_v4_optimize(PFA_data_out, data_in, m1,m2,s_m1,s_m2,m1_inv,m2_inv,s_m1_inv,s_m2_inv, prou_n, modular_n);           	
+	/*std::cout << "PFA_data_out =  ";	
 
 	
 	
-	
-	
-	//cout << "modular = " << modular << endl;
-	long long DFT_data_out[m] ; 
-	long long DFT_in[m];
-	
-	for(int i = 0; i < m; i++){
-		DFT_in[i] = i ;
-		//cout << DFT_data_out[i] << endl ;
-	}		
-	
-	test.DFT(DFT_data_out, DFT_in, m, test.ZZ2int(prou), modular);
-	//cout << "golden = " << endl;
-	for(int i = 0; i < m; i++){
-		//cout << DFT_data_out[i] << endl ;
-	}		
-
-
-	for(int i = 0; i < m; i++){
-		//cout << output[i] << endl;;
-		output_ans << output[i] << endl;
-		golden << DFT_data_out[i] << endl;
+	for (int i = 0; i< m ; i++){	
+		std::cout << PFA_data_out[i] << endl;	
 	}
+	*/
+cout << "PFA finish " << endl;
 	
-	ZZ error[m];
+	std::cout << "\n  ";
+	test_105_PFA.DFT(DFT_data_out, data_in, m, prou_n, modular_n);
+/*
+	std::cout << "DFT_data_out =  ";	
+	for (int i = 0; i< m ; i++){	
+		std::cout << DFT_data_out[i] <<" ";	
+	}
+	cout <<endl ;
+	
+	std::cout << "FFT_data_out =  ";	
+	for (int i = 0; i< m ; i++){	
+		std::cout << PFA_data_out[i] <<" ";	
+	}
+	cout <<endl ;
+*/
+
+	
+	//std::cout << "FFT_data_out =  ";	
 	for (int i = 0; i< m ; i++){	
 		//cout << DFT_data_out[i] << endl;
-		error[i] = output[i] - (ZZ)DFT_data_out[i];
+		error[i] = PFA_data_out[i] - DFT_data_out[i];
 		//std::cout << error[i] << " ";	
 	}
 	cout <<endl ;	
 	int k = 0;
 	for (int i = 0; i< m ; i++){	
-		if(output[i] != DFT_data_out[i])	{
+		if(PFA_data_out[i] != DFT_data_out[i])	{
 			cout << "fail" <<endl;
 			break;
 		}
@@ -83,8 +110,11 @@ int main()
 		}
 			
 	}
+		
 	
 	
 	
-	return 0;
+	
+	
+	std::cout << "\n  ";		
 }
