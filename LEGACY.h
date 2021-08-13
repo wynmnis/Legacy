@@ -23,12 +23,17 @@ public:
 	vector<vector<vector<ZZ>>> output_index_second_decompose;
 	vector<vector<ZZ>> first_decompose_precompute_data;
 	vector<vector<vector<ZZ>>> second_decompose_precompute_data;
-	
+	ZZ prou_4, prou_8, prou_16, prou_32, prou_64, prou_128, prou_256;
+	ZZ inv_3, inv_5, inv_7, inv_11;
 	vector<ZZ> RA_3P_precompute;
 	vector<ZZ> RA_5P_precompute;
 	vector<ZZ> RA_7P_precompute;
 	vector<ZZ> RA_11P_precompute;
 
+	vector<ZZ> RA_3P_inv_precompute;
+	vector<ZZ> RA_5P_inv_precompute;
+	vector<ZZ> RA_7P_inv_precompute;
+	vector<ZZ> RA_11P_inv_precompute;
 	
     LEGACY(ZZ m_);	 // constructor
 	long ZZ2int(ZZ n)	;
@@ -113,9 +118,11 @@ public:
 	void FFT_1024_radix2(vector<ZZ> &output, vector<ZZ> &input, int point, ZZ modular);	
 	void FFT_1024_radix2_config(vector<ZZ> &output, vector<ZZ> &input, int point, ZZ m, ZZ prou_m, ZZ modular);
 	void Rader_precompute_data(vector<ZZ> &precompute_data, int n, ZZ m, ZZ prou_m, ZZ modular);
-	void RA_2P_FFT(vector<ZZ> out, vector<ZZ> in);
-	void pointwise_mul(vector<ZZ> out, vector<ZZ> in1, vector<ZZ> in2);
-	
+	void RA_2P_FFT(vector<ZZ> &out, vector<ZZ> &in);
+	void RA_3P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse);	
+	void pointwise_mul(vector<ZZ> &out, vector<ZZ> &in1, vector<ZZ> &in2);
+	void RA_5P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse);
+	void RA_powerof2_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point);
 };
 
 #endif

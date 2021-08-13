@@ -23,8 +23,51 @@ int main()
 	vector<ZZ> first_decompose(5);	
 	int first_cnt = precompute_gen.Factorize_fine(first_decompose ,second_decompose, second_cnt ,(ZZ)m); 
 */	
-
+	//cout << "gen = " << precompute_gen.find_gen((ZZ)5);
+	vector<ZZ> RA_in(3);
+	vector<ZZ> RA_out(3);	
+	RA_in[0] = 5;
+	RA_in[1] = 7;
+	RA_in[2] = 8;	
 	
+	//precompute_gen.RA_3P_FFT(RA_out,RA_in, 0);
+	
+	
+	for(int i = 0; i < 3; i++){
+		//cout << RA_out[i] << endl;
+	}
+	
+	vector<ZZ> DFT_out(3);	
+	//precompute_gen.DFT(DFT_out, RA_in, 3, precompute_gen.find_prou(3, precompute_gen.modular_m), precompute_gen.modular_m);
+	
+	for(int i = 0; i < 3; i++){
+		//cout << DFT_out[i] << endl;
+	}	
+	
+	vector<ZZ> RA_inv_out(3);	
+	//precompute_gen.RA_3P_FFT(RA_inv_out,RA_out, 1);
+	
+	for(int i = 0; i < 3; i++){
+		//cout << RA_inv_out[i] << endl;
+	}
+	
+	vector<ZZ> RA_in4(8);
+	vector<ZZ> RA_out4(8);	
+	vector<ZZ> DFT_out4(8);		
+	for(int i = 0; i < 8; i++){
+		RA_in4[i] = i+1 ;
+	}	
+	
+	precompute_gen.RA_powerof2_FFT(RA_out4, RA_in4, (ZZ)8);
+	for(int i = 0; i < 8; i++){
+		cout << RA_out4[i] << endl;
+	}	
+	
+	
+	precompute_gen.DFT(DFT_out4, RA_in4, 8, precompute_gen.find_prou(8, precompute_gen.modular_m), precompute_gen.modular_m);
+	for(int i = 0; i < 8; i++){
+		cout << DFT_out4[i] << endl;
+	}		
 
 	for(int i = 0; i < precompute_gen.first_cnt; i++){
 		//cout << precompute_gen.first_decompose[i] << endl;
