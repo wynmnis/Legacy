@@ -8,69 +8,7 @@
 #include <assert.h>
 #include <NTL/ZZ.h>
 #include<bits/stdc++.h> 
-//#define system_m 105            //modular = 211,4
-//#define system_phim 48
-//#define system_m1 15
-//#define system_m2 7
-//#define system_small_m1 3
-//#define system_small_m2 5
-//#define system_modular 211
 
-//#define system_m 1023           //modular = 4093,16
-//#define system_phim 600
-//#define system_m1 33
-//#define system_m2 31
-//#define system_small_m1 3
-//#define system_small_m2 11
-//#define system_modular 4093
-
-//#define system_m 1705           //modular = 436481,256
-//#define system_phim 1200
-//#define system_m1 55
-//#define system_m2 31
-//#define system_small_m1 5
-//#define system_small_m2 11
-//#define system_modular 436481
-
-#define system_m 21845           //modular = 4718521,291
-#define system_phim 16384
-#define system_m1 85
-#define system_m2 257
-#define system_small_m1 5
-#define system_small_m2 17
-#define system_modular 4718521   //use RA-FFT modular : 134215681
-
-//#define system_m 24295           //modular = 4718521,291
-//#define system_phim 18816
-//#define system_m1 215
-//#define system_m2 113
-//#define system_small_m1 5
-//#define system_small_m2 43
-//#define system_modular 145771
-
-//#define system_m 27305          //modular = 4718521,291
-//#define system_phim 21168
-//#define system_m1 215
-//#define system_m2 127
-//#define system_small_m1 5
-//#define system_small_m2 43
-//#define system_modular 327661
-
-//#define system_m 28679          //modular = 4718521,291
-//#define system_phim 23040
-//#define system_m1 119
-//#define system_m2 241
-//#define system_small_m1 7
-//#define system_small_m2 17
-//#define system_modular 229433
-
-//#define system_m 32767          //modular = 1310681,2
-//#define system_phim 27000
-//#define system_m1 217
-//#define system_m2 151
-//#define system_small_m1 7
-//#define system_small_m2 31
-//#define system_modular 50330113 //1068 857736 57277
 
 using namespace std;
 using namespace NTL;
@@ -112,8 +50,13 @@ LEGACY::LEGACY(ZZ m_){
 	//cout << LCM(first_decompose_prime) << endl;
 	
 	// 3*5*7*11 = 1155
+	// 1155* 256 = 295680
+	//ZZ prou_2956880, prou_1155;
 	modular_m = find_prime(LCM(LCM(m,LCM(first_decompose_prime)),(ZZ)1155), 8);
 	prou_m = find_prou(ZZ2int(m),modular_m);
+	prou_295680 = find_prou(295680,modular_m);
+	prou_1155 = PowerMod(prou_295680, 256, modular_m);
+	
 	
 
 	
@@ -259,13 +202,12 @@ vector<vector<ZZ>> second_decompose_precompute_prou(first_cnt); // prou_m1', pro
 	RA_3P_precompute.resize(2);
 	RA_5P_precompute.resize(4);
 	RA_7P_precompute.resize(6);
-	RA_11P_precompute.resize(11);
+	RA_11P_precompute.resize(10);
 	RA_3P_inv_precompute.resize(2);
 	RA_5P_inv_precompute.resize(4);
 	RA_7P_inv_precompute.resize(6);
-	RA_11P_inv_precompute.resize(11);		
-	ZZ prou_3p, prou_5p, prou_7p, prou_11p;
-	ZZ inv_2, inv_4, inv_6, inv_10;
+	RA_11P_inv_precompute.resize(10);		
+	
 	vector<ZZ> RA_3P_precompute_FFT_in(2);
 	vector<ZZ> RA_5P_precompute_FFT_in(4);
 	vector<ZZ> RA_7P_precompute_FFT_in(6);
@@ -275,10 +217,42 @@ vector<vector<ZZ>> second_decompose_precompute_prou(first_cnt); // prou_m1', pro
 	vector<ZZ> RA_7P_precompute_FFT_inv_in(6);
 	vector<ZZ> RA_11P_precompute_FFT_inv_in(10);	
 	
-	prou_3p = find_prou(3, modular_m);
-	prou_5p = find_prou(5, modular_m);
-	prou_7p = find_prou(7, modular_m);
-	prou_11p = find_prou(11, modular_m);
+	//prou_3p = find_prou(3, modular_m);
+	//prou_5p = find_prou(5, modular_m);
+	//prou_7p = find_prou(7, modular_m);
+	//prou_11p = find_prou(11, modular_m);
+
+	prou_3p = PowerMod(prou_1155, 5*7*11,modular_m);
+	prou_5p = PowerMod(prou_1155, 3*7*11,modular_m);
+	prou_7p = PowerMod(prou_1155, 5*3*11,modular_m);
+	prou_11p = PowerMod(prou_1155, 5*7*3,modular_m);
+
+
+	
+	prou_6 = PowerMod(prou_295680, 295680/6 , modular_m);
+	prou_10 = PowerMod(prou_295680, 295680/10 , modular_m);
+	
+//-------------------------
+	prou_256 = PowerMod(prou_295680, 1155, modular_m);
+	prou_128 = PowerMod(prou_256, 2, modular_m);
+	prou_64 = PowerMod(prou_128, 2, modular_m);
+	prou_32 = PowerMod(prou_64, 2, modular_m);
+	prou_16 = PowerMod(prou_32, 2, modular_m);
+	prou_8 = PowerMod(prou_16, 2, modular_m);
+	prou_4 = PowerMod(prou_8, 2, modular_m);
+	prou_2 = PowerMod(prou_4, 2, modular_m);
+	
+	prou_2_inv = find_inv(prou_2, modular_m);	
+	prou_4_inv = find_inv(prou_4, modular_m);
+	prou_8_inv = find_inv(prou_8, modular_m);
+	prou_16_inv = find_inv(prou_16, modular_m);
+	prou_32_inv = find_inv(prou_32, modular_m);
+	prou_64_inv = find_inv(prou_64, modular_m);
+	prou_128_inv = find_inv(prou_128, modular_m);	
+	prou_256_inv = find_inv(prou_256, modular_m);
+//-----------------------	
+
+	
 	inv_2 = find_inv((ZZ)2, modular_m);
 	inv_4 = find_inv((ZZ)4, modular_m);
 	inv_6 = find_inv((ZZ)6, modular_m);
@@ -287,15 +261,22 @@ vector<vector<ZZ>> second_decompose_precompute_prou(first_cnt); // prou_m1', pro
 	inv_5 = find_inv((ZZ)5, modular_m);
 	inv_7 = find_inv((ZZ)7, modular_m);
 	inv_11 = find_inv((ZZ)11, modular_m);	
+	
+	inv_8 = find_inv((ZZ)8, modular_m);
+	inv_16 = find_inv((ZZ)16, modular_m);	
+	inv_32 = find_inv((ZZ)32, modular_m);
+	inv_64 = find_inv((ZZ)64, modular_m);
+	inv_128 = find_inv((ZZ)128, modular_m);
+	inv_256 = find_inv((ZZ)256, modular_m);	
 	//
 	RA_3P_precompute_FFT_in[0] =  PowerMod(prou_3p, 1, modular_m);
 	RA_3P_precompute_FFT_in[1] =  PowerMod(prou_3p, 2, modular_m);
-	RA_3P_precompute_FFT_in[0] =  MulMod(RA_3P_precompute_FFT_in[0], inv_2, modular_m);
-	RA_3P_precompute_FFT_in[1] =  MulMod(RA_3P_precompute_FFT_in[1], inv_2, modular_m);		
+	//RA_3P_precompute_FFT_in[0] =  MulMod(RA_3P_precompute_FFT_in[0], inv_2, modular_m);
+	//RA_3P_precompute_FFT_in[1] =  MulMod(RA_3P_precompute_FFT_in[1], inv_2, modular_m);		
 	RA_3P_precompute_FFT_inv_in[0] =  PowerMod(prou_3p, -1, modular_m);
 	RA_3P_precompute_FFT_inv_in[1] =  PowerMod(prou_3p, -2, modular_m);
-	RA_3P_precompute_FFT_inv_in[0] =  MulMod(RA_3P_precompute_FFT_inv_in[0], inv_2, modular_m);
-	RA_3P_precompute_FFT_inv_in[1] =  MulMod(RA_3P_precompute_FFT_inv_in[1], inv_2, modular_m);			
+	//RA_3P_precompute_FFT_inv_in[0] =  MulMod(RA_3P_precompute_FFT_inv_in[0], inv_2, modular_m);
+	//RA_3P_precompute_FFT_inv_in[1] =  MulMod(RA_3P_precompute_FFT_inv_in[1], inv_2, modular_m);			
 	//cout << "prou_3p = " << RA_3P_precompute_FFT_in[0] << endl;	
 	//cout << "prou_3p = " << RA_3P_precompute_FFT_in[1] << endl;
 	//
@@ -303,43 +284,43 @@ vector<vector<ZZ>> second_decompose_precompute_prou(first_cnt); // prou_m1', pro
 	RA_5P_precompute_FFT_in[1] =  PowerMod(prou_5p, 3, modular_m);	
 	RA_5P_precompute_FFT_in[2] =  PowerMod(prou_5p, 4, modular_m);		
 	RA_5P_precompute_FFT_in[3] =  PowerMod(prou_5p, 2, modular_m);
-	RA_5P_precompute_FFT_in[0] =  MulMod(RA_5P_precompute_FFT_in[0], inv_4, modular_m);
-	RA_5P_precompute_FFT_in[1] =  MulMod(RA_5P_precompute_FFT_in[1], inv_4, modular_m);
-	RA_5P_precompute_FFT_in[2] =  MulMod(RA_5P_precompute_FFT_in[2], inv_4, modular_m);
-	RA_5P_precompute_FFT_in[3] =  MulMod(RA_5P_precompute_FFT_in[3], inv_4, modular_m);	
+	//RA_5P_precompute_FFT_in[0] =  MulMod(RA_5P_precompute_FFT_in[0], inv_4, modular_m);
+	//RA_5P_precompute_FFT_in[1] =  MulMod(RA_5P_precompute_FFT_in[1], inv_4, modular_m);
+	//RA_5P_precompute_FFT_in[2] =  MulMod(RA_5P_precompute_FFT_in[2], inv_4, modular_m);
+	//RA_5P_precompute_FFT_in[3] =  MulMod(RA_5P_precompute_FFT_in[3], inv_4, modular_m);	
 	RA_5P_precompute_FFT_inv_in[0] =  PowerMod(prou_5p, -1, modular_m);
 	RA_5P_precompute_FFT_inv_in[1] =  PowerMod(prou_5p, -3, modular_m);	
 	RA_5P_precompute_FFT_inv_in[2] =  PowerMod(prou_5p, -4, modular_m);		
 	RA_5P_precompute_FFT_inv_in[3] =  PowerMod(prou_5p, -2, modular_m);
-	RA_5P_precompute_FFT_inv_in[0] =  MulMod(RA_5P_precompute_FFT_inv_in[0], inv_4, modular_m);
-	RA_5P_precompute_FFT_inv_in[1] =  MulMod(RA_5P_precompute_FFT_inv_in[1], inv_4, modular_m);
-	RA_5P_precompute_FFT_inv_in[2] =  MulMod(RA_5P_precompute_FFT_inv_in[2], inv_4, modular_m);
-	RA_5P_precompute_FFT_inv_in[3] =  MulMod(RA_5P_precompute_FFT_inv_in[3], inv_4, modular_m);		
+	//RA_5P_precompute_FFT_inv_in[0] =  MulMod(RA_5P_precompute_FFT_inv_in[0], inv_4, modular_m);
+	//RA_5P_precompute_FFT_inv_in[1] =  MulMod(RA_5P_precompute_FFT_inv_in[1], inv_4, modular_m);
+	//RA_5P_precompute_FFT_inv_in[2] =  MulMod(RA_5P_precompute_FFT_inv_in[2], inv_4, modular_m);
+	//RA_5P_precompute_FFT_inv_in[3] =  MulMod(RA_5P_precompute_FFT_inv_in[3], inv_4, modular_m);		
 	//
-	RA_7P_precompute_FFT_in[0] =  PowerMod(prou_5p, 1, modular_m);
-	RA_7P_precompute_FFT_in[1] =  PowerMod(prou_5p, 5, modular_m);	
-	RA_7P_precompute_FFT_in[2] =  PowerMod(prou_5p, 4, modular_m);		
-	RA_7P_precompute_FFT_in[3] =  PowerMod(prou_5p, 6, modular_m);	
-	RA_7P_precompute_FFT_in[4] =  PowerMod(prou_5p, 2, modular_m);	
-	RA_7P_precompute_FFT_in[5] =  PowerMod(prou_5p, 3, modular_m);	
-	RA_7P_precompute_FFT_in[0] =  MulMod(RA_7P_precompute_FFT_in[0], inv_6, modular_m);
-	RA_7P_precompute_FFT_in[1] =  MulMod(RA_7P_precompute_FFT_in[1], inv_6, modular_m);
-	RA_7P_precompute_FFT_in[2] =  MulMod(RA_7P_precompute_FFT_in[2], inv_6, modular_m);
-	RA_7P_precompute_FFT_in[3] =  MulMod(RA_7P_precompute_FFT_in[3], inv_6, modular_m);	
-	RA_7P_precompute_FFT_in[4] =  MulMod(RA_7P_precompute_FFT_in[4], inv_6, modular_m);
-	RA_7P_precompute_FFT_in[5] =  MulMod(RA_7P_precompute_FFT_in[5], inv_6, modular_m);	
-	RA_7P_precompute_FFT_inv_in[0] =  PowerMod(prou_5p, -1, modular_m);
-	RA_7P_precompute_FFT_inv_in[1] =  PowerMod(prou_5p, -5, modular_m);	
-	RA_7P_precompute_FFT_inv_in[2] =  PowerMod(prou_5p, -4, modular_m);		
-	RA_7P_precompute_FFT_inv_in[3] =  PowerMod(prou_5p, -6, modular_m);	
-	RA_7P_precompute_FFT_inv_in[4] =  PowerMod(prou_5p, -2, modular_m);	
-	RA_7P_precompute_FFT_inv_in[5] =  PowerMod(prou_5p, -3, modular_m);	
-	RA_7P_precompute_FFT_inv_in[0] =  MulMod(RA_7P_precompute_FFT_inv_in[0], inv_6, modular_m);
-	RA_7P_precompute_FFT_inv_in[1] =  MulMod(RA_7P_precompute_FFT_inv_in[1], inv_6, modular_m);
-	RA_7P_precompute_FFT_inv_in[2] =  MulMod(RA_7P_precompute_FFT_inv_in[2], inv_6, modular_m);
-	RA_7P_precompute_FFT_inv_in[3] =  MulMod(RA_7P_precompute_FFT_inv_in[3], inv_6, modular_m);	
-	RA_7P_precompute_FFT_inv_in[4] =  MulMod(RA_7P_precompute_FFT_inv_in[4], inv_6, modular_m);
-	RA_7P_precompute_FFT_inv_in[5] =  MulMod(RA_7P_precompute_FFT_inv_in[5], inv_6, modular_m);			
+	RA_7P_precompute_FFT_in[0] =  PowerMod(prou_7p, 1, modular_m);
+	RA_7P_precompute_FFT_in[1] =  PowerMod(prou_7p, 5, modular_m);	
+	RA_7P_precompute_FFT_in[2] =  PowerMod(prou_7p, 4, modular_m);		
+	RA_7P_precompute_FFT_in[3] =  PowerMod(prou_7p, 6, modular_m);	
+	RA_7P_precompute_FFT_in[4] =  PowerMod(prou_7p, 2, modular_m);	
+	RA_7P_precompute_FFT_in[5] =  PowerMod(prou_7p, 3, modular_m);	
+	//RA_7P_precompute_FFT_in[0] =  MulMod(RA_7P_precompute_FFT_in[0], inv_6, modular_m);
+	//RA_7P_precompute_FFT_in[1] =  MulMod(RA_7P_precompute_FFT_in[1], inv_6, modular_m);
+	//RA_7P_precompute_FFT_in[2] =  MulMod(RA_7P_precompute_FFT_in[2], inv_6, modular_m);
+	//RA_7P_precompute_FFT_in[3] =  MulMod(RA_7P_precompute_FFT_in[3], inv_6, modular_m);	
+	//RA_7P_precompute_FFT_in[4] =  MulMod(RA_7P_precompute_FFT_in[4], inv_6, modular_m);
+	//RA_7P_precompute_FFT_in[5] =  MulMod(RA_7P_precompute_FFT_in[5], inv_6, modular_m);	
+	RA_7P_precompute_FFT_inv_in[0] =  PowerMod(prou_7p, -1, modular_m);
+	RA_7P_precompute_FFT_inv_in[1] =  PowerMod(prou_7p, -5, modular_m);	
+	RA_7P_precompute_FFT_inv_in[2] =  PowerMod(prou_7p, -4, modular_m);		
+	RA_7P_precompute_FFT_inv_in[3] =  PowerMod(prou_7p, -6, modular_m);	
+	RA_7P_precompute_FFT_inv_in[4] =  PowerMod(prou_7p, -2, modular_m);	
+	RA_7P_precompute_FFT_inv_in[5] =  PowerMod(prou_7p, -3, modular_m);	
+	//RA_7P_precompute_FFT_inv_in[0] =  MulMod(RA_7P_precompute_FFT_inv_in[0], inv_6, modular_m);
+	//RA_7P_precompute_FFT_inv_in[1] =  MulMod(RA_7P_precompute_FFT_inv_in[1], inv_6, modular_m);
+	//RA_7P_precompute_FFT_inv_in[2] =  MulMod(RA_7P_precompute_FFT_inv_in[2], inv_6, modular_m);
+	//RA_7P_precompute_FFT_inv_in[3] =  MulMod(RA_7P_precompute_FFT_inv_in[3], inv_6, modular_m);	
+	//RA_7P_precompute_FFT_inv_in[4] =  MulMod(RA_7P_precompute_FFT_inv_in[4], inv_6, modular_m);
+	//RA_7P_precompute_FFT_inv_in[5] =  MulMod(RA_7P_precompute_FFT_inv_in[5], inv_6, modular_m);			
 	//
 	RA_11P_precompute_FFT_in[0] =  PowerMod(prou_11p, 1, modular_m);
 	RA_11P_precompute_FFT_in[1] =  PowerMod(prou_11p, 6, modular_m);	
@@ -347,72 +328,70 @@ vector<vector<ZZ>> second_decompose_precompute_prou(first_cnt); // prou_m1', pro
 	RA_11P_precompute_FFT_in[3] =  PowerMod(prou_11p, 7, modular_m);	
 	RA_11P_precompute_FFT_in[4] =  PowerMod(prou_11p, 9, modular_m);	
 	RA_11P_precompute_FFT_in[5] =  PowerMod(prou_11p, 10, modular_m);	
-	RA_11P_precompute_FFT_in[2] =  PowerMod(prou_11p, 5, modular_m);		
-	RA_11P_precompute_FFT_in[3] =  PowerMod(prou_11p, 8, modular_m);	
-	RA_11P_precompute_FFT_in[4] =  PowerMod(prou_11p, 4, modular_m);	
-	RA_11P_precompute_FFT_in[5] =  PowerMod(prou_11p, 2, modular_m);
-	RA_11P_precompute_FFT_in[0] =  MulMod(RA_11P_precompute_FFT_in[0], inv_10, modular_m);
-	RA_11P_precompute_FFT_in[1] =  MulMod(RA_11P_precompute_FFT_in[1], inv_10, modular_m);
-	RA_11P_precompute_FFT_in[2] =  MulMod(RA_11P_precompute_FFT_in[2], inv_10, modular_m);
-	RA_11P_precompute_FFT_in[3] =  MulMod(RA_11P_precompute_FFT_in[3], inv_10, modular_m);	
-	RA_11P_precompute_FFT_in[4] =  MulMod(RA_11P_precompute_FFT_in[4], inv_10, modular_m);
-	RA_11P_precompute_FFT_in[5] =  MulMod(RA_11P_precompute_FFT_in[5], inv_10, modular_m);		
-	RA_11P_precompute_FFT_in[6] =  MulMod(RA_11P_precompute_FFT_in[6], inv_10, modular_m);
-	RA_11P_precompute_FFT_in[7] =  MulMod(RA_11P_precompute_FFT_in[7], inv_10, modular_m);	
-	RA_11P_precompute_FFT_in[8] =  MulMod(RA_11P_precompute_FFT_in[8], inv_10, modular_m);
-	RA_11P_precompute_FFT_in[9] =  MulMod(RA_11P_precompute_FFT_in[9], inv_10, modular_m);	
+	RA_11P_precompute_FFT_in[6] =  PowerMod(prou_11p, 5, modular_m);		
+	RA_11P_precompute_FFT_in[7] =  PowerMod(prou_11p, 8, modular_m);	
+	RA_11P_precompute_FFT_in[8] =  PowerMod(prou_11p, 4, modular_m);	
+	RA_11P_precompute_FFT_in[9] =  PowerMod(prou_11p, 2, modular_m);
+	//RA_11P_precompute_FFT_in[0] =  MulMod(RA_11P_precompute_FFT_in[0], inv_10, modular_m);
+	//RA_11P_precompute_FFT_in[1] =  MulMod(RA_11P_precompute_FFT_in[1], inv_10, modular_m);
+	//RA_11P_precompute_FFT_in[2] =  MulMod(RA_11P_precompute_FFT_in[2], inv_10, modular_m);
+	//RA_11P_precompute_FFT_in[3] =  MulMod(RA_11P_precompute_FFT_in[3], inv_10, modular_m);	
+	//RA_11P_precompute_FFT_in[4] =  MulMod(RA_11P_precompute_FFT_in[4], inv_10, modular_m);
+	//RA_11P_precompute_FFT_in[5] =  MulMod(RA_11P_precompute_FFT_in[5], inv_10, modular_m);		
+	//RA_11P_precompute_FFT_in[6] =  MulMod(RA_11P_precompute_FFT_in[6], inv_10, modular_m);
+	//RA_11P_precompute_FFT_in[7] =  MulMod(RA_11P_precompute_FFT_in[7], inv_10, modular_m);	
+	//RA_11P_precompute_FFT_in[8] =  MulMod(RA_11P_precompute_FFT_in[8], inv_10, modular_m);
+	//RA_11P_precompute_FFT_in[9] =  MulMod(RA_11P_precompute_FFT_in[9], inv_10, modular_m);	
 	RA_11P_precompute_FFT_inv_in[0] =  PowerMod(prou_11p, -1, modular_m);
 	RA_11P_precompute_FFT_inv_in[1] =  PowerMod(prou_11p, -6, modular_m);	
 	RA_11P_precompute_FFT_inv_in[2] =  PowerMod(prou_11p, -3, modular_m);		
 	RA_11P_precompute_FFT_inv_in[3] =  PowerMod(prou_11p, -7, modular_m);	
 	RA_11P_precompute_FFT_inv_in[4] =  PowerMod(prou_11p, -9, modular_m);	
 	RA_11P_precompute_FFT_inv_in[5] =  PowerMod(prou_11p, -10, modular_m);	
-	RA_11P_precompute_FFT_inv_in[2] =  PowerMod(prou_11p, -5, modular_m);		
-	RA_11P_precompute_FFT_inv_in[3] =  PowerMod(prou_11p, -8, modular_m);	
-	RA_11P_precompute_FFT_inv_in[4] =  PowerMod(prou_11p, -4, modular_m);	
-	RA_11P_precompute_FFT_inv_in[5] =  PowerMod(prou_11p, -2, modular_m);
-	RA_11P_precompute_FFT_inv_in[0] =  MulMod(RA_11P_precompute_FFT_inv_in[0], inv_10, modular_m);
-	RA_11P_precompute_FFT_inv_in[1] =  MulMod(RA_11P_precompute_FFT_inv_in[1], inv_10, modular_m);
-	RA_11P_precompute_FFT_inv_in[2] =  MulMod(RA_11P_precompute_FFT_inv_in[2], inv_10, modular_m);
-	RA_11P_precompute_FFT_inv_in[3] =  MulMod(RA_11P_precompute_FFT_inv_in[3], inv_10, modular_m);	
-	RA_11P_precompute_FFT_inv_in[4] =  MulMod(RA_11P_precompute_FFT_inv_in[4], inv_10, modular_m);
-	RA_11P_precompute_FFT_inv_in[5] =  MulMod(RA_11P_precompute_FFT_inv_in[5], inv_10, modular_m);		
-	RA_11P_precompute_FFT_inv_in[6] =  MulMod(RA_11P_precompute_FFT_inv_in[6], inv_10, modular_m);
-	RA_11P_precompute_FFT_inv_in[7] =  MulMod(RA_11P_precompute_FFT_inv_in[7], inv_10, modular_m);	
-	RA_11P_precompute_FFT_inv_in[8] =  MulMod(RA_11P_precompute_FFT_inv_in[8], inv_10, modular_m);
-	RA_11P_precompute_FFT_inv_in[9] =  MulMod(RA_11P_precompute_FFT_inv_in[9], inv_10, modular_m);		
+	RA_11P_precompute_FFT_inv_in[6] =  PowerMod(prou_11p, -5, modular_m);		
+	RA_11P_precompute_FFT_inv_in[7] =  PowerMod(prou_11p, -8, modular_m);	
+	RA_11P_precompute_FFT_inv_in[8] =  PowerMod(prou_11p, -4, modular_m);	
+	RA_11P_precompute_FFT_inv_in[9] =  PowerMod(prou_11p, -2, modular_m);
+	//RA_11P_precompute_FFT_inv_in[0] =  MulMod(RA_11P_precompute_FFT_inv_in[0], inv_10, modular_m);
+	//RA_11P_precompute_FFT_inv_in[1] =  MulMod(RA_11P_precompute_FFT_inv_in[1], inv_10, modular_m);
+	//RA_11P_precompute_FFT_inv_in[2] =  MulMod(RA_11P_precompute_FFT_inv_in[2], inv_10, modular_m);
+	//RA_11P_precompute_FFT_inv_in[3] =  MulMod(RA_11P_precompute_FFT_inv_in[3], inv_10, modular_m);	
+	//RA_11P_precompute_FFT_inv_in[4] =  MulMod(RA_11P_precompute_FFT_inv_in[4], inv_10, modular_m);
+	//RA_11P_precompute_FFT_inv_in[5] =  MulMod(RA_11P_precompute_FFT_inv_in[5], inv_10, modular_m);		
+	//RA_11P_precompute_FFT_inv_in[6] =  MulMod(RA_11P_precompute_FFT_inv_in[6], inv_10, modular_m);
+	//RA_11P_precompute_FFT_inv_in[7] =  MulMod(RA_11P_precompute_FFT_inv_in[7], inv_10, modular_m);	
+	//RA_11P_precompute_FFT_inv_in[8] =  MulMod(RA_11P_precompute_FFT_inv_in[8], inv_10, modular_m);
+	//RA_11P_precompute_FFT_inv_in[9] =  MulMod(RA_11P_precompute_FFT_inv_in[9], inv_10, modular_m);		
 	//
-	DFT(RA_3P_precompute, RA_3P_precompute_FFT_in, 2, find_prou(2, modular_m) , modular_m) ;
-	DFT(RA_5P_precompute, RA_5P_precompute_FFT_in, 4, find_prou(4, modular_m) , modular_m) ;	
-	DFT(RA_7P_precompute, RA_7P_precompute_FFT_in, 6, find_prou(6, modular_m) , modular_m) ;
-	DFT(RA_11P_precompute, RA_11P_precompute_FFT_in, 10, find_prou(10, modular_m) , modular_m) ;
+	DFT(RA_3P_precompute, RA_3P_precompute_FFT_in, 2, prou_2 , modular_m) ;
+	DFT(RA_5P_precompute, RA_5P_precompute_FFT_in, 4, prou_4 , modular_m) ;	
+	DFT(RA_7P_precompute, RA_7P_precompute_FFT_in, 6, prou_6 , modular_m) ;
+	DFT(RA_11P_precompute, RA_11P_precompute_FFT_in, 10, prou_10 , modular_m) ;
 
-	DFT(RA_3P_inv_precompute, RA_3P_precompute_FFT_inv_in, 2, find_prou(2, modular_m) , modular_m) ;	
-	DFT(RA_5P_inv_precompute, RA_5P_precompute_FFT_inv_in, 4, find_prou(4, modular_m) , modular_m) ;	
-	DFT(RA_7P_inv_precompute, RA_7P_precompute_FFT_inv_in, 6, find_prou(6, modular_m) , modular_m) ;
-	DFT(RA_11P_inv_precompute, RA_11P_precompute_FFT_inv_in, 10, find_prou(10, modular_m) , modular_m) ;
+	DFT(RA_3P_inv_precompute, RA_3P_precompute_FFT_inv_in, 2, prou_2 , modular_m) ;	
+	DFT(RA_5P_inv_precompute, RA_5P_precompute_FFT_inv_in, 4, prou_4 , modular_m) ;	
+	DFT(RA_7P_inv_precompute, RA_7P_precompute_FFT_inv_in, 6, prou_6 , modular_m) ;
+	DFT(RA_11P_inv_precompute, RA_11P_precompute_FFT_inv_in, 10, prou_10 , modular_m) ;
 
 
 
-//-------------------------
-	prou_256 = find_prou(256, modular_m);
-	prou_128 = PowerMod(prou_256, 2, modular_m);
-	prou_64 = PowerMod(prou_128, 2, modular_m);
-	prou_32 = PowerMod(prou_64, 2, modular_m);
-	prou_16 = PowerMod(prou_32, 2, modular_m);
-	prou_8 = PowerMod(prou_16, 2, modular_m);
-	prou_4 = PowerMod(prou_8, 2, modular_m);
+
 }
 
 
-void LEGACY::RA_2P_FFT(vector<ZZ> &out, vector<ZZ> &in){
-	//cout << in[0] << in[1] << endl;		
-	out[0] = AddMod(in[0], in[1], modular_m);
-	out[1] = SubMod(in[0], in[1], modular_m);	
-	//cout << out[0] << " . " <<out[1] << endl;
+void LEGACY::RA_2P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse){
+	if(inverse){
+		out[0] = MulMod(AddMod(in[0], in[1], modular_m), inv_2, modular_m);
+		out[1] = MulMod(SubMod(in[0], in[1], modular_m), inv_2, modular_m);	
+		//cout << " out[0]=  " << out[0] << " out[1] = " << out[1] << endl; 
+	}
+	else{
+		out[0] = AddMod(in[0], in[1], modular_m);
+		out[1] = SubMod(in[0], in[1], modular_m);	
+	}
 }
 
-void LEGACY::RA_powerof2_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point){ ///output is not reindex!!!!!!!!! only for point 4,8,16,32,64,128,256
+void LEGACY::RA_powerof2_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point, bool inverse){ //! only for point 4,8,16,32,64,128,256
 	assert(isPowerBy2(point)==true);
 	assert((modular_m - 1)% point == 0 );
 	vector<ZZ> tmp1(ZZ2int(point));
@@ -437,31 +416,72 @@ void LEGACY::RA_powerof2_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point){ ///outp
 				idx = k + j*(m / group);
 				FFT_in[0] = tmp1[idx];
 				FFT_in[1] = tmp1[idx + (BC / group)];				
-				RA_2P_FFT(FFT_out, FFT_in);
+				RA_2P_FFT(FFT_out, FFT_in, 0);
 				tmp1[idx] = FFT_out[0];
-				if(m == 4)
-					tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_4, k*group, modular_m),modular_m);
-				else if (m == 8)
-					tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_8, k*group, modular_m),modular_m);
-				else if (m == 16)
-					tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_16, k*group, modular_m),modular_m);
-				else if (m == 32)
-					tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_32, k*group, modular_m),modular_m);
-				else if (m == 64)
-					tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_64, k*group, modular_m),modular_m);
-				else if (m == 128)
-					tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_128, k*group, modular_m),modular_m);
-				else if (m == 256)
-					tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_256, k*group, modular_m),modular_m);					
+				if(inverse){
+					if(m == 4)
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_4_inv, k*group, modular_m),modular_m);
+					else if (m == 8)
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_8_inv, k*group, modular_m),modular_m);
+					else if (m == 16)
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_16_inv, k*group, modular_m),modular_m);
+					else if (m == 32)
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_32_inv, k*group, modular_m),modular_m);
+					else if (m == 64)
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_64_inv, k*group, modular_m),modular_m);
+					else if (m == 128)
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_128_inv, k*group, modular_m),modular_m);
+					else if (m == 256)
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_256_inv, k*group, modular_m),modular_m);	
+				}	
+				else {
+					if(m == 4)
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_4, k*group, modular_m),modular_m);
+					else if (m == 8)
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_8, k*group, modular_m),modular_m);
+					else if (m == 16)
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_16, k*group, modular_m),modular_m);
+					else if (m == 32)
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_32, k*group, modular_m),modular_m);
+					else if (m == 64)
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_64, k*group, modular_m),modular_m);
+					else if (m == 128)
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_128, k*group, modular_m),modular_m);
+					else if (m == 256)
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_256, k*group, modular_m),modular_m);						
+				}
 			}	
 		}
 	}
-	
+	//bit reverse
 	for(int i = 0; i < point; i++){
-		out[i] = tmp1[i];
+		int ind_j = 0;
+		for(int k=0;k<log2(m);k++)
+		{
+		   if(((i >> k) & (ZZ)1) == (ZZ)1)
+		   {
+			   ind_j |= (1 << (int)(log2(m) - k - 1));
+		   }
+		}		
+		if(inverse){
+			if(m == 4)
+				out[ind_j] = MulMod(tmp1[i],inv_4,modular_m);
+			else if (m == 8)        
+				out[ind_j] = MulMod(tmp1[i],inv_8,modular_m);
+			else if (m == 16)       
+				out[ind_j] = MulMod(tmp1[i],inv_16,modular_m);
+			else if (m == 32)       
+				out[ind_j] = MulMod(tmp1[i],inv_32,modular_m);
+			else if (m == 64)       
+				out[ind_j] = MulMod(tmp1[i],inv_64,modular_m);
+			else if (m == 128)      
+				out[ind_j] = MulMod(tmp1[i],inv_128,modular_m);
+			else if (m == 256)      
+				out[ind_j] = MulMod(tmp1[i],inv_256,modular_m);
+		}
+		else
+			out[ind_j] = tmp1[i];
 	}	
-	
-
 }
 
 
@@ -476,12 +496,12 @@ void LEGACY::RA_3P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse){
 	vector<ZZ> FFT_out_1(2);
 	vector<ZZ> FFT_out_2(2);	
 	vector<ZZ> pointwise_out(2);
-	RA_2P_FFT(FFT_out_1, FFT_in);
+	RA_2P_FFT(FFT_out_1, FFT_in, 0);
 	//cout << FFT_out_1[0] <<  " . " << FFT_out_1[1] << endl;	
 	if(inverse){
 		pointwise_mul(pointwise_out, FFT_out_1, RA_3P_inv_precompute);
 		//cout << RA_3P_precompute[0] <<  " " << RA_3P_precompute[1] << endl;	
-		RA_2P_FFT(FFT_out_2, pointwise_out);	
+		RA_2P_FFT(FFT_out_2, pointwise_out, 1);	
 		out[0] = MulMod((in[0] + in[1] + in[2]), inv_3, modular_m) ;		
 		out[1] = MulMod((in[0] + FFT_out_2[0]), inv_3, modular_m) ;
 		out[2] = MulMod((in[0] + FFT_out_2[1]), inv_3, modular_m) ;	
@@ -489,14 +509,328 @@ void LEGACY::RA_3P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse){
 	else{
 		pointwise_mul(pointwise_out, FFT_out_1, RA_3P_precompute);
 		//cout << RA_3P_precompute[0] <<  " " << RA_3P_precompute[1] << endl;	
-		RA_2P_FFT(FFT_out_2, pointwise_out);	
-		out[0] = in[0] + in[1] + in[2] ;		
-		out[1] = in[0] + FFT_out_2[0];
-		out[2] = in[0] + FFT_out_2[1];	
+		RA_2P_FFT(FFT_out_2, pointwise_out, 1);	
+		out[0] = (in[0] + in[1] + in[2])% modular_m;		
+		out[1] = AddMod(in[0] , FFT_out_2[0],modular_m);
+		out[2] = AddMod(in[0] , FFT_out_2[1],modular_m);
 	}
 }
 
+void LEGACY::RA_5P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse){
+	vector<ZZ> FFT_in(4);
 
+	
+	vector<ZZ> FFT_out_1(4);
+	vector<ZZ> FFT_out_2(4);	
+	vector<ZZ> pointwise_out(4);
+	
+	FFT_in[0] = in[1];
+	FFT_in[1] = in[2];	
+	FFT_in[2] = in[4];
+	FFT_in[3] = in[3];	
+	RA_powerof2_FFT(FFT_out_1, FFT_in, ZZ(4), 0);	
+
+	if(inverse){
+		pointwise_mul(pointwise_out, FFT_out_1, RA_5P_inv_precompute);
+		//cout << RA_3P_precompute[0] <<  " " << RA_3P_precompute[1] << endl;	
+		RA_powerof2_FFT(FFT_out_2, pointwise_out, ZZ(4), 1);	
+		out[0] = MulMod((in[0] + in[1] + in[2] + in[3] + in[4]), inv_5, modular_m) ;		
+		out[1] = MulMod((in[0] + FFT_out_2[0]), inv_5, modular_m) ;
+		out[3] = MulMod((in[0] + FFT_out_2[1]), inv_5, modular_m) ;	
+		out[4] = MulMod((in[0] + FFT_out_2[2]), inv_5, modular_m) ;
+		out[2] = MulMod((in[0] + FFT_out_2[3]), inv_5, modular_m) ;			
+	}
+	else{
+		pointwise_mul(pointwise_out, FFT_out_1, RA_5P_precompute);
+		//cout << RA_3P_precompute[0] <<  " " << RA_3P_precompute[1] << endl;	
+		RA_powerof2_FFT(FFT_out_2, pointwise_out, ZZ(4), 1);	
+		out[0] = (in[0] + in[1] + in[2] + in[3] + in[4]) % modular_m;		
+		out[1] = AddMod(in[0] , FFT_out_2[0] , modular_m);
+		out[3] = AddMod(in[0] , FFT_out_2[1] , modular_m);
+		out[4] = AddMod(in[0] , FFT_out_2[2] , modular_m);
+		out[2] = AddMod(in[0] , FFT_out_2[3] , modular_m);		
+	}	
+}
+
+void LEGACY::PFA_6P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse){
+	vector<ZZ> FFT_2P_in1(2);
+	vector<ZZ> FFT_2P_in2(2);
+	vector<ZZ> FFT_2P_in3(2);
+	vector<ZZ> FFT_3P_in1(3);
+	vector<ZZ> FFT_3P_in2(3);
+	
+	vector<ZZ> FFT_2P_out1(2);
+	vector<ZZ> FFT_2P_out2(2);
+	vector<ZZ> FFT_2P_out3(2);
+	vector<ZZ> FFT_3P_out1(3);
+	vector<ZZ> FFT_3P_out2(3);	
+	if(inverse){
+		FFT_2P_in1[0] = in[0];
+		FFT_2P_in1[1] = in[3];
+		FFT_2P_in2[0] = in[2];
+		FFT_2P_in2[1] = in[5];
+		FFT_2P_in3[0] = in[4];
+		FFT_2P_in3[1] = in[1];
+
+		RA_2P_FFT(FFT_2P_out1, FFT_2P_in1, 1);
+		RA_2P_FFT(FFT_2P_out2, FFT_2P_in2, 1);
+		RA_2P_FFT(FFT_2P_out3, FFT_2P_in3, 1);	
+
+		FFT_3P_in1[0] = FFT_2P_out1[0];
+		FFT_3P_in1[1] = FFT_2P_out2[0];
+		FFT_3P_in1[2] = FFT_2P_out3[0];
+		FFT_3P_in2[0] = FFT_2P_out1[1];
+		FFT_3P_in2[1] = FFT_2P_out2[1];
+		FFT_3P_in2[2] = FFT_2P_out3[1];
+
+		RA_3P_FFT(FFT_3P_out1, FFT_3P_in1, 1);
+		RA_3P_FFT(FFT_3P_out2, FFT_3P_in2, 1);
+		out[0] = FFT_3P_out1[0];
+		out[4] = FFT_3P_out1[1];
+		out[2] = FFT_3P_out1[2];
+		out[3] = FFT_3P_out2[0];
+		out[1] = FFT_3P_out2[1];
+		out[5] = FFT_3P_out2[2];		
+	}
+	else {
+		FFT_2P_in1[0] = in[0];
+		FFT_2P_in1[1] = in[3];
+		FFT_2P_in2[0] = in[2];
+		FFT_2P_in2[1] = in[5];
+		FFT_2P_in3[0] = in[4];
+		FFT_2P_in3[1] = in[1];
+
+		RA_2P_FFT(FFT_2P_out1, FFT_2P_in1, 0);
+		RA_2P_FFT(FFT_2P_out2, FFT_2P_in2, 0);
+		RA_2P_FFT(FFT_2P_out3, FFT_2P_in3, 0);	
+
+		FFT_3P_in1[0] = FFT_2P_out1[0];
+		FFT_3P_in1[1] = FFT_2P_out2[0];
+		FFT_3P_in1[2] = FFT_2P_out3[0];
+		FFT_3P_in2[0] = FFT_2P_out1[1];
+		FFT_3P_in2[1] = FFT_2P_out2[1];
+		FFT_3P_in2[2] = FFT_2P_out3[1];
+
+		RA_3P_FFT(FFT_3P_out1, FFT_3P_in1, 0);
+		RA_3P_FFT(FFT_3P_out2, FFT_3P_in2, 0);
+		out[0] = FFT_3P_out1[0];
+		out[4] = FFT_3P_out1[1];
+		out[2] = FFT_3P_out1[2];
+		out[3] = FFT_3P_out2[0];
+		out[1] = FFT_3P_out2[1];
+		out[5] = FFT_3P_out2[2];
+	}	
+}
+
+void LEGACY::RA_7P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse){
+	vector<ZZ> FFT_in(6);
+
+	vector<ZZ> FFT_out_1(6);
+	vector<ZZ> FFT_out_2(6);	
+	vector<ZZ> pointwise_out(6);
+	
+	FFT_in[0] = in[1];
+	FFT_in[1] = in[3];	
+	FFT_in[2] = in[2];
+	FFT_in[3] = in[6];	
+	FFT_in[4] = in[4];
+	FFT_in[5] = in[5];		
+	
+	//RA_powerof2_FFT(FFT_out_1, FFT_in, ZZ(4), 0);	
+	PFA_6P_FFT(FFT_out_1, FFT_in, 0) ;
+	
+	if(inverse){
+		pointwise_mul(pointwise_out, FFT_out_1, RA_7P_inv_precompute);
+		//cout << RA_3P_precompute[0] <<  " " << RA_3P_precompute[1] << endl;	
+		PFA_6P_FFT(FFT_out_2, pointwise_out, 1) ;	
+		out[0] = MulMod((in[0] + in[1] + in[2] + in[3] + in[4] + in[5] + in[6]), inv_7, modular_m) ;		
+		out[1] = MulMod((in[0] + FFT_out_2[0]), inv_7, modular_m) ;
+		out[5] = MulMod((in[0] + FFT_out_2[1]), inv_7, modular_m) ;	
+		out[4] = MulMod((in[0] + FFT_out_2[2]), inv_7, modular_m) ;
+		out[6] = MulMod((in[0] + FFT_out_2[3]), inv_7, modular_m) ;		
+		out[2] = MulMod((in[0] + FFT_out_2[4]), inv_7, modular_m) ;	
+		out[3] = MulMod((in[0] + FFT_out_2[5]), inv_7, modular_m) ;
+	}
+	else{
+		pointwise_mul(pointwise_out, FFT_out_1, RA_7P_precompute);
+		//cout << RA_3P_precompute[0] <<  " " << RA_3P_precompute[1] << endl;	
+		//RA_powerof2_FFT(FFT_out_2, pointwise_out, ZZ(4), 1);	
+		PFA_6P_FFT(FFT_out_2, pointwise_out, 1) ;
+		out[0] = (in[0] + in[1] + in[2] + in[3] + in[4] + in[5] + in[6]) % modular_m;		
+		out[1] = AddMod(in[0] , FFT_out_2[0] , modular_m);
+		out[5] = AddMod(in[0] , FFT_out_2[1] , modular_m);
+		out[4] = AddMod(in[0] , FFT_out_2[2] , modular_m);
+		out[6] = AddMod(in[0] , FFT_out_2[3] , modular_m);		
+		out[2] = AddMod(in[0] , FFT_out_2[4] , modular_m);
+		out[3] = AddMod(in[0] , FFT_out_2[5] , modular_m);			
+	}	
+}
+
+void LEGACY::PFA_10P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse){
+	vector<ZZ> FFT_2P_in1(2);
+	vector<ZZ> FFT_2P_in2(2);
+	vector<ZZ> FFT_2P_in3(2);
+	vector<ZZ> FFT_2P_in4(2);
+	vector<ZZ> FFT_2P_in5(2);	
+	vector<ZZ> FFT_5P_in1(5);
+	vector<ZZ> FFT_5P_in2(5);
+
+
+	
+	vector<ZZ> FFT_2P_out1(2);
+	vector<ZZ> FFT_2P_out2(2);
+	vector<ZZ> FFT_2P_out3(2);
+	vector<ZZ> FFT_2P_out4(2);
+	vector<ZZ> FFT_2P_out5(2);	
+	vector<ZZ> FFT_5P_out1(5);
+	vector<ZZ> FFT_5P_out2(5);
+	
+	if(inverse){
+		FFT_2P_in1[0] = in[0];
+		FFT_2P_in1[1] = in[5];
+		FFT_2P_in2[0] = in[2];
+		FFT_2P_in2[1] = in[7];
+		FFT_2P_in3[0] = in[4];
+		FFT_2P_in3[1] = in[9];
+		FFT_2P_in4[0] = in[6];
+		FFT_2P_in4[1] = in[1];
+		FFT_2P_in5[0] = in[8];
+		FFT_2P_in5[1] = in[3];
+
+
+		RA_2P_FFT(FFT_2P_out1, FFT_2P_in1, 1);
+		RA_2P_FFT(FFT_2P_out2, FFT_2P_in2, 1);
+		RA_2P_FFT(FFT_2P_out3, FFT_2P_in3, 1);	
+		RA_2P_FFT(FFT_2P_out4, FFT_2P_in4, 1);
+		RA_2P_FFT(FFT_2P_out5, FFT_2P_in5, 1);	
+		
+		FFT_5P_in1[0] = FFT_2P_out1[0];
+		FFT_5P_in1[1] = FFT_2P_out2[0];
+		FFT_5P_in1[2] = FFT_2P_out3[0];
+		FFT_5P_in1[3] = FFT_2P_out4[0];
+		FFT_5P_in1[4] = FFT_2P_out5[0];
+		FFT_5P_in2[0] = FFT_2P_out1[1];
+		FFT_5P_in2[1] = FFT_2P_out2[1];
+		FFT_5P_in2[2] = FFT_2P_out3[1];
+		FFT_5P_in2[3] = FFT_2P_out4[1];
+		FFT_5P_in2[4] = FFT_2P_out5[1];
+
+		RA_5P_FFT(FFT_5P_out1, FFT_5P_in1, 1);
+		RA_5P_FFT(FFT_5P_out2, FFT_5P_in2, 1);
+		
+		out[0] = FFT_5P_out1[0];
+		out[6] = FFT_5P_out1[1];
+		out[2] = FFT_5P_out1[2];
+		out[8] = FFT_5P_out1[3];
+		out[4] = FFT_5P_out1[4];		
+		out[5] = FFT_5P_out2[0];
+		out[1] = FFT_5P_out2[1];
+		out[7] = FFT_5P_out2[2];
+		out[3] = FFT_5P_out2[3];
+		out[9] = FFT_5P_out2[4];		
+	}
+	else {
+		FFT_2P_in1[0] = in[0];
+		FFT_2P_in1[1] = in[5];
+		FFT_2P_in2[0] = in[2];
+		FFT_2P_in2[1] = in[7];
+		FFT_2P_in3[0] = in[4];
+		FFT_2P_in3[1] = in[9];
+		FFT_2P_in4[0] = in[6];
+		FFT_2P_in4[1] = in[1];
+		FFT_2P_in5[0] = in[8];
+		FFT_2P_in5[1] = in[3];
+
+
+		RA_2P_FFT(FFT_2P_out1, FFT_2P_in1, 0);
+		RA_2P_FFT(FFT_2P_out2, FFT_2P_in2, 0);
+		RA_2P_FFT(FFT_2P_out3, FFT_2P_in3, 0);	
+		RA_2P_FFT(FFT_2P_out4, FFT_2P_in4, 0);
+		RA_2P_FFT(FFT_2P_out5, FFT_2P_in5, 0);	
+		
+		FFT_5P_in1[0] = FFT_2P_out1[0];
+		FFT_5P_in1[1] = FFT_2P_out2[0];
+		FFT_5P_in1[2] = FFT_2P_out3[0];
+		FFT_5P_in1[3] = FFT_2P_out4[0];
+		FFT_5P_in1[4] = FFT_2P_out5[0];
+		FFT_5P_in2[0] = FFT_2P_out1[1];
+		FFT_5P_in2[1] = FFT_2P_out2[1];
+		FFT_5P_in2[2] = FFT_2P_out3[1];
+		FFT_5P_in2[3] = FFT_2P_out4[1];
+		FFT_5P_in2[4] = FFT_2P_out5[1];
+
+		RA_5P_FFT(FFT_5P_out1, FFT_5P_in1, 0);
+		RA_5P_FFT(FFT_5P_out2, FFT_5P_in2, 0);
+		
+		out[0] = FFT_5P_out1[0];
+		out[6] = FFT_5P_out1[1];
+		out[2] = FFT_5P_out1[2];
+		out[8] = FFT_5P_out1[3];
+		out[4] = FFT_5P_out1[4];		
+		out[5] = FFT_5P_out2[0];
+		out[1] = FFT_5P_out2[1];
+		out[7] = FFT_5P_out2[2];
+		out[3] = FFT_5P_out2[3];
+		out[9] = FFT_5P_out2[4];
+	}	
+}
+
+void LEGACY::RA_11P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse){
+	vector<ZZ> FFT_in(10);
+
+	vector<ZZ> FFT_out_1(10);
+	vector<ZZ> FFT_out_2(10);	
+	vector<ZZ> pointwise_out(10);
+	
+	FFT_in[0] = in[1];
+	FFT_in[1] = in[2];	
+	FFT_in[2] = in[4];
+	FFT_in[3] = in[8];	
+	FFT_in[4] = in[5];
+	FFT_in[5] = in[10];	
+	FFT_in[6] = in[9];
+	FFT_in[7] = in[7];	
+	FFT_in[8] = in[3];
+	FFT_in[9] = in[6];	
+
+	//RA_powerof2_FFT(FFT_out_1, FFT_in, ZZ(4), 0);	
+	PFA_10P_FFT(FFT_out_1, FFT_in, 0) ;
+	
+	if(inverse){
+		pointwise_mul(pointwise_out, FFT_out_1, RA_11P_inv_precompute);
+		//cout << RA_3P_precompute[0] <<  " " << RA_3P_precompute[1] << endl;	
+		PFA_10P_FFT(FFT_out_2, pointwise_out, 1) ;	
+		out[0] = MulMod((in[0] + in[1] + in[2] + in[3] + in[4] + in[5] + in[6] + in[7] + in[8] + in[9] + in[10]), inv_11, modular_m) ;		
+		out[1] = MulMod((in[0] + FFT_out_2[0]), inv_11, modular_m) ;
+		out[6] = MulMod((in[0] + FFT_out_2[1]), inv_11, modular_m) ;	
+		out[3] = MulMod((in[0] + FFT_out_2[2]), inv_11, modular_m) ;
+		out[7] = MulMod((in[0] + FFT_out_2[3]), inv_11, modular_m) ;		
+		out[9] = MulMod((in[0] + FFT_out_2[4]), inv_11, modular_m) ;	
+		out[10]= MulMod((in[0] + FFT_out_2[5]), inv_11, modular_m) ;
+		out[5] = MulMod((in[0] + FFT_out_2[6]), inv_11, modular_m) ;
+		out[8] = MulMod((in[0] + FFT_out_2[7]), inv_11, modular_m) ;		
+		out[4] = MulMod((in[0] + FFT_out_2[8]), inv_11, modular_m) ;	
+		out[2] = MulMod((in[0] + FFT_out_2[9]), inv_11, modular_m) ;		
+		
+	}
+	else{
+		pointwise_mul(pointwise_out, FFT_out_1, RA_11P_precompute);
+		//cout << RA_3P_precompute[0] <<  " " << RA_3P_precompute[1] << endl;	
+		//RA_powerof2_FFT(FFT_out_2, pointwise_out, ZZ(4), 1);	
+		PFA_10P_FFT(FFT_out_2, pointwise_out, 1) ;
+		out[0] = (in[0] + in[1] + in[2] + in[3] + in[4] + in[5] + in[6] + in[7] + in[8] + in[9] + in[10]) % modular_m ;		
+		out[1] = AddMod(in[0] , FFT_out_2[0] , modular_m);
+		out[6] = AddMod(in[0] , FFT_out_2[1] , modular_m);
+		out[3] = AddMod(in[0] , FFT_out_2[2] , modular_m);
+		out[7] = AddMod(in[0] , FFT_out_2[3] , modular_m);		
+		out[9] = AddMod(in[0] , FFT_out_2[4] , modular_m);
+		out[10]= AddMod(in[0] , FFT_out_2[5] , modular_m);	
+		out[5] = AddMod(in[0] , FFT_out_2[6] , modular_m);
+		out[8] = AddMod(in[0] , FFT_out_2[7] , modular_m);		
+		out[4] = AddMod(in[0] , FFT_out_2[8] , modular_m);
+		out[2] = AddMod(in[0] , FFT_out_2[9] , modular_m);			
+	}	
+}
 
 
 void LEGACY::pointwise_mul(vector<ZZ> &out, vector<ZZ> &in1, vector<ZZ> &in2){
@@ -510,6 +844,111 @@ void LEGACY::pointwise_mul(vector<ZZ> &out, vector<ZZ> &in1, vector<ZZ> &in2){
 		//cout << out[i] << endl;
 	}
 }
+
+void LEGACY::PFA_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ m1, ZZ m2, ZZ m1_inv, ZZ m2_inv, ZZ prou, bool inverse){
+	int n1,n2;
+	vector<vector<ZZ>> FFT_m1P_in( ZZ2int(m2) , vector<ZZ>(ZZ2int(m1), (ZZ)0));
+	vector<vector<ZZ>> FFT_m2P_in( ZZ2int(m1) , vector<ZZ> (ZZ2int(m2), (ZZ)0));	
+	vector<vector<ZZ>> FFT_m1P_out( ZZ2int(m2) , vector<ZZ>(ZZ2int(m1), (ZZ)0));
+	vector<vector<ZZ>> FFT_m2P_out( ZZ2int(m1) , vector<ZZ> (ZZ2int(m2), (ZZ)0));	
+	vector<ZZ> factor_tmp(10);
+	vector<ZZ> factor_tmp2(10);	
+	ZZ m1_prou, m2_prou;
+	ZZ index_in, index_out, index_m, k1, k2;
+	m1_prou = PowerMod(prou, m2, modular_m);
+	m2_prou = PowerMod(prou, m1, modular_m);	
+	
+	
+	
+    for(n2=0;n2<m2;n2++)
+    {
+        for(n1=0;n1<m1;n1++)
+        {
+            index_in = (n1 * m2 + n2 * m1) % (m1 * m2);//input re-index
+           
+            FFT_m1P_in[n2][n1] = in[ZZ2int(index_in)];
+        } 
+		if(isPowerBy2(m1) && m1 != 2){
+			RA_powerof2_FFT(FFT_m1P_out[n2], FFT_m1P_in[n2], m1, inverse);
+		}
+		/*else if (!isPrime(m1)){
+			Factorize_2(factor_tmp, m1);
+			PFA_FFT(FFT_m1P_out[n2], FFT_m1P_in[n2], factor_tmp[0], factor_tmp[1], find_inv(factor_tmp[0], modular_m), find_inv(factor_tmp[1], modular_m), m1_prou, inverse);
+		}*/
+		else{
+			if(m1 == 2)
+				RA_2P_FFT(FFT_m1P_out[n2], FFT_m1P_in[n2], inverse);
+			else if (m1 == 3)
+				RA_3P_FFT(FFT_m1P_out[n2], FFT_m1P_in[n2], inverse);	
+			else if (m1 == 5)
+				RA_5P_FFT(FFT_m1P_out[n2], FFT_m1P_in[n2], inverse);
+			else if (m1 == 7)
+				RA_7P_FFT(FFT_m1P_out[n2], FFT_m1P_in[n2], inverse);			
+			else if (m1 == 11)
+				RA_11P_FFT(FFT_m1P_out[n2], FFT_m1P_in[n2], inverse);	
+			else    {                                                      //m1 prou
+				if(inverse)
+					IDFT(FFT_m1P_out[n2], FFT_m1P_in[n2], ZZ2int(m1), PowerMod(prou, m2, modular_m) , modular_m) ;
+				else
+					DFT(FFT_m1P_out[n2], FFT_m1P_in[n2], ZZ2int(m1), PowerMod(prou, m2, modular_m) , modular_m) ;				
+			}				
+		}
+    }	
+	
+	
+
+	
+    for(n1=0;n1<m1;n1++)
+    {
+        for(n2=0;n2<m2;n2++)
+        {
+			FFT_m2P_in[n1][n2] = FFT_m1P_out[n2][n1]; 
+        } 
+		
+		if(isPowerBy2(m2) && m2 != 2){
+			RA_powerof2_FFT(FFT_m2P_out[n1], FFT_m2P_in[n1], m2, inverse);
+		}
+		else if (!isPrime(m2)){
+			Factorize_2(factor_tmp2, m2);
+			PFA_FFT(FFT_m2P_out[n1], FFT_m2P_in[n1], factor_tmp2[0], factor_tmp2[1], find_inv(factor_tmp2[0], modular_m), find_inv(factor_tmp2[1], modular_m), m2_prou, inverse);
+			cout << factor_tmp2[0] << " , " << factor_tmp2[1] << endl;
+		}			
+		else{
+			if(m2 == 2)
+				RA_2P_FFT(FFT_m2P_out[n1], FFT_m2P_in[n1], inverse);
+			else if (m2 == 3)
+				RA_3P_FFT(FFT_m2P_out[n1], FFT_m2P_in[n1], inverse);	
+			else if (m2 == 5)
+				RA_5P_FFT(FFT_m2P_out[n1], FFT_m2P_in[n1], inverse);
+			else if (m2 == 7)
+				RA_7P_FFT(FFT_m2P_out[n1], FFT_m2P_in[n1], inverse);			
+			else if (m2 == 11)
+				RA_11P_FFT(FFT_m2P_out[n1], FFT_m2P_in[n1], inverse);	
+			else   {                                                       //m2 prou
+				if(inverse)
+					IDFT(FFT_m2P_out[n1], FFT_m2P_in[n1], ZZ2int(m2), PowerMod(prou, m1, modular_m) , modular_m) ;
+				else
+					DFT(FFT_m2P_out[n1], FFT_m2P_in[n1], ZZ2int(m2), PowerMod(prou, m1, modular_m) , modular_m) ;
+			}
+		}
+    }	
+	
+	for(n1=0;n1<m1;n1++)
+    {
+        for(n2=0;n2<m2;n2++)
+        {
+			//output re-index
+            index_out = (n1*m2*m2_inv + n2*m1*m1_inv)% (m1*m2);
+            out[ZZ2int(index_out)] = FFT_m2P_out[n1][n2];
+			//cout << index_out << endl;
+        }    
+    }
+	
+}
+	
+	
+
+
 
 
 long LEGACY::ZZ2int(ZZ n){
@@ -786,6 +1225,54 @@ long long LEGACY::Factorize(vector<ZZ> &factor, ZZ num)   /*列印標準分解�
 		return cnt;
 }
 
+
+void LEGACY::Factorize_2(vector<ZZ> &factor, ZZ num)   /*列印標準分解式*/
+{
+	
+	ZZ a=num,i=(ZZ)2,k;
+	long long cnt = 0;
+	ZZ factor_tmp ;
+	factor_tmp = 0;
+	
+	if(!isPowerBy2(num)) {
+		//cout << " initail = " << num << endl;
+		while(a!=1)
+		{
+			if(a%Prime(i)==0 && Prime(i)!=1)
+			{
+			  k=Prime(i);
+			  a/=k;
+			  //printf("  %d",k);
+			  //printf("\n"); 		  
+			  //factor_tmp = k;
+			  factor[cnt] = k;			  		     
+			  //if(a!=1)
+				  //printf("\n");    
+				if(cnt > 0){
+					if(factor[cnt] == factor[cnt-1] || factor[cnt] == factor_tmp)
+						{
+							factor_tmp = factor[cnt - 1];
+							factor[cnt - 1] *= factor[cnt];
+							factor_tmp = factor[cnt];
+							factor[cnt] = 0;
+							//cnt--;
+						}
+						else 
+							cnt++;
+					}	
+				else 
+					cnt++;
+
+			}
+			else 
+			  i++;
+		}
+	}
+	if(cnt > 2){
+		for(int i = 2; i < cnt ; i++)
+			factor[1] *= factor[i];
+	}
+}
 
 long long LEGACY::Factorize_fine(vector<ZZ> &first_decompose, vector<vector<ZZ>> &second_decompose, vector<ZZ> &second_cnt ,ZZ num)   /*列印標準分解式*/
 {
@@ -1357,69 +1844,7 @@ long long LEGACY::FFT(long long *DFT_data, long long *data_in, long long n, long
     
 	return 0;
 }
-/*
-void LEGACY::FFT(ZZ *DFT_data, ZZ *data_in, ZZ n, ZZ prou, ZZ modular) //primitive root of unity in n-point FFT
-{
-	ZZ DFT_data_tmp_1[n];
-	ZZ DFT_data_tmp_2[n];
-    ZZ two_to_i, ind_j;
-    ZZ i, j, k;
-	
-	ZZ check_n;// check if m | modular - 1
-	check_n = (modular-1) % n ;
-	assert(check_n == 0) ;    
-	
-    for(j=0;j<n;j++)
-    {
-        DFT_data_tmp_1[j] = data_in[j];
-    }
-        
-    for(i=0;i<log2(n);i++)
-    {
-        two_to_i=1<<i;
-        for(k=0;k<two_to_i;k++)
-        {
-            for(j=0;j<((n/two_to_i)/2);j++)
-            {
-                ind_j = j + k * (n/two_to_i);
-                //BU2 up output
-                DFT_data_tmp_2[ind_j] = DFT_data_tmp_1[ind_j] + DFT_data_tmp_1[ind_j + ((n/two_to_i)/2)];
-                DFT_data_tmp_2[ind_j] %= modular;
-                //BU2 down output
-                DFT_data_tmp_2[ind_j + ((n/two_to_i)/2)] = DFT_data_tmp_1[ind_j] - DFT_data_tmp_1[ind_j + ((n/two_to_i)/2)];
-                DFT_data_tmp_2[ind_j + ((n/two_to_i)/2)] *= prou_power(prou, j * two_to_i, modular);
-                DFT_data_tmp_2[ind_j + ((n/two_to_i)/2)] %= modular;
-            }
-        }
-        for(j=0;j<n;j++)
-        {
-            DFT_data_tmp_1[j] = DFT_data_tmp_2[j];
-            DFT_data_tmp_1[j] %= modular;
-        }
-    } 	
-    
-    //output index
-    for(i=0;i<n;i++)
-    {
-        ind_j = 0;
-        for(k=0;k<log2(n);k++)
-        {
-           if(((i >> k) & (ZZ)1) == (ZZ)1)
-           {
-               ind_j |= (1 << (int)(log2(n) - k - 1));
-           }
-        }
 
-        DFT_data[ind_j] = DFT_data_tmp_1[i]; //deal with negative
-        if(DFT_data[ind_j] < 0)
-        {
-        	DFT_data[ind_j] += modular;
-        }
-    }
-    
-	return 0;
-}
-*/
 long long LEGACY::IFFT(long long *IDFT_data, long long *data_in, long long n, long long prou, long long modular) //primitive root of unity in n-point FFT
 {
 	long long prou_inv;
@@ -2176,7 +2601,7 @@ void LEGACY::Rader_DFT_optimize(long long *RA_out, long long *data_in, long long
 
 
 //combine the first and second decomposition input index at the beginnig 
-
+/*
 long long LEGACY::PFA3_v2(long long *DFT_data, long long *data_in, long long m1, long long m2, long long s_m1, long long s_m2, long long inv1, long long inv2, long long s_inv1, long long s_inv2, long long prou, long long modular) //primitive root of unity in m(= m1(= s_m1 * s_m2) * m2)-point PFA
 {
     long long n1,n2,k1,k2,k3;
@@ -2310,22 +2735,14 @@ long long LEGACY::PFA3_v3(long long *DFT_data, long long *data_in, long long m1,
 		else
 			tw_FFT_in1[i] = prou_power(m1_prou,tw_FFT_index1[i],modular);
 	}
-	//cout << "prou = " << prou << endl;
-	//cout << "m1_prou = " << m1_prou << endl;	
-	//cout << "tw_FFT_in1 = " << endl;
-	/*for (int i = 0; i < m1_prime ; i++){
-			//cout << tw_FFT_in1[i] <<endl;
-	}*/
+
 	
 	long long tw_FFT_out1[m1_prime];
 	long long m1_prime_prou;
 
 	m1_prime_prou = find_prou(m1_prime, modular);
 	FFT(tw_FFT_out1, tw_FFT_in1, m1_prime, m1_prime_prou, modular) ;	
-	//cout << "tw_FFT_out1 = " << endl;
-	/*for (int i = 0; i < m1_prime ; i++){
-			//cout << tw_FFT_out1[i] <<endl;
-	}*/	
+
 //-----------------------
 	int m2_prime, gen2;
 	long long rader_index_in2[s_m1];
@@ -2559,22 +2976,14 @@ long long LEGACY::PFA3_v4(long long *DFT_data, long long *data_in, long long m1,
 		else
 			tw_FFT_in1[i] = prou_power(m1_prou,tw_FFT_index1[i],modular);
 	}
-	//cout << "prou = " << prou << endl;
-	//cout << "m1_prou = " << m1_prou << endl;	
-	//cout << "tw_FFT_in1 = " << endl;
-	/*for (int i = 0; i < m1_prime ; i++){
-			//cout << tw_FFT_in1[i] <<endl;
-	}*/
+
 	
 	long long tw_FFT_out1[m1_prime];
 	long long m1_prime_prou;
 
 	m1_prime_prou = find_prou(m1_prime, modular);
 	FFT(tw_FFT_out1, tw_FFT_in1, m1_prime, m1_prime_prou, modular) ;	
-	//cout << "tw_FFT_out1 = " << endl;
-	/*for (int i = 0; i < m1_prime ; i++){
-			//cout << tw_FFT_out1[i] <<endl;
-	}*/	
+
 //-----------------------
 	int m2_prime, gen2;
 	long long rader_index_in2[s_m1];
@@ -2745,24 +3154,6 @@ long long LEGACY::PFA3_v4(long long *DFT_data, long long *data_in, long long m1,
 		}  
     }	
 	
-    //merge final two input reindex
-/*	
-    for(n2=0;n2<m2;n2++)
-    {
-        for(n1=0;n1<m1;n1++)
-        {
-            index_m = n1 + n2 * m1;
-			//k2 = index_m % m2;
-            //k1 = index_m / m2;
-            //index_out = (k1 * inv2 * m2 + k2 * inv1 * m1) % (m1 * m2);
-			k1 = (index_m / m2) % m1 ;
-            k2 = (index_m / s_m2) % s_m1 ;
-		    k3 = index_m % s_m2;
-            index_out = (k1 * inv2 * m2 + (k2 * s_m2 * s_inv2 + k3 * s_m1 * s_inv1)*m1*inv1 ) % (m1 * m2);
-            DFT_data[index_out] = data_tmp[index_m];
-        }    
-    }
-*/
 
 for(int i = 0; i < m1*m2; i++){
 	//cout << data_tmp[i] << endl;
@@ -2869,10 +3260,7 @@ long long LEGACY::PFA3_v4_optimize(long long *DFT_data, long long *data_in, long
 
 	m1_prime_prou = find_prou(m1_prime, modular);
 	DFT(tw_FFT_out1, tw_FFT_in1, m1_prime, m1_prime_prou, modular) ;	
-	//cout << "tw_FFT_out1 = " << endl;
-	/*for (int i = 0; i < m1_prime ; i++){
-			//cout << tw_FFT_out1[i] <<endl;
-	}*/	
+
 //-----------------------
 	int m2_prime, gen2;
 	long long rader_index_in2[s_m1];
@@ -3070,7 +3458,7 @@ for(int i = 0; i < m1*m2; i++){
 		test << DFT_data[i] << endl;
 	}
 }
-
+*/
 
 long long LEGACY::find_gen(long long n)
 {
@@ -3097,32 +3485,7 @@ long long LEGACY::find_gen(long long n)
 	}
 	return ans ;
 }
-/*
-long long LEGACY::find_gen(ZZ n)
-{
-	bool flag = 0 ;
-	long long ans;
-	long long tmp = 1;
-	for(int i = 2; i < n; i++)
-	{
-		for(int j = 1; j < n; j++)
-		{
-			MulMod((ZZ)tmp, (ZZ)i , n);
-			if(tmp == 1){
-				if(j == n - 1)
-					flag = 1;
-				else
-					break ;
-			}
-		}
-		if(flag == 1){
-			ans = i;
-			break ; 
-		}
-	}
-	return ans ;
-}
-*/
+
 ZZ LEGACY::find_gen(ZZ n)
 {
 	bool flag = 0 ;
@@ -3428,13 +3791,7 @@ void LEGACY::Rader_DFT(long long *RA_out, long long *data_in, long long n, long 
 
 void LEGACY::Rader_v3(long long *RA_out, long long *data_in, long long *tw_FFT_out, long long *index_in,long long *index_out, long long m, long long m_prime, long long m_prime_prou, long long modular)
 {
-	/*
-	cout << "RA_in = " << data_in << endl;
-	for (int i = 0; i < m ; i++){
-		cout << data_in[i] << endl ;
-	}	
-	cout << endl;
-	*/	
+	
 		
 	long long FFT_in[m_prime];
 	for (int i = 0; i < m_prime ; i++){
@@ -3469,26 +3826,11 @@ void LEGACY::Rader_v3(long long *RA_out, long long *data_in, long long *tw_FFT_o
 		//cout << index_out[i+1] << endl;
 	}	
 	
-	//cout << "ok" <<endl;
-	/*
-	cout << "RA_out = " <<endl;
-	for (int i = 0; i< m ; i++){	
-		cout << RA_out[i] << " ";
-	}	
-	cout  <<endl;
-	*/
-	
 }
 
 void LEGACY::Rader_v4(long long *RA_out, long long *data_in, long long *tw_FFT_out, long long *index_in,long long *index_out, long long m, long long m_prime, long long m_prime_prou, long long modular)
 {
-	/*
-	cout << "RA_in = " << data_in << endl;
-	for (int i = 0; i < m ; i++){
-		cout << data_in[i] << endl ;
-	}	
-	cout << endl;
-	*/	
+
 		
 	long long FFT_in[m_prime];
 	for (int i = 0; i < m_prime ; i++){
@@ -3523,26 +3865,12 @@ void LEGACY::Rader_v4(long long *RA_out, long long *data_in, long long *tw_FFT_o
 		//cout << index_out[i+1] << endl;
 	}	
 	
-	//cout << "ok" <<endl;
-	/*
-	cout << "RA_out = " <<endl;
-	for (int i = 0; i< m ; i++){	
-		cout << RA_out[i] << " ";
-	}	
-	cout  <<endl;
-	*/
-	
+
 }
 
 void LEGACY::Rader_v4_optimize(long long *RA_out, long long *data_in, long long *tw_FFT_out, long long *index_in,long long *index_out, long long m, long long m_prime, long long m_prime_prou, long long modular)
 {
-	/*
-	cout << "RA_in = " << data_in << endl;
-	for (int i = 0; i < m ; i++){
-		cout << data_in[i] << endl ;
-	}	
-	cout << endl;
-	*/	
+	
 		
 	long long FFT_in[m_prime];
 	for (int i = 0; i < m_prime ; i++){
@@ -3577,18 +3905,10 @@ void LEGACY::Rader_v4_optimize(long long *RA_out, long long *data_in, long long 
 		//cout << index_out[i+1] << endl;
 	}	
 	
-	//cout << "ok" <<endl;
-	/*
-	cout << "RA_out = " <<endl;
-	for (int i = 0; i< m ; i++){	
-		cout << RA_out[i] << " ";
-	}	
-	cout  <<endl;
-	*/
-	
+
 }
 
-
+/*
 long long LEGACY::cyc_DFT(long long *DFT_data, long long *data_in, long long m, long long prou, long long modular) //primitive root of unity in m-point DFT : m in -> m-1 out
 {
 	long long DFT_data_tmp[m];
@@ -3754,6 +4074,7 @@ long long LEGACY::cyc_PFA3(long long *DFT_data, long long *data_in, long long m1
     }
 }
 
+*/
 // group are range, if 4-bit index, the group is 16
 int LEGACY::Gray(int index,int group){
 	int result_tmp;
@@ -5050,38 +5371,4 @@ void LEGACY::Rader_precompute_data(vector<ZZ> &precompute_data, int n, ZZ m, ZZ 
 	}
 	
 }
-/*
-void LEGACY::RAFFT_3P(vector<ZZ> &Data_out, vector<ZZ> &Data_in, vector<ZZ> &precompute_data, ZZ prou, ZZ modular)
-{
-	
-}
 
-void LEGACY::RAFFT_5P(vector<ZZ> &Data_out, vector<ZZ> &Data_in, vector<ZZ> &precompute_data, ZZ prou, ZZ modular)
-{
-	
-}
-
-void LEGACY::RAFFT_7P(vector<ZZ> &Data_out, vector<ZZ> &Data_in, vector<ZZ> &precompute_data, ZZ prou, ZZ modular)
-{
-	
-}
-
-void LEGACY::RAFFT_11P(vector<ZZ> &Data_out, vector<ZZ> &Data_in, vector<ZZ> &precompute_data, ZZ prou, ZZ modular)
-{
-	
-}
-
-void LEGACY::Rader_Precompute_mem(vector<ZZ> &precompute_data, ZZ m, ZZ prou_m, ZZ modular)
-{
-	vector<ZZ> DFT_data_out(m);
-	DFT(ZZ *DFT_data, ZZ *data_in, long long m, ZZ prou, ZZ modular)
-	for(int i = 0; i < m; i++){
-		
-	}
-}
-
-void LEGACY::RA_IO_Index_mem(vector<ZZ> &input_index, vector<ZZ> &output_index, ZZ point)
-{
-	//if(point == 5)
-}
-*/

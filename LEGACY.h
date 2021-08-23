@@ -14,6 +14,7 @@ public:
 	ZZ modular_m;
 	ZZ prou_m;
 	int first_cnt;
+	ZZ prou_295680, prou_1155;
 	vector<ZZ> second_cnt;
 	vector<vector<ZZ>> second_decompose;
 	vector<ZZ> first_decompose;
@@ -23,8 +24,13 @@ public:
 	vector<vector<vector<ZZ>>> output_index_second_decompose;
 	vector<vector<ZZ>> first_decompose_precompute_data;
 	vector<vector<vector<ZZ>>> second_decompose_precompute_data;
-	ZZ prou_4, prou_8, prou_16, prou_32, prou_64, prou_128, prou_256;
+	ZZ prou_3p, prou_5p, prou_7p, prou_11p;
+	ZZ prou_6, prou_10;	
+	ZZ prou_2, prou_4, prou_8, prou_16, prou_32, prou_64, prou_128, prou_256;
+	ZZ prou_2_inv, prou_4_inv, prou_8_inv, prou_16_inv, prou_32_inv, prou_64_inv, prou_128_inv, prou_256_inv;	
 	ZZ inv_3, inv_5, inv_7, inv_11;
+	ZZ inv_2, inv_4, inv_6, inv_10;
+	ZZ inv_8, inv_16, inv_32, inv_64, inv_128, inv_256;
 	vector<ZZ> RA_3P_precompute;
 	vector<ZZ> RA_5P_precompute;
 	vector<ZZ> RA_7P_precompute;
@@ -47,6 +53,7 @@ public:
 	long long Factorize(ZZ *factor, ZZ num);
 	long long Factorize(vector<ZZ> &factor, ZZ num);	
 	long long Factorize_fine(vector<ZZ> &first_decompose, vector<vector<ZZ>> &second_decompose, vector<ZZ> &second_cnt ,ZZ num)	;
+	void Factorize_2(vector<ZZ> &factor, ZZ num);
 	long long find_gen(long long n);
 	//long long find_gen(ZZ n);	
 	ZZ find_gen(ZZ n);		
@@ -118,11 +125,16 @@ public:
 	void FFT_1024_radix2(vector<ZZ> &output, vector<ZZ> &input, int point, ZZ modular);	
 	void FFT_1024_radix2_config(vector<ZZ> &output, vector<ZZ> &input, int point, ZZ m, ZZ prou_m, ZZ modular);
 	void Rader_precompute_data(vector<ZZ> &precompute_data, int n, ZZ m, ZZ prou_m, ZZ modular);
-	void RA_2P_FFT(vector<ZZ> &out, vector<ZZ> &in);
+	void RA_2P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse);
 	void RA_3P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse);	
 	void pointwise_mul(vector<ZZ> &out, vector<ZZ> &in1, vector<ZZ> &in2);
 	void RA_5P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse);
-	void RA_powerof2_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point);
+	void RA_powerof2_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point, bool inverse);
+	void PFA_6P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse);
+	void RA_7P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse);
+	void PFA_10P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse);	
+	void RA_11P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse);
+	void PFA_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ m1, ZZ m2, ZZ m1_inv, ZZ m2_inv, ZZ prou, bool inverse);
 };
 
 #endif

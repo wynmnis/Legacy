@@ -23,7 +23,7 @@ int main()
 	vector<ZZ> first_decompose(5);	
 	int first_cnt = precompute_gen.Factorize_fine(first_decompose ,second_decompose, second_cnt ,(ZZ)m); 
 */	
-	//cout << "gen = " << precompute_gen.find_gen((ZZ)5);
+	//cout << "gen = " << precompute_gen.find_gen((ZZ)11);
 	vector<ZZ> RA_in(3);
 	vector<ZZ> RA_out(3);	
 	RA_in[0] = 5;
@@ -31,6 +31,11 @@ int main()
 	RA_in[2] = 8;	
 	
 	//precompute_gen.RA_3P_FFT(RA_out,RA_in, 0);
+	
+	vector<ZZ> factor(10);
+	//precompute_gen.Factorize_2(factor,(ZZ)999);
+	
+	//cout << " f1 f2 = " << factor[0] << " , " << factor[1] << endl; 
 	
 	
 	for(int i = 0; i < 3; i++){
@@ -51,21 +56,26 @@ int main()
 		//cout << RA_inv_out[i] << endl;
 	}
 	
-	vector<ZZ> RA_in4(8);
-	vector<ZZ> RA_out4(8);	
-	vector<ZZ> DFT_out4(8);		
-	for(int i = 0; i < 8; i++){
-		RA_in4[i] = i+1 ;
-	}	
 	
-	precompute_gen.RA_powerof2_FFT(RA_out4, RA_in4, (ZZ)8);
-	for(int i = 0; i < 8; i++){
+	int p = 30 ;
+	vector<ZZ>   RA_in4(p);
+	vector<ZZ>  RA_out4(p);	
+	vector<ZZ> DFT_out4(p);		
+	 for(int i = 0; i < p; i++){
+		RA_in4[i] = i+1 ;
+	 }	
+	
+	//precompute_gen.RA_powerof2_FFT(RA_out4, RA_in4, (ZZ)8, 0);
+	//precompute_gen.PFA_10P_FFT(RA_out4,RA_in4, 0);
+	//precompute_gen.RA_11P_FFT(RA_out4,RA_in4, 0);
+	precompute_gen.PFA_FFT(RA_out4,RA_in4, (ZZ)2, (ZZ)15, (ZZ)8, (ZZ)1,precompute_gen.find_prou(p, precompute_gen.modular_m), 0);
+	for(int i = 0; i < p; i++){
 		cout << RA_out4[i] << endl;
 	}	
 	
-	
-	precompute_gen.DFT(DFT_out4, RA_in4, 8, precompute_gen.find_prou(8, precompute_gen.modular_m), precompute_gen.modular_m);
-	for(int i = 0; i < 8; i++){
+	//cout << " prou = " << precompute_gen.find_prou(p, precompute_gen.modular_m) << endl;
+	precompute_gen.DFT(DFT_out4, RA_in4, p, precompute_gen.find_prou(p, precompute_gen.modular_m), precompute_gen.modular_m);
+	for(int i = 0; i < p; i++){
 		cout << DFT_out4[i] << endl;
 	}		
 
@@ -78,6 +88,15 @@ int main()
 		//cout << endl;
 	}
 		//cout << endl;
+
+	//precompute_gen.RA_powerof2_FFT(DFT_out4, RA_out4, (ZZ)8, 1);
+	//precompute_gen.PFA_10P_FFT(DFT_out4,RA_out4, 1);	
+	//precompute_gen.RA_11P_FFT(DFT_out4,RA_out4, 1);
+	precompute_gen.PFA_FFT(DFT_out4,RA_out4, (ZZ)2, (ZZ)15, (ZZ)8, (ZZ)1,precompute_gen.find_prou(p, precompute_gen.modular_m), 1);	
+	for(int i = 0; i < p; i++){
+		cout << DFT_out4[i] << endl;
+	}	
+
 
 	/*
 	for(int i = 0; i < first_cnt; i++){
