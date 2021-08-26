@@ -44,25 +44,49 @@ LEGACY::LEGACY(ZZ m_){
 		else if(isPowerBy2(first_decompose[i])){
 			first_decompose_prime[i] = first_decompose[i];
 		}
-		else cout << "special case" << endl;
+		else {
+			first_decompose_prime[i] = first_decompose[i];
+			cout << "special case" << endl;
+		}
+		
 	}
 	
-	//cout << LCM(first_decompose_prime) << endl;
+	cout << " m = " << m << endl;	
+	cout << LCM(first_decompose_prime) << endl;
+	int PowerOf2 = 8; 
 	
+	LCM_  = LCM(LCM(LCM(m,LCM(first_decompose_prime)),(ZZ)1155),(ZZ)pow(2,PowerOf2));
+	cout << " LCM = " << LCM_ << endl;	
 	// 3*5*7*11 = 1155
 	// 1155* 256 = 295680
 	//ZZ prou_2956880, prou_1155;
-	modular_m = find_prime(LCM(LCM(m,LCM(first_decompose_prime)),(ZZ)1155), 8);
-	prou_m = find_prou(ZZ2int(m),modular_m);
-	prou_295680 = find_prou(295680,modular_m);
-	prou_1155 = PowerMod(prou_295680, 256, modular_m);
+	
+	
+	
+	
+	modular_m = find_prime(LCM_, 0);
+	cout << " modular_m = " << modular_m << endl;	
+	
+	prou_LCM = find_prou2(ZZ2int(LCM_) ,modular_m);  // here LCM include LCM_ and powerOf2
+	
+	cout << " prou_LCM = " << prou_LCM << endl;	
+	
+	prou_m = PowerMod(prou_LCM, LCM_/m, modular_m);
+	cout << " prou_m = " << prou_m << endl;	
+	
+	prou_295680 = PowerMod(prou_LCM, LCM_/295680, modular_m);
+	//prou_LCMxPowerOf2 = PowerMod(prou_LCM, LCM_/295680, modular_m);
+	
+	cout << " prou_295680 = " << prou_295680 << endl;	 
+	prou_1155 = PowerMod(prou_LCM, LCM_/1155, modular_m);
+	cout << " prou_1155 = " << prou_1155 << endl;
 	
 	
 
 	
-	cout << " m = " << m << endl;
-	cout << " modular_m = " << modular_m << endl;	
-	
+
+
+/*	
 
 	
 //----first stage RA input reindex----//
@@ -71,9 +95,11 @@ LEGACY::LEGACY(ZZ m_){
 	vector<ZZ> gen_inv_first_decompose(first_cnt);	
 	for(int i = 0; i < first_cnt; i++){
 		gen_first_decompose[i] = find_gen(first_decompose[i]);
-		gen_inv_first_decompose[i] = find_inv(gen_first_decompose[i], first_decompose[i] );
+		gen_inv_first_decompose[i] = find_inv_exgcd(gen_first_decompose[i], first_decompose[i] );
 		//cout << gen_first_decompose[i] << endl;
 	}
+
+
 	
 	input_index_first_decompose.resize(first_cnt);
 	output_index_first_decompose.resize(first_cnt);	
@@ -89,14 +115,7 @@ LEGACY::LEGACY(ZZ m_){
 	}
 	
 	cout << "first stage RA input reindex --- done" << endl; 
-/*
-	for(int i = 0; i < first_cnt; i++){ 
-		for(int j = 0; j < first_decompose[i] ; j++){
-			//cout << input_index_first_decompose[i][j] << endl;
-			//cout << output_index_first_decompose[i][j] << endl;			
-		}
-	}	
-*/	
+
 
 //----second stage RA input reindex----//
 	//[prime_first][idx]	
@@ -144,16 +163,7 @@ cout << "------------------" << endl;
 			}
 		}		
 	}
-	
-	/*
-	for(int i = 0; i < first_cnt; i++){	
-		for(int j = 0; j < second_cnt[i]; j++){
-			for(int k = 0; k < second_decompose[i][j]; k++){	
-				cout << input_index_second_decompose[i][j][k] << endl;
-			}
-		}		
-	}
-	*/
+
 	cout << "second stage RA input reindex --- done" << endl; 	
 	
 	
@@ -197,7 +207,7 @@ vector<vector<ZZ>> second_decompose_precompute_prou(first_cnt); // prou_m1', pro
 			//cout << first_decompose_prime[i]/second_decompose[i][j] << endl;
 		}
 	}	
-	
+*/	
 // 2,3,5,7,11-point DFT precompute data	
 	RA_3P_precompute.resize(2);
 	RA_5P_precompute.resize(4);
@@ -229,11 +239,13 @@ vector<vector<ZZ>> second_decompose_precompute_prou(first_cnt); // prou_m1', pro
 
 
 	
-	prou_6 = PowerMod(prou_295680, 295680/6 , modular_m);
-	prou_10 = PowerMod(prou_295680, 295680/10 , modular_m);
+	prou_6 = PowerMod(prou_LCM, LCM_/6 , modular_m);
+	prou_10 = PowerMod(prou_LCM, LCM_/10 , modular_m);
+	prou_9 = PowerMod(prou_LCM, LCM_/9 , modular_m);
+	prou_27 = PowerMod(prou_LCM, LCM_/27 , modular_m);	
 	
 //-------------------------
-	prou_256 = PowerMod(prou_295680, 1155, modular_m);
+	prou_256 = PowerMod(prou_LCM, LCM_/256, modular_m);
 	prou_128 = PowerMod(prou_256, 2, modular_m);
 	prou_64 = PowerMod(prou_128, 2, modular_m);
 	prou_32 = PowerMod(prou_64, 2, modular_m);
@@ -242,32 +254,37 @@ vector<vector<ZZ>> second_decompose_precompute_prou(first_cnt); // prou_m1', pro
 	prou_4 = PowerMod(prou_8, 2, modular_m);
 	prou_2 = PowerMod(prou_4, 2, modular_m);
 	
-	prou_2_inv = find_inv(prou_2, modular_m);	
-	prou_4_inv = find_inv(prou_4, modular_m);
-	prou_8_inv = find_inv(prou_8, modular_m);
-	prou_16_inv = find_inv(prou_16, modular_m);
-	prou_32_inv = find_inv(prou_32, modular_m);
-	prou_64_inv = find_inv(prou_64, modular_m);
-	prou_128_inv = find_inv(prou_128, modular_m);	
-	prou_256_inv = find_inv(prou_256, modular_m);
+	prou_2_inv = find_inv_exgcd(prou_2, modular_m);	
+	prou_4_inv = find_inv_exgcd(prou_4, modular_m);
+	prou_8_inv = find_inv_exgcd(prou_8, modular_m);
+	prou_16_inv = find_inv_exgcd(prou_16, modular_m);
+	prou_32_inv = find_inv_exgcd(prou_32, modular_m);
+	prou_64_inv = find_inv_exgcd(prou_64, modular_m);
+	prou_128_inv = find_inv_exgcd(prou_128, modular_m);	
+	prou_256_inv = find_inv_exgcd(prou_256, modular_m);
+	prou_9_inv = find_inv_exgcd(prou_9, modular_m);	
+	prou_27_inv = find_inv_exgcd(prou_27, modular_m);	
+	
 //-----------------------	
 
 	
-	inv_2 = find_inv((ZZ)2, modular_m);
-	inv_4 = find_inv((ZZ)4, modular_m);
-	inv_6 = find_inv((ZZ)6, modular_m);
-	inv_10 = find_inv((ZZ)10, modular_m);	
-	inv_3 = find_inv((ZZ)3, modular_m);
-	inv_5 = find_inv((ZZ)5, modular_m);
-	inv_7 = find_inv((ZZ)7, modular_m);
-	inv_11 = find_inv((ZZ)11, modular_m);	
+	inv_2 = find_inv_exgcd((ZZ)2, modular_m);
+	inv_4 = find_inv_exgcd((ZZ)4, modular_m);
+	inv_6 = find_inv_exgcd((ZZ)6, modular_m);
+	inv_10= find_inv_exgcd((ZZ)10, modular_m);	
+	inv_3 = find_inv_exgcd((ZZ)3, modular_m);
+	inv_5 = find_inv_exgcd((ZZ)5, modular_m);
+	inv_7 = find_inv_exgcd((ZZ)7, modular_m);
+	inv_11= find_inv_exgcd((ZZ)11, modular_m);	
 	
-	inv_8 = find_inv((ZZ)8, modular_m);
-	inv_16 = find_inv((ZZ)16, modular_m);	
-	inv_32 = find_inv((ZZ)32, modular_m);
-	inv_64 = find_inv((ZZ)64, modular_m);
-	inv_128 = find_inv((ZZ)128, modular_m);
-	inv_256 = find_inv((ZZ)256, modular_m);	
+	inv_8  = find_inv_exgcd((ZZ)8, modular_m);
+	inv_16 = find_inv_exgcd((ZZ)16, modular_m);	
+	inv_32 = find_inv_exgcd((ZZ)32, modular_m);
+	inv_64 = find_inv_exgcd((ZZ)64, modular_m);
+	inv_128= find_inv_exgcd((ZZ)128, modular_m);
+	inv_256= find_inv_exgcd((ZZ)256, modular_m);	
+	inv_9  = find_inv_exgcd((ZZ)9, modular_m);
+	inv_27 = find_inv_exgcd((ZZ)27, modular_m);		
 	//
 	RA_3P_precompute_FFT_in[0] =  PowerMod(prou_3p, 1, modular_m);
 	RA_3P_precompute_FFT_in[1] =  PowerMod(prou_3p, 2, modular_m);
@@ -373,7 +390,7 @@ vector<vector<ZZ>> second_decompose_precompute_prou(first_cnt); // prou_m1', pro
 	DFT(RA_7P_inv_precompute, RA_7P_precompute_FFT_inv_in, 6, prou_6 , modular_m) ;
 	DFT(RA_11P_inv_precompute, RA_11P_precompute_FFT_inv_in, 10, prou_10 , modular_m) ;
 
-
+	cout << "precompute done " << endl;
 
 
 }
@@ -393,6 +410,7 @@ void LEGACY::RA_2P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse){
 
 void LEGACY::RA_powerof2_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point, bool inverse){ //! only for point 4,8,16,32,64,128,256
 	assert(isPowerBy2(point)==true);
+	//cout << "------------" << endl;
 	assert((modular_m - 1)% point == 0 );
 	vector<ZZ> tmp1(ZZ2int(point));
 	vector<ZZ> tmp2(ZZ2int(point));	
@@ -408,7 +426,6 @@ void LEGACY::RA_powerof2_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point, bool inv
 		tmp1[i] = in[i];
 	}	
 	
-	
 	for(int i = 0; i < stage; i++){
 		group = 1 << i; 
 		for(int j = 0; j < group; j++){
@@ -416,9 +433,10 @@ void LEGACY::RA_powerof2_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point, bool inv
 				idx = k + j*(m / group);
 				FFT_in[0] = tmp1[idx];
 				FFT_in[1] = tmp1[idx + (BC / group)];				
-				RA_2P_FFT(FFT_out, FFT_in, 0);
-				tmp1[idx] = FFT_out[0];
+
 				if(inverse){
+					RA_2P_FFT(FFT_out, FFT_in, 1);
+					tmp1[idx] = FFT_out[0];					
 					if(m == 4)
 						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_4_inv, k*group, modular_m),modular_m);
 					else if (m == 8)
@@ -435,6 +453,8 @@ void LEGACY::RA_powerof2_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point, bool inv
 						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_256_inv, k*group, modular_m),modular_m);	
 				}	
 				else {
+					RA_2P_FFT(FFT_out, FFT_in, 0);
+					tmp1[idx] = FFT_out[0];					
 					if(m == 4)
 						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_4, k*group, modular_m),modular_m);
 					else if (m == 8)
@@ -463,7 +483,7 @@ void LEGACY::RA_powerof2_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point, bool inv
 			   ind_j |= (1 << (int)(log2(m) - k - 1));
 		   }
 		}		
-		if(inverse){
+		/*if(inverse){
 			if(m == 4)
 				out[ind_j] = MulMod(tmp1[i],inv_4,modular_m);
 			else if (m == 8)        
@@ -479,9 +499,86 @@ void LEGACY::RA_powerof2_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point, bool inv
 			else if (m == 256)      
 				out[ind_j] = MulMod(tmp1[i],inv_256,modular_m);
 		}
-		else
+		else*/
 			out[ind_j] = tmp1[i];
 	}	
+}
+
+void LEGACY::RA_powerof3_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point, bool inverse){ //! only for point 4,8,16,32,64,128,256
+	assert(isPowerBy3(point)==true);
+	//cout << "------------" << endl;
+	assert((modular_m - 1)% point == 0 );
+	vector<ZZ> tmp1(ZZ2int(point));
+	vector<ZZ> tmp2(ZZ2int(point));	
+	vector<ZZ> FFT_in(3);
+	vector<ZZ> FFT_out(3);	
+	int m = ZZ2int(point);
+	int group;
+	int stage = log(m) / log(3);
+	int BC = m/3;
+	int idx;
+	
+	for(int i = 0; i < point; i++){
+		tmp1[i] = in[i];
+	}	
+	
+	
+	for(int i = 0; i < stage; i++){
+		group = pow(3,i);
+		for(int j = 0; j < group; j++){
+			for(int k = 0; k < BC/group; k++){
+				idx = k + j*(m / group);
+				FFT_in[0] = tmp1[idx];
+				FFT_in[1] = tmp1[idx + (BC / group)];
+				FFT_in[2] = tmp1[idx + 2*(BC / group)];	
+
+				if(inverse){
+					RA_3P_FFT(FFT_out, FFT_in, 1);
+					tmp1[idx] = FFT_out[0];					
+					if(m == 9){
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_9_inv, k*group, modular_m),modular_m);
+						tmp1[idx + 2*(BC / group)] = MulMod(FFT_out[2],PowerMod(prou_9_inv, 2*k*group, modular_m),modular_m);
+					}
+					else if (m == 27){
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_27_inv, k*group, modular_m),modular_m);
+						tmp1[idx + 2*(BC / group)] = MulMod(FFT_out[2],PowerMod(prou_27_inv, 2*k*group, modular_m),modular_m);					
+					}					
+				}
+				else{
+					RA_3P_FFT(FFT_out, FFT_in, 0);
+					tmp1[idx] = FFT_out[0];					
+					if(m == 9){
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_9, k*group, modular_m),modular_m);
+						tmp1[idx + 2*(BC / group)] = MulMod(FFT_out[2],PowerMod(prou_9, 2*k*group, modular_m),modular_m);
+					}
+					else if (m == 27){
+						tmp1[idx + (BC / group)] = MulMod(FFT_out[1],PowerMod(prou_27, k*group, modular_m),modular_m);
+						tmp1[idx + 2*(BC / group)] = MulMod(FFT_out[2],PowerMod(prou_27, 2*k*group, modular_m),modular_m);					
+					}
+				}
+			}			
+		}
+	}	
+
+	//reindex
+
+		if(m == 9){
+			for(int i = 0; i < 3; i++){
+				for(int j = 0; j < 3; j++){
+					out[j+3*i] = tmp1[i + 3*j] ;
+				}			
+			}
+		}
+		else if(m == 27){
+			for(int i = 0; i < 3; i++){
+				for(int j = 0; j < 3; j++){
+					for(int k = 0; k < 3; k++){
+						out[k + 3 * j + 9 * i] = tmp1[i + 3 * j + 9 * k] ;
+					}	
+				}			
+			}	 
+		}
+	
 }
 
 
@@ -515,7 +612,32 @@ void LEGACY::RA_3P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse){
 		out[2] = AddMod(in[0] , FFT_out_2[1],modular_m);
 	}
 }
-
+/*
+void LEGACY::RA_powerof3_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point, bool inverse){ //! only for point 3,9,27
+	assert(isPowerBy3(point)==true);
+	assert((modular_m - 1)% point == 0 );
+	vector<ZZ> tmp1(ZZ2int(point));
+	vector<ZZ> tmp2(ZZ2int(point));	
+	vector<ZZ> FFT_in(3);
+	vector<ZZ> FFT_out(3);	
+	int m = ZZ2int(point);
+	int group;
+	int stage = log(m) / log(3);
+	int BC = m/3;
+	int idx;
+	
+	for(int i = 0; i < point; i++){
+		tmp1[i] = in[i];
+	}	
+	
+	
+	for(int i = 0; i < stage; i++){
+		for(int j = 0; j < BC; j++){
+		
+		}
+	}
+}
+*/
 void LEGACY::RA_5P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse){
 	vector<ZZ> FFT_in(4);
 
@@ -858,7 +980,7 @@ void LEGACY::PFA_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ m1, ZZ m2, ZZ m1_inv, Z
 	m1_prou = PowerMod(prou, m2, modular_m);
 	m2_prou = PowerMod(prou, m1, modular_m);	
 	
-	
+	//cout << "start PFA FFT " << endl;
 	
     for(n2=0;n2<m2;n2++)
     {
@@ -871,10 +993,14 @@ void LEGACY::PFA_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ m1, ZZ m2, ZZ m1_inv, Z
 		if(isPowerBy2(m1) && m1 != 2){
 			RA_powerof2_FFT(FFT_m1P_out[n2], FFT_m1P_in[n2], m1, inverse);
 		}
-		/*else if (!isPrime(m1)){
-			Factorize_2(factor_tmp, m1);
-			PFA_FFT(FFT_m1P_out[n2], FFT_m1P_in[n2], factor_tmp[0], factor_tmp[1], find_inv(factor_tmp[0], modular_m), find_inv(factor_tmp[1], modular_m), m1_prou, inverse);
-		}*/
+		else if (!isPrime(m1)){
+			//Factorize_2(factor_tmp, m1);
+			//PFA_FFT(FFT_m1P_out[n2], FFT_m1P_in[n2], factor_tmp[0], factor_tmp[1], find_inv_exgcd(factor_tmp[0], factor_tmp[1]), find_inv_exgcd(factor_tmp[1], factor_tmp[0]), m1_prou, inverse);
+			if(inverse)
+				IDFT(FFT_m1P_out[n2], FFT_m1P_in[n2], ZZ2int(m1), m1_prou , modular_m) ;
+			else
+				DFT(FFT_m1P_out[n2], FFT_m1P_in[n2], ZZ2int(m1), m1_prou , modular_m) ;	
+		}
 		else{
 			if(m1 == 2)
 				RA_2P_FFT(FFT_m1P_out[n2], FFT_m1P_in[n2], inverse);
@@ -887,10 +1013,11 @@ void LEGACY::PFA_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ m1, ZZ m2, ZZ m1_inv, Z
 			else if (m1 == 11)
 				RA_11P_FFT(FFT_m1P_out[n2], FFT_m1P_in[n2], inverse);	
 			else    {                                                      //m1 prou
+				//cout << "DFT " << endl;
 				if(inverse)
-					IDFT(FFT_m1P_out[n2], FFT_m1P_in[n2], ZZ2int(m1), PowerMod(prou, m2, modular_m) , modular_m) ;
+					IDFT(FFT_m1P_out[n2], FFT_m1P_in[n2], ZZ2int(m1), m1_prou , modular_m) ;
 				else
-					DFT(FFT_m1P_out[n2], FFT_m1P_in[n2], ZZ2int(m1), PowerMod(prou, m2, modular_m) , modular_m) ;				
+					DFT(FFT_m1P_out[n2], FFT_m1P_in[n2], ZZ2int(m1), m1_prou , modular_m) ;				
 			}				
 		}
     }	
@@ -910,8 +1037,8 @@ void LEGACY::PFA_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ m1, ZZ m2, ZZ m1_inv, Z
 		}
 		else if (!isPrime(m2)){
 			Factorize_2(factor_tmp2, m2);
-			PFA_FFT(FFT_m2P_out[n1], FFT_m2P_in[n1], factor_tmp2[0], factor_tmp2[1], find_inv(factor_tmp2[0], modular_m), find_inv(factor_tmp2[1], modular_m), m2_prou, inverse);
-			cout << factor_tmp2[0] << " , " << factor_tmp2[1] << endl;
+			PFA_FFT(FFT_m2P_out[n1], FFT_m2P_in[n1], factor_tmp2[0], factor_tmp2[1], find_inv_exgcd(factor_tmp2[0], factor_tmp2[1]), find_inv_exgcd(factor_tmp2[1], factor_tmp2[0]), m2_prou, inverse);
+			//cout << factor_tmp2[0] << " , " << factor_tmp2[1] << endl;
 		}			
 		else{
 			if(m2 == 2)
@@ -925,10 +1052,11 @@ void LEGACY::PFA_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ m1, ZZ m2, ZZ m1_inv, Z
 			else if (m2 == 11)
 				RA_11P_FFT(FFT_m2P_out[n1], FFT_m2P_in[n1], inverse);	
 			else   {                                                       //m2 prou
+				//cout << "DFT " << endl;
 				if(inverse)
-					IDFT(FFT_m2P_out[n1], FFT_m2P_in[n1], ZZ2int(m2), PowerMod(prou, m1, modular_m) , modular_m) ;
+					IDFT(FFT_m2P_out[n1], FFT_m2P_in[n1], ZZ2int(m2), m2_prou , modular_m) ;
 				else
-					DFT(FFT_m2P_out[n1], FFT_m2P_in[n1], ZZ2int(m2), PowerMod(prou, m1, modular_m) , modular_m) ;
+					DFT(FFT_m2P_out[n1], FFT_m2P_in[n1], ZZ2int(m2), m2_prou , modular_m) ;
 			}
 		}
     }	
@@ -945,9 +1073,11 @@ void LEGACY::PFA_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ m1, ZZ m2, ZZ m1_inv, Z
     }
 	
 }
-	
-	
-
+/*	
+void LEGACY::RADER_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point, bool inverse){
+	assert(isPrime(point)==true);	
+}	
+*/
 
 
 
@@ -1181,6 +1311,36 @@ long long LEGACY::Factorize(ZZ *factor, ZZ num)   /*列印標準分解式*/
 		return cnt;
 }
 
+long long LEGACY::Factorize_no_power(vector<ZZ> &factor, ZZ num)   /*列印標準分解式*/
+{
+	ZZ a=num,i=(ZZ)2,k;
+	long long cnt = 0;
+	ZZ factor_tmp[20];
+	
+	if(!isPowerBy2(num)) {
+		//cout << " initail = " << num << endl;
+		while(a!=1)
+		{
+			if(a%Prime(i)==0 && Prime(i)!=1)
+			{
+			  k=Prime(i);
+			  a/=k;
+			  //printf("  %d",k);
+			  //printf("\n"); 		  
+			  factor_tmp[cnt] = k;
+			  factor[cnt] = k;			  
+			  cnt++;    
+			  //if(a!=1)
+				  //printf("\n");    
+			}
+			else {
+			  i++;
+			}	
+		}
+	}
+		return cnt;
+}
+
 long long LEGACY::Factorize(vector<ZZ> &factor, ZZ num)   /*列印標準分解式*/
 {
 	ZZ a=num,i=(ZZ)2,k;
@@ -1226,7 +1386,7 @@ long long LEGACY::Factorize(vector<ZZ> &factor, ZZ num)   /*列印標準分解�
 }
 
 
-void LEGACY::Factorize_2(vector<ZZ> &factor, ZZ num)   /*列印標準分解式*/
+void LEGACY::Factorize_2(vector<ZZ> &factor, ZZ num)   /*列印標準分解式*/  // 拆成兩個
 {
 	
 	ZZ a=num,i=(ZZ)2,k;
@@ -1299,7 +1459,7 @@ long long LEGACY::Factorize_fine(vector<ZZ> &first_decompose, vector<vector<ZZ>>
 					if(first_decompose[cnt] == first_decompose[cnt-1] || first_decompose[cnt] == factor_tmp){
 						//factor_tmp = first_decompose[cnt - 1];
 						first_decompose[cnt - 1] *= first_decompose[cnt];
-						cout << "first_decompose[cnt - 1] = " << first_decompose[cnt - 1] << endl;
+						//cout << "first_decompose[cnt - 1] = " << first_decompose[cnt - 1] << endl;
 						factor_tmp = first_decompose[cnt];
 						first_decompose[cnt] = 0;
 						//cnt--;
@@ -1322,15 +1482,21 @@ long long LEGACY::Factorize_fine(vector<ZZ> &first_decompose, vector<vector<ZZ>>
 
 	
 	for(int j = 0; j < cnt; j++){
-		if(!isPowerBy2(first_decompose[j])){
-			if(!isPowerBy2(first_decompose[j] - 1)){
-				second_cnt[j] = Factorize(second_decompose[j], first_decompose[j] - 1);
-			}
-			else {
-				second_decompose[j][0] = first_decompose[j] - 1 ;
-				second_cnt[j] = 1;
-			}
-		}	
+		if(isPrime(first_decompose[j])){
+			if(!isPowerBy2(first_decompose[j])){
+				if(!isPowerBy2(first_decompose[j] - 1)){
+					second_cnt[j] = Factorize(second_decompose[j], first_decompose[j] - 1);
+				}
+				else {
+					second_decompose[j][0] = first_decompose[j] - 1 ;
+					second_cnt[j] = 1;
+				}
+			}	
+		}
+		else{
+			second_decompose[j][0] = first_decompose[j]  ;
+			second_cnt[j] = 1;			
+		}
 	}
 	
 	
@@ -1446,7 +1612,7 @@ ZZ LEGACY::LCM(ZZ a, ZZ b) {
 }
 
 
-ZZ LEGACY::LCM(vector<ZZ> a) {
+ZZ LEGACY::LCM(vector<ZZ> &a) {
     ZZ ans ;
     ZZ tmp ;
 	int len = a.size();
@@ -1517,10 +1683,11 @@ long long LEGACY::find_prou(long long m, long long modular)
 
 ZZ LEGACY::find_n_rou(ZZ base, long long m, ZZ modular) // a^(p-1) = 1 (mod p)  ---> base^(modular-1) = 1 (mod modular)
 {
+	//cout << " m = " << m << " modular = "<< modular << endl; 
 	assert(( modular % m ) == 1);
 	ZZ i;
 	ZZ n_rou;
-	i = modular/m ;   // base^(modular - 1) = base^( n * i ) = (base^i)^n = 1 (mod modular)
+	i = (modular-1)/m ;   // base^(modular - 1) = base^( n * i ) = (base^i)^n = 1 (mod modular)
 	PowerMod(n_rou, base, i, modular);
 	//cout << " n_rou = " << n_rou << endl;
 	return n_rou;
@@ -1539,6 +1706,22 @@ bool LEGACY::check_prou(ZZ n_rou, long long m, ZZ modular){ //check if n_rou^1, 
 	return is_prou;
 }
 
+bool LEGACY::check_prou2(vector<ZZ> &factor, long long cnt, ZZ n_rou, long long m, ZZ modular){ 
+	bool is_prou = true;
+	ZZ tmp;
+	
+	for(int i = 0; i < cnt; i++){	
+		//cout <<  factor[i] << endl;
+		tmp = PowerMod(n_rou, factor[i], modular);
+		if(tmp == 1){
+			is_prou = false;
+			break;			
+		}
+	}
+	
+	return is_prou;
+}
+
 ZZ LEGACY::find_prou(long long m, ZZ modular)
 {   
 	bool is_prou = false;
@@ -1547,14 +1730,118 @@ ZZ LEGACY::find_prou(long long m, ZZ modular)
 	ZZ prou;
 	while(is_prou == false)
 	{
+		//cout << " 1 " << endl;
 		n_rou = find_n_rou(i, m, modular);
+		//cout << " 2 " << endl;
 		is_prou = check_prou(n_rou, m, modular);
-		i = i + 1;
+		//cout << " 3 " << endl;
+		i = i + 1;		
 	}
-	//cout << " base " << i-1 << endl;
+	cout << " base " << i-1 << endl;
 	prou = n_rou;
 	return prou;
 }
+
+ZZ LEGACY::find_prou2(long long m, ZZ modular)
+{   
+	vector<ZZ> fac(5000);
+	vector<ZZ> product(50000);
+	long long cnt = Factorize_no_power(fac, (ZZ)m);
+	cout << "cnt = " << cnt << endl;
+	long long cnt2 = find_AllProduct(product, fac, cnt);
+	cout << "cnt2 = " << cnt2 << endl;	
+	bool is_prou = false;
+	ZZ i = (ZZ)2 ;
+	ZZ n_rou;
+	ZZ prou;
+
+	while(is_prou == false)
+	{
+
+		n_rou = find_n_rou(i, m, modular);
+
+		is_prou = check_prou2(product, cnt2, n_rou, m, modular);
+
+		i = i + 1;		
+	}
+	cout << "base = " << i - 1;
+
+	prou = n_rou;
+	return prou;
+}
+
+
+long long LEGACY::find_AllProduct(vector<ZZ> &product, vector<ZZ> &factor, long long cnt){ //列出array中所有元素的組合的乘積
+	int counter;
+	int counter_acc = 0;
+	
+	for(int i = 1; i < cnt; i++){ //C cnt 取 (1 ~ n-1)
+		vector<ZZ> out(50000);
+		counter = allprint(cnt, i, factor, out) ;
+		
+		for(int j = 0; j < counter; j++){			
+			product[j + counter_acc] = out[j];
+			//cout << out[j] << endl;
+		}
+		counter_acc	+= 	counter;
+	}	
+	return counter_acc;
+}
+
+int LEGACY::allprint(int iAllLen, int n, vector<ZZ> &a, vector<ZZ> &out)
+{
+	if (iAllLen < n)
+		return 0;
+	else if (iAllLen == n)
+	{
+		//for (int i = 0; i < n; ++i)
+			//cout << i+1;
+		//cout << endl;
+	}
+	else
+	{
+		int j = 0;
+		vector<int> veNum(iAllLen + 1);
+		out[0] = 1;
+		for (int i = 0; i <= iAllLen; ++i) veNum[i] = i;
+		//列印初始值
+		for (int i = 1; i <= n; ++i){
+			//cout << veNum[i];
+			out[0] *= a[veNum[i] - 1];
+		}
+		//cout << " ";		
+		//cout << out[j] ;		
+		//cout << endl;
+		int iposition = n ;
+		j = 1;
+		while (1)
+		{
+			int b = 1;
+			out[j] = 1;
+			if (veNum[n] == iAllLen)
+				iposition--;
+			else
+				iposition = n;
+			veNum[iposition]++;
+			for (int i = iposition + 1; i <= n; ++i)
+				veNum[i] = veNum[i - 1] + 1;
+			for (int i = 1; i <= n; ++i){
+				//cout << veNum[i];
+				out[j] *= a[veNum[i] - 1];
+			}
+			//cout << " ";
+			//cout << out[j] ;
+			//cout << endl;
+			j++;
+			if (veNum[1] >= iAllLen - n + 1)
+			{
+				return j ;
+				break;
+			}
+		}
+	}
+}
+
 
 void LEGACY::find_zmstar(long long *zmstar, long long m)
 {

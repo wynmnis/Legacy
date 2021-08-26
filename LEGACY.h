@@ -14,6 +14,8 @@ public:
 	ZZ modular_m;
 	ZZ prou_m;
 	int first_cnt;
+	ZZ LCM_ ;
+	ZZ prou_LCM;
 	ZZ prou_295680, prou_1155;
 	vector<ZZ> second_cnt;
 	vector<vector<ZZ>> second_decompose;
@@ -27,10 +29,11 @@ public:
 	ZZ prou_3p, prou_5p, prou_7p, prou_11p;
 	ZZ prou_6, prou_10;	
 	ZZ prou_2, prou_4, prou_8, prou_16, prou_32, prou_64, prou_128, prou_256;
-	ZZ prou_2_inv, prou_4_inv, prou_8_inv, prou_16_inv, prou_32_inv, prou_64_inv, prou_128_inv, prou_256_inv;	
+	ZZ prou_9, prou_27;
+	ZZ prou_2_inv, prou_4_inv, prou_8_inv, prou_16_inv, prou_32_inv, prou_64_inv, prou_128_inv, prou_256_inv, prou_9_inv, prou_27_inv;	
 	ZZ inv_3, inv_5, inv_7, inv_11;
 	ZZ inv_2, inv_4, inv_6, inv_10;
-	ZZ inv_8, inv_16, inv_32, inv_64, inv_128, inv_256;
+	ZZ inv_8, inv_16, inv_32, inv_64, inv_128, inv_256, inv_9, inv_27;
 	vector<ZZ> RA_3P_precompute;
 	vector<ZZ> RA_5P_precompute;
 	vector<ZZ> RA_7P_precompute;
@@ -50,7 +53,8 @@ public:
 	long long Prime(long long i);	
 	ZZ Prime(ZZ i)	;
 	long long Factorize(long long *factor ,long long num);
-	long long Factorize(ZZ *factor, ZZ num);
+	long long Factorize_no_power(vector<ZZ> &factor, ZZ num);
+	long long Factorize(ZZ *factor, ZZ num);	
 	long long Factorize(vector<ZZ> &factor, ZZ num);	
 	long long Factorize_fine(vector<ZZ> &first_decompose, vector<vector<ZZ>> &second_decompose, vector<ZZ> &second_cnt ,ZZ num)	;
 	void Factorize_2(vector<ZZ> &factor, ZZ num);
@@ -61,7 +65,7 @@ public:
 	ZZ find_inv(ZZ data_in, ZZ modular);
 	ZZ exgcd(ZZ a, ZZ b, ZZ &x, ZZ &y);
 	ZZ LCM(ZZ a, ZZ b);
-	ZZ LCM(vector<ZZ> a);
+	ZZ LCM(vector<ZZ> &a);
 	ZZ find_inv_exgcd(ZZ a, ZZ m) ;		
 	bool isPowerBy2(long long n);
 	bool isPowerBy2(ZZ n);
@@ -75,7 +79,14 @@ public:
 	long long find_prou(long long m, long long modular);
 	ZZ find_n_rou(ZZ base, long long m, ZZ modular)	;
 	bool check_prou(ZZ n_rou, long long m, ZZ modular)	;
+	bool check_prou2(vector<ZZ> &factor, long long cnt, ZZ n_rou, long long m, ZZ modular)	;	
 	ZZ find_prou(long long m, ZZ modular);
+	ZZ find_prou2(long long m, ZZ modular);	
+	void C(int n,int r, int a[], int product_out[], int m);
+	int C(int n, int r);
+	int Combin2(int A[], int m, int n, int r);
+	int allprint(int iAllLen, int n, vector<ZZ> &a, vector<ZZ> &out)	;
+	long long find_AllProduct(vector<ZZ> &product, vector<ZZ> &factor, long long cnt);	
 	void find_zmstar(long long *zmstar, long long m);	
 	long long prou_power(long long data_in, long long power, long long modular);
 	long long DFT(long long *DFT_data, long long *data_in, long long m, long long prou, long long modular);
@@ -130,6 +141,7 @@ public:
 	void pointwise_mul(vector<ZZ> &out, vector<ZZ> &in1, vector<ZZ> &in2);
 	void RA_5P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse);
 	void RA_powerof2_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point, bool inverse);
+	void RA_powerof3_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ point, bool inverse);	
 	void PFA_6P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse);
 	void RA_7P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse);
 	void PFA_10P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse);	
