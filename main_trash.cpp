@@ -13,100 +13,61 @@ using namespace std;
 int main()
 {
 	ZZ m ;
-	m = 1925;
+	m = 5;
     LEGACY precompute_gen(m);
+	ZZ LCM;
+	ZZ prime;
 	ZZ prou_LCM;
-	//long long LCM = 4369*1155*256;
-	//prou_LCM = (ZZ)2168490747132;
+	long long a[8] = {21845, 30277, 32767, 52429, 53261, 61103, 78881, 92837};
+	long long phi_a[8] = {16384, 26112, 27000, 46656, 46080, 49392, 70000, 84672};	
+	long long blue_m[8] = {65536, 65536, 65536, 131072, 131072, 131072, 262144, 262144};
+	long long rader_m[8] = {256, 512, 512, 256, 512, 128, 256, 256};
 	
-	//LCM = 4369*1155*256
-	//notice that the primitive root of unity exist
-	//when m | modular - 1 (modular -1 can be divided by m)	
-	vector<ZZ> a(6) ;
-	vector<ZZ> out(100) ;
-	a[0] = 2;
-	a[1] = 4;
-	a[2] = 6;
-	a[3] = 8;
-	a[4] = 10;
-	a[5] = 12;	
-	int cnt ;
-	//precompute_gen.C(6,3,a,0);
-	//precompute_gen.Combin2(a,5,3,3);
-	//cout << precompute_gen.C(7,4) << endl;
-	//cnt = precompute_gen.allprint(6, 3, a, out);
-	//cnt = precompute_gen.find_AllProduct(out, a, 6);
-	//cout << "cnt = " << cnt <<endl;
+	long long optimize_m[42] = {2,4,6,10,12,16,18,22,25,28,30,36,40,42,49,60,70,72,88,96,100,108,112,126,132,136,150,240,250,256,330,336,396,432,600,630,672,682,756,880,1800,8190};
 	
-	for(int i = 0; i < cnt; i++){
-		//cout << out[i] << endl;
+	vector<long long> optimize_vec(42);
+	for(int i = 0; i < 42; i++){
+		optimize_vec[i] = optimize_m[i];
 	}
 	
-	//cnt = precompute_gen.Factorize_no_power(out, m*16);
+	long long LCM_optimize;
 	
+	LCM_optimize = precompute_gen.LCM(optimize_vec);
 	
-	for(int i = 0; i < cnt; i++){
-		//cout << out[i] << endl;
+	cout << "LCM = " << LCM_optimize << "(" << ceil(log(LCM_optimize)/log(2.0)) << ")" << endl;
+	
+	long long p ;
+/*	
+	for(int i = 0; i < 8; i++){
+		p = precompute_gen.find_prime(a[i], 0);
+		
+		cout << a[i] << ", "<< "prime = " << p << "bit = " << log(p)/log(2.0) << endl;
 	}
-	//cout << "check " << precompute_gen.check_prou((ZZ)1433201, 105, precompute_gen.modular_m)<< endl;
-	
-	
-	int p = precompute_gen.ZZ2int(m) ;
-	vector<ZZ>   RA_in4(p);
-	vector<ZZ>  RA_out4(p);	
-	vector<ZZ> DFT_out4(p);		
-	 for(int i = 0; i < p; i++){
-		RA_in4[i] = i+1 ;
-	 }	
-	ZZ prou_p, inv1, inv2;
-	vector<ZZ> factor_p(10);
-	prou_p = PowerMod(precompute_gen.prou_LCM, precompute_gen.LCM_/p, precompute_gen.modular_m);
-	//prou_p = PowerMod(prou_LCM, LCM/p, precompute_gen.modular_m);
-	precompute_gen.Factorize_2(factor_p, (ZZ)p);
-	cout << factor_p[0] << " , " << factor_p[1] << endl;
-	inv1 = precompute_gen.find_inv_exgcd(factor_p[0], factor_p[1]);
-	inv2 = precompute_gen.find_inv_exgcd(factor_p[1], factor_p[0]);
-	//precompute_gen.RA_powerof2_FFT(RA_out4, RA_in4, (ZZ)8, 0);
-	//precompute_gen.PFA_10P_FFT(RA_out4,RA_in4, 0);
-	//precompute_gen.RA_11P_FFT(RA_out4,RA_in4, 0);
-	//precompute_gen.PFA_FFT(RA_out4,RA_in4, (ZZ)2, (ZZ)15, (ZZ)8, (ZZ)1,precompute_gen.find_prou(p, precompute_gen.modular_m), 0);
-	precompute_gen.PFA_FFT(RA_out4,RA_in4, factor_p[0], factor_p[1], inv1, inv2, prou_p , 0);
-	for(int i = 0; i < p; i++){
-		//cout << RA_out4[i] << endl;
+*/	
+/*
+	    long long num = 65536;
+		p = precompute_gen.find_prime(num, 0);
+		cout << num << ", "<< "prime = " << p << "bit = " << log(p)/log(2.0) << endl;
+*/
+	long long Q;
+/*	
+	for(int i = 0; i < 8; i++){
+		Q = a[i]*a[i]*phi_a[i];
+		//cout << "Q = " << Q << "(" << ceil(log(Q)/log(2.0)) << ")" << endl;
+		p = precompute_gen.find_prime_conditional(rader_m[i], Q);
+		cout << "p = " << p << "(" << ceil(log(p)/log(2.0)) << ")" << endl;
+	}
+*/
+	for(int i = 0; i < 8; i++){
+		Q = a[i]*a[i]*phi_a[i];
+		//cout << "Q = " << Q << "(" << ceil(log(Q)/log(2.0)) << ")" << endl;
+		p = precompute_gen.find_prime_conditional(LCM_optimize, Q);
+		cout << "p = " << p << "(" << ceil(log(p)/log(2.0)) << ")" << endl;
 	}	
 	
-	//cout << " prou = " << precompute_gen.find_prou(p, precompute_gen.modular_m) << endl;
-	precompute_gen.DFT(DFT_out4, RA_in4, p, prou_p, precompute_gen.modular_m);
-	for(int i = 0; i < p; i++){
-		//cout << DFT_out4[i] << endl;
-	}		
-
-	for(int i = 0; i < p; i++){
-		if(RA_out4[i] !=  DFT_out4[i]){
-			cout << " DFT fail " << endl;
-			break;
-		}
-		else if(i == p - 1)
-			cout << " DFT done " << endl;
-	}		
-
-	//precompute_gen.RA_powerof2_FFT(DFT_out4, RA_out4, (ZZ)8, 1);
-	//precompute_gen.PFA_10P_FFT(DFT_out4,RA_out4, 1);	
-	//precompute_gen.RA_11P_FFT(DFT_out4,RA_out4, 1);
-	precompute_gen.PFA_FFT(DFT_out4,RA_out4, factor_p[0], factor_p[1], inv1, inv2, prou_p , 1);	
-	for(int i = 0; i < p; i++){
-		//cout << DFT_out4[i] << endl;
-	}	
-
-	for(int i = 0; i < p; i++){
-		if(DFT_out4[i] !=  RA_in4[i]){
-			cout << " IDFT fail " << endl;
-			break;
-		}
-		else if(i == p - 1)
-			cout << " IDFT done " << endl;
-	}	
-
 	
-
+	
+	
+	
+	
 }

@@ -64,8 +64,11 @@ public:
 	long long find_inv(long long data_in, long long modular);
 	ZZ find_inv(ZZ data_in, ZZ modular);
 	ZZ exgcd(ZZ a, ZZ b, ZZ &x, ZZ &y);
+	long long exgcd(long long a, long long b, long long &x, long long &y);	
 	ZZ LCM(ZZ a, ZZ b);
+	long long LCM(long long a, long long b);	
 	ZZ LCM(vector<ZZ> &a);
+	long long LCM(vector<long long> &a);	
 	ZZ find_inv_exgcd(ZZ a, ZZ m) ;		
 	bool isPowerBy2(long long n);
 	bool isPowerBy2(ZZ n);
@@ -75,6 +78,8 @@ public:
 	bool isPrime(long long n);
 	bool isPrime(ZZ n);	
 	long long find_prime(long long m, long long powerof2);
+    long long find_prime_conditional(long long m, long long lowerbound)	;
+	
 	ZZ find_prime(ZZ m, long long powerof2);	
 	long long find_prou(long long m, long long modular);
 	ZZ find_n_rou(ZZ base, long long m, ZZ modular)	;
@@ -94,6 +99,7 @@ public:
 	void DFT(vector<ZZ> &DFT_data, vector<ZZ> &data_in, long long m, ZZ prou, ZZ modular);	
 	void Rader(long long *RA_out, long long *data_in, long long n, long long prou, long long modular);
 	void Rader_DFT(long long *RA_out, long long *data_in, long long n, long long prou, long long modular);
+	void Rader_DFT_0118(long long *RA_out, long long *data_in, long long n, long long *precompute_data, long long *In_Reindex, long long *Out_Reindex, long long prou_n_neg_1, long long modular);	
 	void Rader_DFT_optimize(long long *RA_out, long long *data_in, long long n, long long prou, long long modular);	
 	void Rader_v3(long long *RA_out, long long *data_in, long long *tw_FFT_out, long long *index_in, long long *index_out, long long m, long long m_prime, long long m_prime_prou, long long modular)	;
 	void Rader_v4(long long *RA_out, long long *data_in, long long *tw_FFT_out, long long *index_in, long long *index_out, long long m, long long m_prime, long long m_prime_prou, long long modular)	;
@@ -107,7 +113,7 @@ public:
     long long PFA2(long long *DFT_data, long long *data_in, long long m1, long long m2, long long inv1, long long inv2, long long prou, long long modular);	
 	long long PFA2_optimize(long long *DFT_data, long long *data_in, long long m1, long long m2, long long inv1, long long inv2, long long prou, long long modular);		
 	long long PFA3(long long *DFT_data, long long *data_in, long long m1, long long m2, long long s_m1, long long s_m2, long long inv1, long long inv2, long long s_inv1, long long s_inv2, long long prou, long long modular) ;
-	long long PFA3_optimize(long long *DFT_data, long long *data_in, long long m1, long long m2, long long s_m1, long long s_m2, long long inv1, long long inv2, long long s_inv1, long long s_inv2, long long prou, long long modular) ;	
+	//long long PFA3_optimize(long long *DFT_data, long long *data_in, long long m1, long long m2, long long s_m1, long long s_m2, long long inv1, long long inv2, long long s_inv1, long long s_inv2, long long prou, long long modular) ;	
 	long long PFA2_v2(long long *DFT_data, long long *data_in, long long m1, long long m2, long long inv1, long long inv2, long long prou, long long modular);	
 	long long PFA2_v3(long long *DFT_data, long long *data_in, long long m1, long long m2, long long m1_prime, long long m2_prime, long long m1_prime_prou, long long m2_prime_prou, long long inv1, long long inv2, long long *tw_FFT_out1, long long *tw_FFT_out2, long long *index_out1, long long *index_out2, long long modular,long long m1_prou,long long m2_prou,long long *index_in1,long long *index_in2);
 	long long PFA2_v4(long long *DFT_data, long long *data_in, long long m1, long long m2, long long m1_prime, long long m2_prime, long long m1_prime_prou, long long m2_prime_prou, long long inv1, long long inv2, long long *tw_FFT_out1, long long *tw_FFT_out2, long long *index_out1, long long *index_out2, long long modular,long long m1_prou,long long m2_prou,long long *index_in1,long long *index_in2);
@@ -147,6 +153,7 @@ public:
 	void PFA_10P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse);	
 	void RA_11P_FFT(vector<ZZ> &out, vector<ZZ> &in, bool inverse);
 	void PFA_FFT(vector<ZZ> &out, vector<ZZ> &in, ZZ m1, ZZ m2, ZZ m1_inv, ZZ m2_inv, ZZ prou, bool inverse);
+	void Winograd_small_FFT(int N, vector<ZZ> &FFT_out, vector<ZZ> &FFT_in, ZZ m, ZZ prou_m, ZZ modular, bool inverse);
 };
 
 #endif
