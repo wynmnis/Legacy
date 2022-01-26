@@ -19,9 +19,9 @@ int main()
 	n = 2821; // 7*13*31
 	LEGACY test_2821(n);
 ////////////////////////////////////////////////////////////	
-	long long N1 = 7;
-	long long N2 = 13;
-	long long N3 = 31;
+	long long N1 = 31;
+	long long N2 = 41;
+	long long N3 = 61;
 	long long N1N2_inv = test_2821.find_inv(N1*N2,N3);
 	long long N1N3_inv = test_2821.find_inv(N1*N3,N2);
 	long long N2N3_inv = test_2821.find_inv(N3*N2,N1);	

@@ -3274,11 +3274,9 @@ void LEGACY::Rader_DFT_0118(long long *RA_out, long long *data_in, long long n, 
 		if(i ==0){
 			RA_out[i] = (DFT_tmp[0] + data_in[0]) % modular;
 		}
-		else {
-		//with output reindex
-			//RA_out[Out_Reindex[i]] = (data_out_tmp[i-1] + data_in[0]) % modular;
-		//without output reindex
-			RA_out[i] = (data_out_tmp[i-1] + data_in[0]) % modular;
+		else {		
+			//RA_out[Out_Reindex[i]] = (data_out_tmp[i-1] + data_in[0]) % modular; //with output reindex		
+			RA_out[i] = (data_out_tmp[i-1] + data_in[0]) % modular; //without output reindex
 			//cout << Out_Reindex[i] << endl;
 		}
 	}		

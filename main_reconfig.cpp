@@ -24,7 +24,7 @@ cout << "*---------------------------------------------------*" << endl;
 	ZZ modulus = (ZZ)421;
 	ZZ prou420, prou7, prou5, prou4, prou3, prou2;
 	ZZ prou7_1, prou7_2, prou7_3, prou7_4, prou7_5, prou7_6;
-	bool inverse = 1;
+	bool inverse = 0;
 	
 	prou420 = precompute_gen.find_prou(420, modulus);
 	prou7 = PowerMod(prou420, (ZZ)(420/7), modulus);
@@ -84,14 +84,14 @@ cout << "*---------------------------------------------------*" << endl;
 	//cout << "prou2 = " << prou2 << endl;
 	//cout << "inv_3 = " << inv_3 << endl;	
 	
-	cout << "C70 = " << C70 << endl;
-	cout << "C71 = " << C71 << endl;
-	cout << "C72 = " << C72 << endl;
-	cout << "C73 = " << C73 << endl;
-	cout << "C74 = " << C74 << endl;
-	cout << "C75 = " << C75 << endl;
-	cout << "C76 = " << C76 << endl;
-	cout << "C77 = " << C77 << endl;	
+	//cout << "C70 = " << C70 << endl;
+	//cout << "C71 = " << C71 << endl;
+	//cout << "C72 = " << C72 << endl;
+	//cout << "C73 = " << C73 << endl;
+	//cout << "C74 = " << C74 << endl;
+	//cout << "C75 = " << C75 << endl;
+	//cout << "C76 = " << C76 << endl;
+	//cout << "C77 = " << C77 << endl;	
 	ZZ prou5_1, prou5_2, prou5_3, prou5_4;
 	prou5_1 = prou5;
 	prou5_2 = PowerMod(prou5_1, 2, modulus);
@@ -105,7 +105,7 @@ cout << "*---------------------------------------------------*" << endl;
 	ZZ C50,C51,C52,C53,C54;
 	C50 = SubMod(MulMod(AddMod(cosu, cos2u, modulus), inv_2, modulus), (ZZ)1, modulus);
 	C51 = MulMod(SubMod(cosu, cos2u, modulus), inv_2, modulus);	
-	C52 = MulMod(AddMod(isinu, isin2u, modulus), inv_2, modulus);	
+	C52 = AddMod(isinu, isin2u, modulus);	
 	C53 = isin2u;	
 	C54 = SubMod(isinu, isin2u, modulus);
 	
@@ -123,7 +123,7 @@ cout << "*---------------------------------------------------*" << endl;
 	C31 = isinu;
 	
 
-	int point = 7;
+	int point = 5;
 	vector<ZZ> x(7);
 	vector<ZZ> X(7);
 	vector<ZZ> x_5(5), x_4(4), x_3(3), x_2(2);
@@ -165,8 +165,8 @@ cout << "*---------------------------------------------------*" << endl;
 		
 		x_5[0] = x[0]; 
 		x_5[1] = x[1];
-		x_5[2] = x[3];
-		x_5[3] = x[4];
+		x_5[2] = x[4];
+		x_5[3] = x[3];
 		x_5[4] = x[6];
 		
 		s0 = 0;
@@ -357,69 +357,26 @@ cout << "*---------------------------------------------------*" << endl;
 	cout << "a30 = " << a30 << endl;
 	cout << "a34 = " << a34 << endl;	
 	cout << "a36 = " << a36 << endl;	
-	/*
-	a1 = (x[1] + x[6]) % modulus; 
-	a2 = (x[1] - x[6]) % modulus; 
-	a3 = (x[4] + x[3]) % modulus; 	
-	a4 = (x[4] - x[3]) % modulus; 
-	a5 = (x[2] + x[5]) % modulus; 
-	a6 = (x[2] - x[5]) % modulus; 
-	a7 = (a1 + a3) % modulus; 
-	a8 = (a7 + a5) % modulus; 
-	a9 = (a8 + x[0]) % modulus; 
-	a10 = (a1 - a3) % modulus; 
-	a11 = (a3 - a5) % modulus; 
-	a12 = (a5 - a1) % modulus; 
-	a13 = (a2 + a4) % modulus; 
-	a14 = (a13 + a6) % modulus; 
-	a15 = (a2 - a4) % modulus; 
-	a16 = (a4 - a6) % modulus; 
-	a17 = (a6 - a2) % modulus; 
-	mul0 = a9;
-	mul1 = (A0 * a8)%modulus;
-	mul2 = (A1 * a10)%modulus;
-	mul3 = (A2 * a11)%modulus;
-	mul4 = (A3 * a12)%modulus;
-	mul5 = (A4 * a14)%modulus;
-	mul6 = (A5 * a15)%modulus;	
-	mul7 = (A6 * a16)%modulus;	
-	mul8 = (A7 * a17)%modulus;	
-	a18 = (mul0 + mul1) % modulus;	
-	a19 = (a18 + mul2) % modulus;	
-	a20 = (a19 + mul3) % modulus;		
-	a21 = (a18 - mul2) % modulus;	
-	a22 = (a21 - mul4) % modulus;
-	a23 = (a18 - mul3) % modulus;
-	a24 = (a23 + mul4) % modulus;
-	a25 = (mul5 + mul6) % modulus;
-	a26 = (a25 + mul7) % modulus;
-	a27 = (mul5 - mul6) % modulus;
-	a28 = (a27 - mul8) % modulus;
-	a29 = (mul5 - mul7) % modulus;
-	a30 = (a29 + mul8) % modulus;
-	a31 = (a20 + a26) % modulus;
-	a32 = (a20 - a26) % modulus;
-	a33 = (a22 + a28) % modulus;
-	a34 = (a22 - a28) % modulus;
-	a35 = (a24 + a30) % modulus;
-	a36 = (a24 - a30) % modulus;	
-	X[0] = mul0;
-	X[1] = a31;
-	X[2] = a33;
-	X[3] = a36;
-	X[4] = a35;
-	X[5] = a34;
-	X[6] = a32;
-*/
+	
+
 	
 	cout << "ans = " << endl; 
-	for(int i = 0; i < 7; i++){
-		if(inverse)		
-			cout << MulMod(X[i], inv_7, modulus) << endl;
-		else
-			cout << X[i] << endl;			
+	if(point == 7){
+		for(int i = 0; i < 7; i++){
+			if(inverse)		
+				cout << MulMod(X[i], inv_7, modulus) << endl;
+			else
+				cout << X[i] << endl;			
+		}
 	}
-	
+	else if (point == 5){
+		for(int i = 0; i < 7; i++){
+			if(inverse)		
+				cout << MulMod(X[i], inv_7, modulus) << endl;
+			else
+				cout << X[i] << endl;			
+		}		
+	}
 	
 	
 	vector<ZZ> DFT_out7(7);
@@ -461,8 +418,11 @@ cout << "*---------------------------------------------------*" << endl;
 		for(int i = 0; i < point; i++){
 			cout << DFT_out2[i] << endl;
 		}			
-	}		
-/*  5-WFFT
+	}
+	
+	
+/*	
+    //  5-WFFT
 	vector<ZZ> a(5) ;
 	vector<ZZ> DFT_out5(5) ;
 	vector<ZZ> Winograd_out5(5) ;
@@ -470,7 +430,7 @@ cout << "*---------------------------------------------------*" << endl;
 	ZZ mod_5 = (ZZ)31;
 	a[0] = 2;
 	a[1] = 14;
-	a[2] = 26;
+	a[2] = 9;
 	a[3] = 8;
 	a[4] = 13;
 	ZZ prou5;
@@ -590,6 +550,60 @@ cout << "*---------------------------------------------------*" << endl;
 	}
 */
 
+	/*
+	a1 = (x[1] + x[6]) % modulus; 
+	a2 = (x[1] - x[6]) % modulus; 
+	a3 = (x[4] + x[3]) % modulus; 	
+	a4 = (x[4] - x[3]) % modulus; 
+	a5 = (x[2] + x[5]) % modulus; 
+	a6 = (x[2] - x[5]) % modulus; 
+	a7 = (a1 + a3) % modulus; 
+	a8 = (a7 + a5) % modulus; 
+	a9 = (a8 + x[0]) % modulus; 
+	a10 = (a1 - a3) % modulus; 
+	a11 = (a3 - a5) % modulus; 
+	a12 = (a5 - a1) % modulus; 
+	a13 = (a2 + a4) % modulus; 
+	a14 = (a13 + a6) % modulus; 
+	a15 = (a2 - a4) % modulus; 
+	a16 = (a4 - a6) % modulus; 
+	a17 = (a6 - a2) % modulus; 
+	mul0 = a9;
+	mul1 = (A0 * a8)%modulus;
+	mul2 = (A1 * a10)%modulus;
+	mul3 = (A2 * a11)%modulus;
+	mul4 = (A3 * a12)%modulus;
+	mul5 = (A4 * a14)%modulus;
+	mul6 = (A5 * a15)%modulus;	
+	mul7 = (A6 * a16)%modulus;	
+	mul8 = (A7 * a17)%modulus;	
+	a18 = (mul0 + mul1) % modulus;	
+	a19 = (a18 + mul2) % modulus;	
+	a20 = (a19 + mul3) % modulus;		
+	a21 = (a18 - mul2) % modulus;	
+	a22 = (a21 - mul4) % modulus;
+	a23 = (a18 - mul3) % modulus;
+	a24 = (a23 + mul4) % modulus;
+	a25 = (mul5 + mul6) % modulus;
+	a26 = (a25 + mul7) % modulus;
+	a27 = (mul5 - mul6) % modulus;
+	a28 = (a27 - mul8) % modulus;
+	a29 = (mul5 - mul7) % modulus;
+	a30 = (a29 + mul8) % modulus;
+	a31 = (a20 + a26) % modulus;
+	a32 = (a20 - a26) % modulus;
+	a33 = (a22 + a28) % modulus;
+	a34 = (a22 - a28) % modulus;
+	a35 = (a24 + a30) % modulus;
+	a36 = (a24 - a30) % modulus;	
+	X[0] = mul0;
+	X[1] = a31;
+	X[2] = a33;
+	X[3] = a36;
+	X[4] = a35;
+	X[5] = a34;
+	X[6] = a32;
+	*/
 
 
 }
