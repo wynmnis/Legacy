@@ -15,7 +15,9 @@ int main()
 	ZZ m ;
 	m = 2821;
     LEGACY winograd(m);
-	long long point = 7;
+	int point ;
+	cout << "point = " ;
+	cin >> point ;
 	
 	if(point == 7){
 		//  7-WFFT
@@ -126,23 +128,23 @@ int main()
 		Winograd_out[5] = s35;
 		Winograd_out[6] = s34;	
 
-		cout << "ans " << endl;
+		cout << "--ans-- " << endl;
 		for(int i = 0; i < point; i++){
 			cout << Winograd_out[i] << endl;
 		}		
 	}
 	else if(point == 5){
-		//  5-WFFT
+		//  5-WFFT OK
 		long long a[point] ;
 		long long DFT_out[point] ;
 		long long Winograd_out[point] ;
 		long long out(100) ;
 		long long modular = 421;
-		a[0] = 2;
-		a[1] = 14;
-		a[2] = 9;
-		a[3] = 8;
-		a[4] = 13;
+		a[0] = 1;
+		a[1] = 2;
+		a[2] = 3;
+		a[3] = 4;
+		a[4] = 5;
 		long long prou5;
 		long long inv_2;
 		inv_2 = winograd.find_inv(2, modular);
@@ -173,11 +175,14 @@ int main()
 		long long m0,m1,m2,m3,m4,m5;
 		long long c1,c2,c3,c4,c5;
 
-		c1 = MulMod(AddMod(cosu,cos2u,modular), inv_2, modular) - 1;
-		c2 = MulMod(SubMod(cosu,cos2u,modular), inv_2, modular);
-		c3 = AddMod(isinu,isin2u,modular);
-		c5 = isin2u;
-		c4 = SubMod(isinu,isin2u,modular);
+	
+//check OK
+		c1 = SubMod(MulMod(AddMod(cosu,cos2u,modular), inv_2, modular) ,1, modular); //(cos(u)+cos(2u))/2-1
+		c2 = MulMod(SubMod(cosu,cos2u,modular), inv_2, modular);    				 //(cos(u)-cos(2u))/2
+		//c3 = MulMod(AddMod(isinu,isin2u,modular), inv_2, modular);				 //j(sin(u)+sin(2u))/2
+		c3 = AddMod(isinu,isin2u,modular);							 				 //j(sin(u)+sin(2u)											     				 //jsin(2u)
+		c4 = SubMod(isinu,isin2u,modular);							 				 //j(sin(u)-sin(2u))
+		c5 = isin2u;	
 		
 		s1 = AddMod(a[1], a[4], modular);
 		s2 = SubMod(a[1], a[4], modular);
@@ -187,7 +192,15 @@ int main()
 		s6 = SubMod(s1, s3,modular);
 		s7 = AddMod(s2, s4,modular);
 		s8 = AddMod(s5, a[0], modular);	
-
+		
+		cout << "s1 = " << s1 << endl;
+		cout << "s2 = " << s2 << endl;		
+		cout << "s3 = " << s3 << endl;
+		cout << "s4 = " << s4 << endl;	
+		cout << "s5 = " << s5 << endl;
+		cout << "s6 = " << s6 << endl;		
+		cout << "s7 = " << s7 << endl;
+		cout << "s8 = " << s8 << endl;			
 		m0 = s8;
 		m1 = MulMod(s5, c1, modular);
 		m2 = MulMod(s6, c2, modular);
@@ -212,11 +225,54 @@ int main()
 		Winograd_out[2] = s16;
 		Winograd_out[3] = s17;
 		Winograd_out[4] = s15;
+
+/*
+		c1 = SubMod(MulMod(AddMod(cosu,cos2u,modular), inv_2, modular) ,1, modular); //(cos(u)+cos(2u))/2-1
+		c2 = MulMod(SubMod(cosu,cos2u,modular), inv_2, modular);     //(cos(u)-cos(2u))/2
+		//c3 = MulMod(AddMod(isinu,isin2u,modular), inv_2, modular);							 //j(sin(u)+sin(2u))/2
+		c3 = AddMod(isinu,isin2u,modular);							 //j(sin(u)+sin(2u)
+		c4 = isin2u;											     //jsin(2u)
+		c5 = SubMod(isinu,isin2u,modular);							 //j(sin(u)-sin(2u))
 		
-		cout << "ans " << endl;
+		s1 = AddMod(a[1], a[4], modular);
+		s2 = SubMod(a[1], a[4], modular);
+		s3 = AddMod(a[3], a[2], modular);
+		s4 = SubMod(a[3], a[2], modular);
+		s5 = AddMod(s1, s3,modular);
+		s6 = SubMod(s1, s3,modular);
+		s7 = AddMod(s2, s4,modular);
+		s8 = AddMod(s5, a[0], modular);	
+
+		m0 = s8;
+		m1 = MulMod(s5, c1, modular);
+		m2 = MulMod(s6, c2, modular);
+		m3 = MulMod(s2, c3, modular);
+		m4 = MulMod(s7, c4, modular);
+		m5 = MulMod(s4, c5, modular);	
+		
+		s9  = AddMod(m0, m1, modular);
+		s10 = AddMod(s9, m2, modular);	
+		s11 = SubMod(s9, m2, modular);	
+		s12 = SubMod(m3, m4, modular);
+		s13 = AddMod(m5, m4, modular);
+		s14 = AddMod(s10, s12, modular);
+		s15 = SubMod(s10, s12, modular);	
+		s16 = AddMod(s11, s13, modular);
+		s17 = SubMod(s11, s13, modular);	
+		
+		
+		
+		Winograd_out[0] = m0;
+		Winograd_out[1] = s14;
+		Winograd_out[2] = s16;
+		Winograd_out[3] = s17;
+		Winograd_out[4] = s15;
+
+		cout << "--ans-- " << endl;
 		for(int i = 0; i < point; i++){
 			cout << Winograd_out[i] << endl;
 		}
+*/		
 	}
 	else if(point == 4){
 		//  4-WFFT
@@ -260,8 +316,8 @@ int main()
 		long long c1,c2,c3,c4,c5;
 
 		c1 = prou4;
-
 		
+		//DIF 
 		s1 = AddMod(a[0], a[2], modular);
 		s2 = SubMod(a[0], a[2], modular);
 		s3 = AddMod(a[1], a[3], modular);
@@ -283,7 +339,7 @@ int main()
 		Winograd_out[3] = s8;
 
 		
-		cout << "ans " << endl;
+		cout << "--ans-- " << endl;
 		for(int i = 0; i < point; i++){
 			cout << Winograd_out[i] << endl;
 		}	
@@ -351,9 +407,14 @@ int main()
 
 
 		
-		cout << "ans " << endl;
+		cout << "--ans-- " << endl;
 		for(int i = 0; i < point; i++){
 			cout << Winograd_out[i] << endl;
 		}	
 	}	
+
+
+
+
+
 }

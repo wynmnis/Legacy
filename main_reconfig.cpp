@@ -33,9 +33,11 @@ cout << "*---------------------------------------------------*" << endl;
 	prou3 = PowerMod(prou420, (ZZ)(420/3), modulus);
 	prou2 = PowerMod(prou420, (ZZ)(420/2), modulus);
 	
-	ZZ inv_3, inv_2, inv_7;
+	ZZ inv_3, inv_2, inv_7, inv_5, inv_4;
 	inv_3 = precompute_gen.find_inv((ZZ)3, modulus);
 	inv_2 = precompute_gen.find_inv((ZZ)2, modulus);
+	inv_4 = precompute_gen.find_inv((ZZ)4, modulus);	
+	inv_5 = precompute_gen.find_inv((ZZ)5, modulus);	
 	inv_7 = precompute_gen.find_inv((ZZ)7, modulus);
 	
 	if(inverse)
@@ -123,7 +125,9 @@ cout << "*---------------------------------------------------*" << endl;
 	C31 = isinu;
 	
 
-	int point = 5;
+	int point ;
+	cout << "point = " ;
+	cin >> point ;
 	vector<ZZ> x(7);
 	vector<ZZ> X(7);
 	vector<ZZ> x_5(5), x_4(4), x_3(3), x_2(2);
@@ -344,24 +348,25 @@ cout << "*---------------------------------------------------*" << endl;
 	X[5] = a35;
 	X[6] = a34;
 	
-	cout << "a1 = " << a1 << endl;	
-	cout << "a2 = " << a2 << endl;	
-	cout << "a3 = " << a3 << endl;	
-	cout << "a4 = " << a4 << endl;	
-	cout << "a7 = " << a7 << endl;	
-	cout << "a8 = " << a8 << endl;		
-	cout << "a13 = " << a13 << endl;		
-	cout << "a18 = " << a18 << endl;
-	cout << "mul6 = " << mul6 << endl;
-	cout << "a27 = " << a27 << endl;
-	cout << "a30 = " << a30 << endl;
-	cout << "a34 = " << a34 << endl;	
-	cout << "a36 = " << a36 << endl;	
+	//cout << "a1 = " << a1 << endl;	
+	//cout << "a2 = " << a2 << endl;	
+	//cout << "a3 = " << a3 << endl;	
+	//cout << "a4 = " << a4 << endl;	
+	//cout << "a7 = " << a7 << endl;	
+	//cout << "a8 = " << a8 << endl;		
+	//cout << "a13 = " << a13 << endl;		
+	//cout << "a18 = " << a18 << endl;
+	//cout << "mul6 = " << mul6 << endl;
+	//cout << "a27 = " << a27 << endl;
+	//cout << "a30 = " << a30 << endl;
+	//cout << "a34 = " << a34 << endl;	
+	//cout << "a36 = " << a36 << endl;	
 	
 
 	
 	cout << "ans = " << endl; 
 	if(point == 7){
+		
 		for(int i = 0; i < 7; i++){
 			if(inverse)		
 				cout << MulMod(X[i], inv_7, modulus) << endl;
@@ -372,12 +377,35 @@ cout << "*---------------------------------------------------*" << endl;
 	else if (point == 5){
 		for(int i = 0; i < 7; i++){
 			if(inverse)		
-				cout << MulMod(X[i], inv_7, modulus) << endl;
+				cout << MulMod(X[i], inv_5, modulus) << endl;
 			else
 				cout << X[i] << endl;			
 		}		
 	}
-	
+	else if (point == 4){
+		for(int i = 0; i < 7; i++){
+			if(inverse)		
+				cout << MulMod(X[i], inv_4, modulus) << endl;
+			else
+				cout << X[i] << endl;			
+		}		
+	}
+	else if (point == 3){
+		for(int i = 0; i < 7; i++){
+			if(inverse)		
+				cout << MulMod(X[i], inv_3, modulus) << endl;
+			else
+				cout << X[i] << endl;			
+		}		
+	}
+	else if (point == 2){
+		for(int i = 0; i < 7; i++){
+			if(inverse)		
+				cout << MulMod(X[i], inv_2, modulus) << endl;
+			else
+				cout << X[i] << endl;			
+		}		
+	}	
 	
 	vector<ZZ> DFT_out7(7);
 	vector<ZZ> DFT_out5(5);
@@ -393,32 +421,49 @@ cout << "*---------------------------------------------------*" << endl;
 			precompute_gen.DFT(DFT_out7, x, 7, prou7, modulus);			
 		for(int i = 0; i < point; i++){
 			cout << DFT_out7[i] << endl;
+			if(DFT_out7[i] != X[i]){
+				cout << "error" << endl;
+			}
 		}	
 	}
 	else if (point == 5){
 		precompute_gen.DFT(DFT_out5, x_5, 5, prou5, modulus);	
 		for(int i = 0; i < point; i++){
 			cout << DFT_out5[i] << endl;
+			if(DFT_out7[i] != X[i]){
+				cout << "error" << endl;
+			}			
 		}			
 	}
 	else if (point == 4){
 		precompute_gen.DFT(DFT_out4, x_4, 4, prou4, modulus);	
 		for(int i = 0; i < point; i++){
 			cout << DFT_out4[i] << endl;
+			if(DFT_out4[i] != X[i]){
+				cout << "error" << endl;
+			}			
 		}			
 	}	
 	else if (point == 3){
 		precompute_gen.DFT(DFT_out3, x_3, 3, prou3, modulus);	
 		for(int i = 0; i < point; i++){
 			cout << DFT_out3[i] << endl;
+			if(DFT_out3[i] != X[i]){
+				cout << "error" << endl;
+			}			
 		}			
 	}	
 	else if (point == 2){
 		precompute_gen.DFT(DFT_out2, x_2, 2, prou2, modulus);	
 		for(int i = 0; i < point; i++){
 			cout << DFT_out2[i] << endl;
+			if(DFT_out2[i] != X[i]){
+				cout << "error" << endl;
+			}			
 		}			
 	}
+	
+
 	
 	
 /*	
